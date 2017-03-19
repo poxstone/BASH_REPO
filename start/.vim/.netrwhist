@@ -1,0 +1,7 @@
+let g:netrw_dirhistmax  =10
+let g:netrw_dirhist_cnt =5
+let g:netrw_dirhist_1='/home/pox255/default/static'
+let g:netrw_dirhist_2='/home/pox255/default/static/js'
+let g:netrw_dirhist_3='/home/pox255/default'
+let g:netrw_dirhist_4='/home/pox255/default/templates'
+let g:netrw_dirhist_5='/home/pox255/default'
