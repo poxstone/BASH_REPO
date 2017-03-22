@@ -29,7 +29,7 @@ to_install=(
     'sudo apt-get upgrade -y'
     # Libraries
     'sudo apt-get install git gitk -y'
-    'sudo apt-get install curl build-essential autoconf libtool pkg-config python-opengl python-imaging python-pyrex python-pyside.qtopengl idle-python2.7 qt4-dev-tools qt4-designer libqtgui4 libqtcore4 libqt4-xml libqt4-test libqt4-script libqt4-network libqt4-dbus python-qt4 python-qt4-gl libgle3 python-dev python-setuptools libpcap0.8-dev libnetfilter-queue-dev libssl-dev libjpeg-dev libxml2-dev libxslt1-dev libcapstone3 libcapstone-dev libffi-dev file checkinstall python-pip build-essential libssl-dev -y'
+    'sudo apt-get install curl build-essential autoconf libtool pkg-config python-opengl python-imaging python-pyrex python-pyside.qtopengl idle-python2.7 qt4-dev-tools qt4-designer libqtgui4 libqtcore4 libqt4-xml libqt4-test libqt4-script libqt4-network libqt4-dbus python-qt4 python-qt4-gl libgle3 python-dev python-setuptools python-virtualenv libpcap0.8-dev libnetfilter-queue-dev libssl-dev libjpeg-dev libxml2-dev libxslt1-dev libcapstone3 libcapstone-dev libffi-dev file checkinstall python-pip build-essential libssl-dev -y'
     'apt-get install autoconf g++ python2.7-dev -y'
     'sudo easy_install greenlet'
     'sudo easy_install gevent'
