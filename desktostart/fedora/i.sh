@@ -4,22 +4,30 @@ cd ~/Downloads;
 
 sudo dnf check-update -y && sudo dnf upgrade -y;
 sudo dnf install kernel-devel-$(uname -r) kernel-core-$(uname -r) -y;
+sudo dnf install https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm -y;
 
 # Dev tools
 sudo dnf install redhat-rpm-config -y;
+sudo dnf install @development-tools -y;
 sudo dnf install dh-autoreconf curl-devel expat-devel gettext-devel openssl-devel perl-devel zlib-devel \
-                 asciidoc xmlto docbook2X getopt -y;
+                 asciidoc xmlto docbook2X getopt binutils fedora-packager chrpath autoconf automake \
+                 gcc libffi-devel epel-release dnf-plugins-core python python-devel -y;
 sudo dnf install wget -y;
 sudo dnf install deluge -y;
 sudo dnf install rpm-build lsb -y;
-sudo dnf install python python-devel -y;
 sudo dnf install zlib-devel sqlite-devel -y; # instlall for ruby;
 sudo dnf install git-all -y;
+sudo dnf install openssh openssh-server -y;
+sudo systemctl enable sshd.service;
+sudo systemctl start sshd.service;
+
 
 # python
 sudo pip install --upgrade pip;
 sudo pip install jrnl[encrypted];
 sudo pip install ansible;
+sudo pip install cryptography;
+
 
 # databases services
 sudo dnf install postgresql-server postgresql-contrib postgresql-devel -y;
@@ -36,10 +44,11 @@ sudo gem install rails && sudo dnf install rubygem-rails;
 sudo dnf group install 'Ruby on Rails' -y;
 
 # Install tools
-sudo dnf install vim-enhanced tmux lynx nmap -y;
+sudo dnf install vim-enhanced tmux htop lynx nmap -y;
 
-# install dsn apps and tools
-sudo dnf install gimp inkscape blender ImageMagick ImageMagick-devel ImageMagick-perl -y;
+# install dsn, media apps and tools
+sudo dnf install gstreamer{1,}-{plugin-crystalhd,ffmpeg,plugins-{good,ugly,bad{,-free,-nonfree,-freeworld,-extras}{,-extras}}} libmpg123 lame-libs --setopt=strict=0 -y;
+sudo dnf install gimp inkscape blender ImageMagick ImageMagick-devel ImageMagick-perl optipng vlc python-vlc npapi-vlc -y;
 
 # Apache php
 sudo dnf install httpd -y;
@@ -48,6 +57,13 @@ sudo dnf install php php-common php-pdo_mysql php-pdo php-gd php-mbstring -y;
 sudo systemctl restart httpd;
 sudo dnf install perl-Net-SSLeay perl-TO-Tty -y;
 sudo systemctl stop httpd;
+
+# DOCKER
+sudo dnf install docker;
+# activate docker daemon
+sudo systemctl start docker;
+# docker compose
+sudo pip install docker-compose;
 
 # java with alternatives
 if java -version;then
@@ -70,7 +86,7 @@ if node -v;then
     if stylus -V && bower -v && ng -v;then
         echo "npm and modules allready installed";
     else
-        npm install -g stylus nib svgexport http-server bower @angular/cli;
+        npm install -g stylus nib less jade svgexport http-server bower @angular/cli;
     fi;
 else
     echo '--- Pending install NVM for nodejs---';
