@@ -11,7 +11,7 @@ sudo dnf install redhat-rpm-config -y;
 sudo dnf install @development-tools -y;
 sudo dnf install dh-autoreconf curl-devel expat-devel gettext-devel openssl-devel perl-devel zlib-devel \
                  asciidoc xmlto docbook2X getopt binutils fedora-packager chrpath autoconf automake \
-                 gcc gcc-c++ qt-devel libffi-devel epel-release dnf-plugins-core python python-devel nasm.x86_64 SDL* -y;
+                 gcc gcc-c++ qt-devel libffi-devel epel-release dnf-plugins-core python python-devel nasm.x86_64 SDL* ant -y;
 sudo dnf install wget -y;
 sudo dnf install deluge -y;
 sudo dnf install rpm-build lsb -y;
@@ -55,6 +55,9 @@ sudo dnf install vim-enhanced tmux htop lynx nmap -y;
 sudo dnf install gnome-color-manager -y;
 sudo dnf install gstreamer{1,}-{plugin-crystalhd,ffmpeg,plugins-{good,ugly,bad{,-free,-nonfree,-freeworld,-extras}{,-extras}}} libmpg123 lame-libs --setopt=strict=0 -y;
 sudo dnf install gimp inkscape blender ImageMagick ImageMagick-devel ImageMagick-perl optipng vlc python-vlc npapi-vlc -y;
+
+# install remte desktop windows
+sudo dnf install remmina remmina-plugins-common remmina-plugins-gnome remmina-plugins-rdp remmina-plugins-vnc --allowerasing -y;
 
 # Apache php
 sudo dnf install httpd -y;
@@ -168,4 +171,7 @@ echo "
 
 cd ~;
 cd $INIT_DIR;
+#CLEAR packages
+sudo dnf clean all;
+
 
