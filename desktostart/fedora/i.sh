@@ -1,17 +1,16 @@
 #!/bin/bash
 INIT_DIR=$(pwd);
 cd ~/Downloads;
-
 sudo dnf check-update -y && sudo dnf upgrade -y;
 sudo dnf install kernel-devel-$(uname -r) kernel-core-$(uname -r) -y;
 sudo dnf install https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm -y;
-
 # Dev tools
 sudo dnf install redhat-rpm-config -y;
 sudo dnf install @development-tools -y;
-sudo dnf install dh-autoreconf curl-devel expat-devel gettext-devel openssl-devel perl-devel zlib-devel \
-                 asciidoc xmlto docbook2X getopt binutils fedora-packager chrpath autoconf automake \
-                 gcc gcc-c++ qt-devel libffi-devel epel-release dnf-plugins-core python python-devel nasm.x86_64 SDL* ant -y;
+sudo dnf install -y dh-autoreconf curl-devel expat-devel gettext-devel openssl-devel perl-devel zlib-devel \;
+sudo dnf install -y asciidoc xmlto docbook2X binutils fedora-packager chrpath autoconf automake;
+sudo dnf install -y gcc gcc-c++ qt-devel libffi-devel dnf-plugins-core python python-devel nasm.x86_64 SDL* ant;
+# epel-release getopt
 sudo dnf install wget -y;
 sudo dnf install deluge -y;
 sudo dnf install rpm-build lsb -y;
@@ -20,7 +19,6 @@ sudo dnf install git-all -y;
 sudo dnf install openssh openssh-server -y;
 sudo systemctl enable sshd.service;
 sudo systemctl start sshd.service;
-
 # python
 sudo pip install --upgrade pip;
 sudo pip install jrnl[encrypted];
@@ -28,12 +26,10 @@ sudo pip install ansible;
 sudo pip install cryptography;
 sudo pip install virtualenv;
 sudo pip install selenium;
-
 # browser drivers for sellenium
-if ! geckodriver --version || ! chromedriver --version;then
+if ! geckodriver --version || ! chromedriver --version ;then
     echo "Pendiente instalar los drivers de lo navegadores";
 fi;
-
 # databases services
 sudo dnf install postgresql-server postgresql-contrib postgresql-devel -y;
 sudo systemctl enable postgresql;
@@ -41,70 +37,60 @@ sudo systemctl enable postgresql;
 sudo postgresql-setup --initdb --unit postgresql;
 sudo systemctl start postgresql;
 sudo dnf install pgadmin3 -y;
-
 # ruby
-sudo dnf install ruby ruby-devel rubygem-thor rubygem-bundler -y;
-sudo dnf install ruby-tcltk rubygem-rake rubygem-test-unit -y;
-sudo gem install rails && sudo dnf install rubygem-rails;
+sudo dnf install -y ruby ruby-devel rubygem-thor rubygem-bundler;
+sudo dnf install -y ruby-tcltk rubygem-rake rubygem-test-unit;
+sudo gem install -y rails && sudo dnf install rubygem-rails;
 sudo dnf group install 'Ruby on Rails' -y;
-
 # Install tools
 sudo dnf install vim-enhanced tmux htop lynx nmap -y;
-
 # install dsn, media apps and tools
 sudo dnf install gnome-color-manager -y;
 sudo dnf install gstreamer{1,}-{plugin-crystalhd,ffmpeg,plugins-{good,ugly,bad{,-free,-nonfree,-freeworld,-extras}{,-extras}}} libmpg123 lame-libs --setopt=strict=0 -y;
 sudo dnf install gimp inkscape blender ImageMagick ImageMagick-devel ImageMagick-perl optipng vlc python-vlc npapi-vlc -y;
-
 # install remte desktop windows
-sudo dnf install remmina remmina-plugins-common remmina-plugins-gnome remmina-plugins-rdp remmina-plugins-vnc --allowerasing -y;
-
+sudo dnf install remmina remmina-plugins-gnome remmina-plugins-rdp remmina-plugins-vnc --allowerasing -y;
+# remmina-plugins-common
 # Apache php
 sudo dnf install httpd -y;
 sudo systemctl start httpd;
 sudo dnf install php php-common php-pdo_mysql php-pdo php-gd php-mbstring -y;
 sudo systemctl restart httpd;
-sudo dnf install perl-Net-SSLeay perl-TO-Tty -y;
+sudo dnf install perl-Net-SSLeay -y;
+#perl-TO-Tty
 sudo systemctl stop httpd;
-
 # DOCKER
-sudo dnf install docker;
+sudo dnf install -y docker;
 # activate docker daemon
 sudo systemctl start docker;
 # docker compose
 sudo pip install docker-compose;
-
 # Android dev
 # sudo fastboot oem get_unlock_data
 sudo dnf install android-tools -y;
 sudo dnf install zlib.i686 ncurses-libs.i686 bzip2-libs.i686 -y;
 sudo dnf install fastboot -y;
 sudo dnf install usbutils -y;
-
 #java oracle
 if ! java -version;then
     if [ -e ~/Downloads/programs/jdk-8u131-linux-x64.rpm ];then
         sudo rpm -ivh ~/Downloads/programs/jdk-8u131-linux-x64.rpm;
-
         # java with alternatives
         sudo alternatives --install /usr/bin/java java /usr/java/latest/jre/bin/java 200000;
         sudo alternatives --install /usr/bin/javaws javaws /usr/java/latest/jre/bin/javaws 200000;
         sudo alternatives --install /usr/lib64/mozilla/plugins/libjavaplugin.so libjavaplugin.so.x86_64 /usr/java/latest/jre/lib/amd64/libnpjp2.so 200000;
         sudo alternatives --install /usr/bin/javac javac /usr/java/latest/bin/javac 200000;
         sudo alternatives --install /usr/bin/jar jar /usr/java/latest/bin/jar 200000;
-
         # config alternatives
-        alternatives --config java;
-        alternatives --config javac;
-        alternatives --config javaws;
-
+        sudo alternatives --config java;
+        sudo alternatives --config javac;
+        sudo alternatives --config javaws;
         # java version
         java -version;
     else
-        echo "java rpm no está en la carpeta de descargas";
+        echo "java rpm no est
+ en la carpeta de descargas";
     fi;
-fi;
-
 # gradle java
 if java -version && gradle -v;then
     echo "gradle and java alternatives alreadyionstalled";
@@ -112,8 +98,6 @@ if java -version && gradle -v;then
     sudo dnf install gradle -y;
 else
     echo '--- Pending install JAVA JDK---';
-fi;
-
 # nodejs
 if node -v;then
     if stylus -V && bower -v && ng -v;then
@@ -123,8 +107,6 @@ if node -v;then
     fi;
 else
     echo '--- Pending install NVM for nodejs---';
-fi;
-
 #manual
 echo "
 ---## MANUAL INSTALATTIONS ###--
@@ -166,9 +148,7 @@ echo "
         later download https://www.lwks.com/videotutorials
           - dnf install libCg-3.1.0013-4.fc22.x86_64.rpm
           - dnf install lwks-14.0.0-amd64.rpm
-
     ";
-
 cd ~;
 cd $INIT_DIR;
 #CLEAR packages
