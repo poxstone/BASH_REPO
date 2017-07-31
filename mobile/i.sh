@@ -21,3 +21,13 @@ apt -y install nodejs
 termux-setup-storage
 npm install -g typescript
 npm install -g @angular/cli
+#psql
+apt -y install postgresql
+#https://wiki.termux.com/wiki/Postgresql
+#mkdir -p $PREFIX/var/lib/postgresql
+#initdb $PREFIX/var/lib/postgresql
+#Starting the database
+#
+#pg_ctl -D $PREFIX/var/lib/postgresql start
+#Similarly stop the database using
+#pg_ctl stop
