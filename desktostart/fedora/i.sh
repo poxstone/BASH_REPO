@@ -111,6 +111,9 @@ else
     echo '--- Pending install NVM for nodejs---';
 fi;
 
+#tools iso to usb
+dnf -y install unetbootin;
+
 #manual
 echo "
 ---## MANUAL INSTALATTIONS ###--
@@ -129,6 +132,7 @@ echo "
           - SHOW VARIABLES LIKE 'validate_password%';
           - SET GLOBAL validate_password_policy=LOW;
           - ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password AS '123456';
+    - workbench download and install rpm mysql-workbench-community-6.3.9-1.fc26.x86_64.rpm
     - tomcat (donwload and run in folder)
     - nvm (download): https://github.com/creationix/nvm
         - curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.2/install.sh | bash
