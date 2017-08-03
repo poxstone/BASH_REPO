@@ -58,6 +58,10 @@ sudo systemctl start httpd;
 sudo dnf install php php-common php-pdo_mysql php-pdo php-gd php-mbstring -y; 
 sudo systemctl restart httpd;
 sudo dnf install perl-Net-SSLeay -y; 
+#php libraries (moodle)
+sudo rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm;
+sudo rpm -Uvh https://mirror.webtatic.com/yum/el7/webtatic-release.rpm;
+sudo dnf install mod_php71w php71w-common php71w-mbstring php71w-xmlrpc php71w-soap php71w-gd php71w-xml php71w-intl php71w-mysqlnd php71w-cli php71w-mcrypt php71w-ldap -y;
 #perl-TO-Tty
 sudo systemctl stop httpd;
 # DOCKER
