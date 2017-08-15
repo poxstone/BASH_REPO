@@ -8,7 +8,7 @@ sudo dnf install https://download1.rpmfusion.org/free/fedora/rpmfusion-free-rele
 # Dev tools
 sudo dnf install redhat-rpm-config -y; 
 sudo dnf install @development-tools -y; 
-sudo dnf install -y dh-autoreconf curl-devel expat-devel gettext-devel openssl-devel perl-devel zlib-devel \;
+sudo dnf install -y dh-autoreconf curl-devel expat-devel gettext-devel openssl-devel apr-devel perl-devel zlib-devel \;
 sudo dnf install -y asciidoc xmlto docbook2X binutils fedora-packager chrpath autoconf automake;
 sudo dnf install -y gcc gcc-c++ qt-devel libffi-devel dnf-plugins-core python python-devel nasm.x86_64 SDL* ant;
 # epel-release getopt
@@ -27,6 +27,7 @@ sudo pip install ansible;
 sudo pip install cryptography;
 sudo pip install virtualenv;
 sudo pip install selenium;
+#sudo dnf install python-pandas -y;
 # browser drivers for sellenium
 if ! geckodriver --version || ! chromedriver --version ;then
     echo "Pendiente instalar los drivers de lo navegadores";
@@ -62,6 +63,9 @@ sudo dnf install perl-Net-SSLeay -y;
 sudo rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm;
 sudo rpm -Uvh https://mirror.webtatic.com/yum/el7/webtatic-release.rpm;
 sudo dnf install mod_php71w php71w-common php71w-mbstring php71w-xmlrpc php71w-soap php71w-gd php71w-xml php71w-intl php71w-mysqlnd php71w-cli php71w-mcrypt php71w-ldap -y;
+sudo dnf install mod_php71w php71w-opcache -y;
+# php 7.1
+sudo dnf install php71w-fpm php71w-opcache -y;
 #perl-TO-Tty
 sudo systemctl stop httpd;
 # DOCKER
@@ -143,6 +147,7 @@ echo "
         export NVM_DIR='$HOME/.nvm'
         [ -s '$NVM_DIR/nvm.sh' ] && \. '$NVM_DIR/nvm.sh'  # This loads nvm
         [ -s '$NVM_DIR/bash_completion' ] && \. '$NVM_DIR/bash_completion'  # This loads nvm bash_completion
+    - etcher fron zio for install usb live
     - postgres (autoinstall and complete configuration):
         - sudo su - postgres
         - \password postgres
