@@ -16,7 +16,7 @@ sudo dnf install wget -y;
 sudo dnf install deluge -y; 
 sudo dnf install rpm-build lsb -y; 
 sudo dnf install zlib-devel sqlite-devel -y; # instlall for ruby;
-sudo dnf install git-all -y; 
+sudo dnf install git-all kdiff3 -y; 
 sudo dnf install openssh openssh-server -y; 
 sudo systemctl enable sshd.service;
 sudo systemctl start sshd.service;
