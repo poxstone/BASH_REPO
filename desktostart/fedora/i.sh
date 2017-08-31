@@ -69,7 +69,16 @@ sudo dnf install php71w-fpm php71w-opcache -y;
 #perl-TO-Tty
 sudo systemctl stop httpd;
 # DOCKER
-sudo dnf install -y docker;
+sudo dnf remove docker docker-common docker-selinux docker-engine-selinux docker-engine -y;
+sudo dnf -y install dnf-plugins-core;
+sudo dnf config-manager --add-repo https://download.docker.com/linux/fedora/docker-ce.repo -y;
+sudo dnf config-manager --set-enabled docker-ce-edge -y;
+sudo dnf config-manager --set-enabled docker-ce-test -y;
+sudo dnf config-manager --set-disabled docker-ce-edge -y;
+sudo dnf check-update -y && sudo dnf update && sudo dnf upgrade -y;
+sudo dnf install docker-ce -y;
+sudo usermod -a -G docker $USER;
+
 # activate docker daemon
 sudo systemctl start docker;
 # docker compose
@@ -121,6 +130,10 @@ fi;
 
 #tools iso to usb
 dnf -y install unetbootin;
+
+#user to docker group
+sudo groupadd docker;
+sudo gpasswd -a $USER docker;
 
 #manual
 echo "
