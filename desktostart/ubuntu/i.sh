@@ -69,6 +69,13 @@ if ! docker -v;then \
     gpasswd -a $USER docker; \
     apt-get insyall -y docker-compose; \
 fi; \
+# ssh-server #https://help.ubuntu.com/lts/serverguide/openssh-server.html
+apt-get install -y openssh-client openssh-server; \
+if [ -e /etc/ssh/sshd_config.original ]; then \
+  cp /etc/ssh/sshd_config /etc/ssh/sshd_config.original; \
+  chmod a-w /etc/ssh/sshd_config.original; \
+  systemctl restart sshd.service
+fi; \
 #android smartphones
 apt-get install -y android-tools-adb android-tools-fastboot; \
 #java oracle
