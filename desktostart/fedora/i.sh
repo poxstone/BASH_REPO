@@ -138,11 +138,11 @@ sudo gpasswd -a $USER docker;
 #manual
 echo "
 ---## MANUAL INSTALATTIONS ###--
-    - chrome install chrome (download)
-    - virtualbox download), install, and install package extension
-    - java download install and run  this (i.sh) again)
+    - chrome: install chrome (download)
+    - virtualbox: download), install, and install package extension
+    - java: download install and run  this (i.sh) again)
         - .bashrc > export JAVA_HOME='/usr/java/jdk1.8.0_131'
-    - mysql (donwlad and install):
+    - mysql: (donwlad and install):
         - sudo dnf install mysql-community-server
         - sudo systemctl start mysqld.service
         - sudo systemctl enable mysqld.service
@@ -153,15 +153,15 @@ echo "
           - SHOW VARIABLES LIKE 'validate_password%';
           - SET GLOBAL validate_password_policy=LOW;
           - ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password AS '123456';
-    - workbench download and install rpm mysql-workbench-community-6.3.9-1.fc26.x86_64.rpm
-    - tomcat (donwload and run in folder)
-    - nvm (download): https://github.com/creationix/nvm
+    - workbench: download and install rpm mysql-workbench-community-6.3.9-1.fc26.x86_64.rpm
+    - tomcat: (donwload and run in folder)
+    - nvm: (download): https://github.com/creationix/nvm
         - curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.2/install.sh | bash
         export NVM_DIR='$HOME/.nvm'
         [ -s '$NVM_DIR/nvm.sh' ] && \. '$NVM_DIR/nvm.sh'  # This loads nvm
         [ -s '$NVM_DIR/bash_completion' ] && \. '$NVM_DIR/bash_completion'  # This loads nvm bash_completion
-    - etcher fron zio for install usb live
-    - postgres (autoinstall and complete configuration):
+    - etcher: from zio for install usb live
+    - postgres: (autoinstall and complete configuration):
         - sudo su - postgres
         - \password postgres
             admin
@@ -174,10 +174,10 @@ echo "
                 listen_addresses = '*'
                 port = 5432 
             - sudo systemctl restart postgresql.service
-      - Lightworks video editor download ftp://195.220.108.108/linux/rpmfusion/nonfree/fedora/releases/23/Everything/x86_64/os/Packages/l/libCg-3.1.0013-4.fc22.x86_64.rpm
-        later download https://www.lwks.com/videotutorials
-          - dnf install libCg-3.1.0013-4.fc22.x86_64.rpm
-          - dnf install lwks-14.0.0-amd64.rpm
+    - Lightworks video editor download ftp://195.220.108.108/linux/rpmfusion/nonfree/fedora/releases/23/Everything/x86_64/os/Packages/l/libCg-3.1.0013-4.fc22.x86_64.rpm
+      later download https://www.lwks.com/videotutorials
+        - dnf install libCg-3.1.0013-4.fc22.x86_64.rpm
+        - dnf install lwks-14.0.0-amd64.rpm
     ";
 cd ~;
 cd $INIT_DIR;
