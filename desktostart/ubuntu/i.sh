@@ -98,6 +98,12 @@ if [[ $JAVA_HOME == "" ]];then \
       source /etc/environment; \
   fi; \
 fi;
+# gcloud
+if gcloud -v;then \
+  curl https://sdk.cloud.google.com | bash && \
+  exec -l $SHELL; \
+  gcloud init; \
+fi; \
 # clean
 chown -R $USER:$(id -gn $USER) ~/.nvm; \
 chown -R $USER:$(id -gn $USER) ~/.config; \
