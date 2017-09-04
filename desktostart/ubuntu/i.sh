@@ -67,7 +67,7 @@ if ! docker -v;then \
     apt-get install -y docker-ce; \
     groupadd docker; \
     gpasswd -a $USER docker; \
-    apt-get insyall -y docker-compose; \
+    apt-get install -y docker-compose; \
 fi; \
 # ssh-server #https://help.ubuntu.com/lts/serverguide/openssh-server.html
 apt-get install -y openssh-client openssh-server; \
@@ -95,5 +95,6 @@ if [[ $JAVA_HOME == "" ]];then \
   fi; \
 fi;
 # clean
-chown -R $USER ~/.nvm; \
+chown -R $USER:$(id -gn $USER) ~/.nvm; \
+chown -R $USER:$(id -gn $USER) ~/.config; \
 apt autoremove -y; \
