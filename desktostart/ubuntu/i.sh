@@ -49,14 +49,16 @@ pip install virtualenvwrapper pyopenssl easy_install greenlet jrnl[encrypted] an
 #sudo dnf install python-pandas -y;
 # Dev tools
 apt-get install -y htop lynx gitk git-all kdiff3 autoconf g++ python2.7-dev nmap; \
-# mysql
-apt-get install -y libmysqlclient-dev mysql-server mysql-client; \
 # Design tools removed(libpng12-dev libtiff4-dev)
 apt-get install -y inkscape gimp imagemagick libjpeg62-dev tesseract\* krita blender optipng vlc; \
 # install remte desktop windows
 apt-get install -y remmina; \
 #pache
 apt-get install -y apache2; \
+# sublime
+wget -qO - https://download.sublimetext.com/sublimehq-pub.gpg | sudo apt-key add -; \
+echo "deb https://download.sublimetext.com/ apt/stable/" | tee /etc/apt/sources.list.d/sublime-text.list; \
+apt-get update && apt-get install -y sublime-text; \
 # docker
 apt-get install -y apt-transport-https ca-certificates software-properties-common; \
 if ! docker -v;then \
@@ -78,6 +80,8 @@ if [ -e /etc/ssh/sshd_config.original ]; then \
 fi; \
 #android smartphones
 apt-get install -y android-tools-adb android-tools-fastboot; \
+# mysql
+apt-get install -y libmysqlclient-dev mysql-server mysql-client; \
 #java oracle
 if [[ $JAVA_HOME == "" ]];then \
   sudo add-apt-repository ppa:webupd8team/java -y; \
@@ -97,4 +101,5 @@ fi;
 # clean
 chown -R $USER:$(id -gn $USER) ~/.nvm; \
 chown -R $USER:$(id -gn $USER) ~/.config; \
+chown -R $USER:$(id -gn $USER) ~/.; \
 apt autoremove -y; \
