@@ -56,7 +56,7 @@ apt-get install -y inkscape gimp imagemagick libjpeg62-dev tesseract\* krita ble
 # install remte desktop windows
 apt-get install -y remmina; \
 #pache
-apt-get install apache2; \
+apt-get install -y apache2; \
 # docker
 apt-get install -y apt-transport-https ca-certificates software-properties-common; \
 if ! docker -v;then \
@@ -64,7 +64,7 @@ if ! docker -v;then \
     curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add - && \
     apt-key fingerprint 0EBFCD88 && \
     add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu  $(lsb_release -cs) stable" && \
-    apt-get install docker-ce; \
+    apt-get install -y docker-ce; \
     groupadd docker; \
     gpasswd -a $USER docker; \
     apt-get insyall -y docker-compose; \
@@ -80,15 +80,15 @@ fi; \
 apt-get install -y android-tools-adb android-tools-fastboot; \
 #java oracle
 if [[ $JAVA_HOME == "" ]];then \
-  add-apt-repository ppa:webupd8team/java -y; \
-  apt-get update; \
-  echo debconf shared/accepted-oracle-license-v1-1 select true | debconf-set-selections; \
-  echo debconf shared/accepted-oracle-license-v1-1 seen true | debconf-set-selections; \
-  echo "JAVA 8 ORACLE REQUIERE INSTALARSE MANUALMENTE COPIANDO Y PEGANDO ESTOS COMANDOS ----*/*/*/*//// NOTA"; \
-  apt install oracle-java8-set-default; \
-  apt-get install -y oracle-java8-installer; \
-  update-alternatives --config java; \
-  update-alternatives --config javac; \
+  sudo add-apt-repository ppa:webupd8team/java -y; \
+  sudo apt-get update; \
+  sudo echo debconf shared/accepted-oracle-license-v1-1 select true | debconf-set-selections; \
+  sudo echo debconf shared/accepted-oracle-license-v1-1 seen true | debconf-set-selections; \
+  sudo echo "JAVA 8 ORACLE REQUIERE INSTALARSE MANUALMENTE COPIANDO Y PEGANDO ESTOS COMANDOS ----*/*/*/*//// NOTA"; \
+  sudo apt install -y oracle-java8-set-default; \
+  sudo apt-get install -y oracle-java8-installer; \
+  sudo update-alternatives --config java; \
+  sudo update-alternatives --config javac; \
   if ! grep /etc/environment -e "JAVA_HOME";then \
       echo 'JAVA_HOME="/usr/lib/jvm/java-8-oracle"' >> /etc/environment; \
       source /etc/environment; \
