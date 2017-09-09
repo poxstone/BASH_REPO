@@ -30,13 +30,13 @@ apt-get update -y && apt-get install -y grep sed git vim tmux curl wget net-tool
 # install node
 apt-get install -y build-essential libssl-dev && \
     . ~/.nvm/nvm.sh && . ~/.bashrc; \
-    if nvm --version && stylus --version && jade --version;then \
+    if nvm --version && stylus --version && pug --version;then \
         echo "node not need instalation"; \
     else \
         curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.2/install.sh | bash && \
         . ~/.nvm/nvm.sh && . ~/.bashrc; \
         nvm install 8 && nvm use 8 && nvm alias default $(nvm current) && \
-        npm i -g stylus nib jade svgexport less less-prefixer watch-less http-server bower; \
+        npm i -g stylus nib pug-cli svgexport less less-prefixer watch-less http-server bower; \
 
     fi; \
 # install builds
@@ -82,6 +82,7 @@ fi; \
 apt-get install -y android-tools-adb android-tools-fastboot; \
 # mysql
 apt-get install -y libmysqlclient-dev mysql-server mysql-client; \
+apt-get install -y mysql-workbench; \
 #java oracle
 if [[ $JAVA_HOME == "" ]];then \
   sudo add-apt-repository ppa:webupd8team/java -y; \

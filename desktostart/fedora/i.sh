@@ -122,7 +122,7 @@ if node -v;then
     if stylus -V && bower -v && ng -v;then
         echo "npm and modules allready installed";
     else
-        npm install -g stylus nib less jade svgexport http-server bower @angular/cli;
+        npm install -g stylus nib less pug-cli svgexport http-server bower @angular/cli;
     fi;
 else
     echo '--- Pending install NVM for nodejs---';
