@@ -1,0 +1,9 @@
+alias python="python2"
+alias pip="pip2"
+alias python="python2"
+alias pip="pip2"
+export PATH=$PATH:'~/bin/google-cloud-sdk/bin/';
+export PATH=$PATH:'~/bin/google-cloud-sdk/bin/';
+#alias gcloud='bash ~/bin/google-cloud-sdk/bin/gcloud';
+#alias gsutil='bash ~/bin/google-cloud-sdk/bin/gsutil';
+#alias dev_appserver.py='bash ~/bin/google-cloud-sdk/bin/dev_appserver.py';
