@@ -6,7 +6,7 @@ declare format="png";
 if [ $2 ];then
     declare -a sizes=($2);
 else
-    declare -a sizes=(1024 512 256 200 180 152 144 128 120 114 100 96 80 76 72 64 60 58 57 52 50 48 40 36 32 29 16);
+    declare -a sizes=(1024 512 256 200 192 180 152 144 128 120 114 100 96 80 76 72 64 60 58 57 52 50 48 40 36 32 29 24 16);
 fi;
 
 # if is file
@@ -40,7 +40,7 @@ function createImg () {
         inkscape -f $dir/$1 -w $size -e $dir/$name &&
         # optipng -v -o5 -quiet -preserve "$dir/$name" &&
         optipng -v -o2 -quiet -strip all $dir/$name &&
-        echo ">>>>> DONE: $dir/$name";
+        echo ">>>>>>>>>>  DONE: $dir/$name  <<<<<<<<<<";
     done;
 }
 
@@ -50,4 +50,8 @@ for img in ${imgs[@]};do
     createImg $img;
 done;
 
-
+#move to folder
+prev_dir = $(pwd);
+cd $dir;
+find . -type f -name "*.png" | awk -F '_' '{dir="if [ ! -e "$1" ];then mkdir "$1";fi;mv "$0" "$1;print dir;system(dir)};';
+cd $prev_dir;

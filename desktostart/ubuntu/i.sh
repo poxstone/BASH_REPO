@@ -42,7 +42,7 @@ apt-get install -y build-essential libssl-dev && \
 # install builds
 apt-get install -y build-essential autoconf libtool pkg-config python-opengl python-imaging python-pyrex python-pyside.qtopengl idle-python2.7 qt4-dev-tools qt4-designer libqtgui4 \
     libqtcore4 libqt4-xml libqt4-test libqt4-script libqt4-network libqt4-dbus python-qt4 python-qt4-gl libgle3 python-dev python-setuptools libpcap0.8-dev libnetfilter-queue-dev \
-    libssl-dev libjpeg-dev libxml2-dev libxslt1-dev libcapstone-dev libffi-dev file checkinstall python-pip libssl-dev; \
+    libssl-dev libjpeg-dev libxml2-dev libxslt1-dev libcapstone-dev libffi-dev file checkinstall python-pip libssl-dev unrar; \
 # Python libs
 pip install --upgrade pip && \
 pip install virtualenvwrapper pyopenssl easy_install greenlet jrnl[encrypted] ansible cryptography virtualenv selenium gevent pycrypto; \
