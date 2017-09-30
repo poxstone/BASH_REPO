@@ -116,3 +116,16 @@ chown -R $USER:$(id -gn $USER) ~/.nvm; \
 chown -R $USER:$(id -gn $USER) ~/.config; \
 chown -R $USER:$(id -gn $USER) ~/.; \
 apt autoremove -y; \
+# install libinput and xdotool for multitouch neded normal user and config " ~/.config/libinput-gestures.conf"
+# http://www.lorenzobettini.it/2017/02/touchpad-gestures-in-linux-kde-with-libinput-gestures/
+# https://github.com/bulletmark/libinput-gestures
+sudo gpasswd -a $USER input; \
+sudo apt-get install -y libinput-tools; \
+git clone http://github.com/bulletmark/libinput-gestures;
+cd libinput-gestures;
+sudo ./libinput-gestures-setup install; \
+libinput-gestures-setup start; \
+libinput-gestures-setup autostart; \
+# test
+# libinput-gestures-setup stop;
+# libinput-gestures -d;
