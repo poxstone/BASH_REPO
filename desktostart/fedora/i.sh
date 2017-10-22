@@ -8,7 +8,7 @@ sudo dnf install https://download1.rpmfusion.org/free/fedora/rpmfusion-free-rele
 # Dev tools
 sudo dnf install redhat-rpm-config -y; 
 sudo dnf install @development-tools -y; 
-sudo dnf install -y dh-autoreconf curl-devel expat-devel gettext-devel openssl-devel apr-devel perl-devel zlib-devel \;
+sudo dnf install -y dh-autoreconf curl-devel expat-devel gettext-devel openssl-devel apr-devel perl-devel zlib-devel;
 sudo dnf install -y asciidoc xmlto docbook2X binutils fedora-packager chrpath autoconf automake;
 sudo dnf install -y gcc gcc-c++ qt-devel libffi-devel dnf-plugins-core python python-devel nasm.x86_64 SDL* ant;
 # epel-release getopt
@@ -36,13 +36,15 @@ fi;
 sudo dnf install postgresql-server postgresql-contrib postgresql-devel -y; 
 sudo systemctl enable postgresql;
 #init database with empty data required to initializaed
-sudo postgresql-setup --initdb --unit postgresql;
+if sudo ls /var/lib/pgsql/data ;then
+  sudo postgresql-setup --initdb --unit postgresql;
+fi;
 sudo systemctl start postgresql;
 sudo dnf install pgadmin3 -y; 
 # ruby
 sudo dnf install -y ruby ruby-devel rubygem-thor rubygem-bundler;
 sudo dnf install -y ruby-tcltk rubygem-rake rubygem-test-unit;
-sudo gem install -y rails && sudo dnf install rubygem-rails;
+sudo gem install rails && sudo dnf install rubygem-rails;
 sudo dnf group install 'Ruby on Rails' -y; 
 # Install tools
 sudo dnf install vim-enhanced tmux htop lynx nmap -y; 
@@ -59,13 +61,14 @@ sudo systemctl start httpd;
 sudo dnf install php php-common php-pdo_mysql php-pdo php-gd php-mbstring -y; 
 sudo systemctl restart httpd;
 sudo dnf install perl-Net-SSLeay -y; 
+# problems on installation dependences
 #php libraries (moodle)
-sudo rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm;
-sudo rpm -Uvh https://mirror.webtatic.com/yum/el7/webtatic-release.rpm;
-sudo dnf install mod_php71w php71w-common php71w-mbstring php71w-xmlrpc php71w-soap php71w-gd php71w-xml php71w-intl php71w-mysqlnd php71w-cli php71w-mcrypt php71w-ldap -y;
-sudo dnf install mod_php71w php71w-opcache -y;
+# sudo rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm;
+# sudo rpm -Uvh https://mirror.webtatic.com/yum/el7/webtatic-release.rpm;
+# sudo dnf install mod_php71w php71w-common php71w-mbstring php71w-xmlrpc php71w-soap php71w-gd php71w-xml php71w-intl php71w-mysqlnd php71w-cli php71w-mcrypt php71w-ldap -y;
+# sudo dnf install mod_php71w php71w-opcache -y;
 # php 7.1
-sudo dnf install php71w-fpm php71w-opcache -y;
+# sudo dnf install php71w-fpm php71w-opcache -y;
 #perl-TO-Tty
 sudo systemctl stop httpd;
 # DOCKER
@@ -78,6 +81,9 @@ sudo dnf config-manager --set-disabled docker-ce-edge -y;
 sudo dnf check-update -y && sudo dnf update && sudo dnf upgrade -y;
 sudo dnf install docker-ce -y;
 sudo usermod -a -G docker $USER;
+#user to docker group
+sudo groupadd docker;
+sudo gpasswd -a $USER docker;
 
 # activate docker daemon
 sudo systemctl start docker;
@@ -91,8 +97,8 @@ sudo dnf install fastboot -y;
 sudo dnf install usbutils -y;
 #java oracle
 if ! java -version;then
-    if [ -e ~/Downloads/programs/jdk-8u131-linux-x64.rpm ];then
-        sudo rpm -ivh ~/Downloads/programs/jdk-8u131-linux-x64.rpm;
+    if [ -e ~/Downloads/programs/jdk-8u151-linux-x64.rpm ];then
+        sudo rpm -ivh ~/Downloads/programs/jdk-8u151-linux-x64.rpm;
         # java with alternatives
         sudo alternatives --install /usr/bin/java java /usr/java/latest/jre/bin/java 200000;
         sudo alternatives --install /usr/bin/javaws javaws /usr/java/latest/jre/bin/javaws 200000;
@@ -117,23 +123,60 @@ else
     echo '--- Pending install JAVA JDK---';
 fi;
 
+#vim
+if ! file ~/.vim || ! file ~/.vim/bundle/;then
+  curl -LSso ~/.vim/autoload/pathogen.vim https://tpo.pe/pathogen.vim; \
+  cd ~/.vim/bundle/; \
+  for i in https://github.com/mattn/emmet-vim \
+    https://github.com/scrooloose/nerdtree.git \
+    https://github.com/tomtom/tlib_vim \
+    https://github.com/leafgarland/typescript-vim \
+    https://github.com/MarcWeber/vim-addon-mw-utils \
+    https://github.com/vim-scripts/vim-auto-save \
+    https://github.com/digitaltoad/vim-pug \
+    https://github.com/tpope/vim-sensible \
+    https://github.com/wavded/vim-stylus.git; \
+  do git clone $i;done; \
+  cd ~; \
+  if [ ! -e ~/.vimrc ];then \
+    touch ~/.vimrc; \
+    chmod 775 ~/.vimrc; \
+  fi; \
+  if ! grep ~/.vimrc -e "execute pathogen#infect()";then \
+    printf "set enc=utf-8\nset fileencoding=utf-8set hls\nset number\nset relativenumber\nset tabstop=2\nset shiftwidth=2\nset expandtab\nset cindent\nset wrap! \n" >> ~/.vimrc; \
+    printf "xnoremap p pgvy\nnnoremap <C-H> :Hexmode<CR>\ninoremap <C-H> <Esc>:Hexmode<CR>\nvnoremap <C-H> :<C-U>Hexmet rela  de<CR> \n" >> ~/.vimrc; \
+    printf "let mapleader = \",\"\nnmap <leader>ne :NERDTreeToggle<cr> \n" >> ~/.vimrc; \
+    printf "execute pathogen#infect() \ncall pathogen#helptags() \nsyntax on \nfiletype plugin indent on \n" >> ~/.vimrc; \
+  fi;
+fi;
+
 # nodejs
 if node -v;then
-    if stylus -V && bower -v && ng -v;then
-        echo "npm and modules allready installed";
-    else
-        npm install -g stylus nib less pug-cli svgexport http-server bower @angular/cli;
+    if [[ $(node -v) != *"v8"* ]];then
+      sudo dnf remove nodejs -y;
+      curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.5/install.sh | bash && \
+      . ~/.nvm/nvm.sh && . ~/.bashrc; \
+      nvm install 8 && nvm use 8 && nvm alias default $(nvm current) && \
+      npm i -g stylus nib pug-cli less less-prefixer watch-less http-server bower;
     fi;
 else
     echo '--- Pending install NVM for nodejs---';
 fi;
 
 #tools iso to usb
-dnf -y install unetbootin;
+sudo dnf -y install unetbootin;
 
-#user to docker group
-sudo groupadd docker;
-sudo gpasswd -a $USER docker;
+
+#mysql https://www.if-not-true-then-false.com/2010/install-mysql-on-fedora-centos-red-hat-rhel/
+if ! mysql -v;then
+  sudo dnf -y install https://dev.mysql.com/get/mysql57-community-release-fc26-10.noarch.rpm;
+  sudo dnf -y --enablerepo=mysql80-community install mysql-community-server;
+  sudo systemctl start mysqld.service;
+  sudo systemctl enable mysqld.service;
+  #password
+  sudo rep 'A temporary password is generated for root@localhost' /var/log/mysqld.log |tail -1;
+  sudo ./usr/bin/mysql_secure_installation;
+fi;
 
 #manual
 echo "
@@ -182,5 +225,8 @@ echo "
 cd ~;
 cd $INIT_DIR;
 #CLEAR packages
+sudo dnf clean packages;
 sudo dnf clean all;
+# fix dependences
+dnf update --best --allowerasing;
 
