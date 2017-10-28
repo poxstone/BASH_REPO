@@ -7,18 +7,16 @@ if [ $1 ];then nodeV=$1; else nodeV="8"; fi;
 # load profile and eviroment vars profile for use in this bash
 . $localDir/nvm.sh; . $userDir/.profile;
 # Change node version
-nvm use $nodeV;
-node -v;
+nvm use $nodeV >> /dev/null; #does not print in screen
 
 # Install node
 if [[ $(node -v 2>&1) != *"v$nodeV"* ]];then 
     echo "----------install node $nodeV------------";
     sudo su <<EOF
-    whoami
-    . $localDir/nvm.sh; . $userDir/.profile;
-    nvm install $nodeV;
-    nvm use $nodeV;
-    node -v;
+        whoami
+        . $localDir/nvm.sh; . $userDir/.profile;
+        nvm install $nodeV;
+        nvm use $nodeV >> /dev/null;
 EOF
 fi;
 
@@ -28,23 +26,19 @@ if [[ $(stylus --version 2>&1) == *"command not found"* ]];then
     sudo su <<EOF
         whoami;
         . $localDir/nvm.sh; . $userDir/.profile;
-        nvm use $nodeV;
-        node -v;
-       npm install -g stylus nib bower;
+        # use v node as normal user cation
+        nvm use $nodeV >> /dev/null;
+        npm install -g stylus nib bower;
 EOF
 fi;
 
 # Install tools
-if [[ $(nmap -v) ]];then
-    echo '';
-else
+if [[ ! $(whereis nmap) ]];then
     echo "----------install nmap------------";
     sudo su <<EOF
         whoami;
         apt-get install nmap -y;
-echo "tools installed";
+        echo "tools installed";
 EOF
 fi;
 
-echo "running...";
-#end
