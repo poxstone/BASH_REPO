@@ -1,23 +1,14 @@
 #!/bin/bash
 userDir=$HOME;
 localDir="/usr/local";
-. $localDir/nvm/nvm.sh; . $userDir/.profile;
-
-# switch node version
-if [ $1 ];then nvm use $1; fi;
-node -v;
-
+source $localDir/nvm/nvm.sh;source $userDir/.profile;
+#variables
+DIR_WORK_1=~/Projects/GAE-TEMPLATE;
 # kill node procceses
-pkill -9 node;
-
-cd ~/Projects/ANG2-TEMPLATE/front;
-stylus -u nib -w static/css/style.styl &
-npm start & # tmux split-window -c "$HOME/Projects/ANG2-TEMPLATE/front/" -t 0 'htop'
-find . -name "*.sw[po]" -type f -delete &&
-    tmux new-window -c "$HOME/Projects/ANG2-TEMPLATE" -n edit 'vim -S .session.vim';
-# open reference
-# find ~/Projects/PRB-NG2/app_pz -name "*.sw[po]" -type f -delete &&
-    # tmux new-window -c "$HOME/Projects/PRB-NG2/app_pz" -n edit 'vim -S .session.vim';
-find ~/Projects/efor-components -name "*.sw[po]" -type f -delete &&
-    tmux new-window -c "$HOME/Projects/efor-components" -n edit 'vim -S .session.vim';
-
+find ~ -name "*.sw[pomn]" -type f -delete;
+sudo pkill -9 node;
+kill -9 $(ps ax | grep -i dev_appserver.py | awk '{print($1)}');
+#open windows, este orden es para dividir las mismas ventanas
+tmux new-window "cd $DIR_WORK_1;vim -S ~/vimsession.vim" &
+dev_appserver.py $DIR_WORK_1 --host 0.0.0.0 &
+tmux split-window -p 50 stylus -u nib -w $DIR_WORK_1/static/css/style.styl;
