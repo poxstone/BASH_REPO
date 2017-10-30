@@ -23,18 +23,18 @@ npm install -g @angular/cli;
 mkdir -p ~/.vim/bundle/; \
 mkdir -p ~/.vim/autoload/; \
 curl -LSso ~/.vim/autoload/pathogen.vim https://tpo.pe/pathogen.vim; \
-  cd ~/.vim/bundle/; \
-  for i in https://github.com/mattn/emmet-vim \
-    https://github.com/scrooloose/nerdtree.git \
-    https://github.com/tomtom/tlib_vim \
-    https://github.com/leafgarland/typescript-vim \
-    https://github.com/MarcWeber/vim-addon-mw-utils \
-    https://github.com/vim-scripts/vim-auto-save \
-    https://github.com/digitaltoad/vim-pug \
-    https://github.com/tpope/vim-sensible \
-    https://github.com/wavded/vim-stylus.git; \
-  do git clone $i;done; \
-  cd ~; \
+cd ~/.vim/bundle/;
+for i in https://github.com/mattn/emmet-vim \
+  https://github.com/scrooloose/nerdtree.git \
+  https://github.com/tomtom/tlib_vim \
+  https://github.com/leafgarland/typescript-vim \
+  https://github.com/MarcWeber/vim-addon-mw-utils \
+  https://github.com/vim-scripts/vim-auto-save \
+  https://github.com/digitaltoad/vim-pug \
+  https://github.com/tpope/vim-sensible \
+  https://github.com/wavded/vim-stylus.git;
+do git clone $i;done;
+cd ~;
   if [ ! -e ~/.vimrc ];then \
     touch ~/.vimrc; \
     chmod 775 ~/.vimrc; \
@@ -57,3 +57,4 @@ for i in $(find bin/google-cloud-sdk -name "*.sh" -type f);do termux-fix-shebang
 #pg_ctl -D $PREFIX/var/lib/postgresql start
 #Similarly stop the database using
 #pg_ctl stop
+#!/data/data/com.termux/files/usr/bin/bash
