@@ -45,9 +45,12 @@ cd ~;
     printf "let mapleader = \",\"\nnmap <leader>ne :NERDTreeToggle<cr> \n" >> ~/.vimrc; \
     printf "execute pathogen#infect() \ncall pathogen#helptags() \nsyntax on \nfiletype plugin indent on \n" >> ~/.vimrc; \
   fi;
-#gcloud
-for i in $(find bin/google-cloud-sdk -name "*.py" -type f);do termux-fix-shebang $i;done;
-for i in $(find bin/google-cloud-sdk -name "*.sh" -type f);do termux-fix-shebang $i;done;
+#gcloud replace
+gcloud=~/bin/google-cloud-sdk;
+ls $gcloud/bin | awk '{system("termux-fix-shebang '$gcloud'/bin/"$0)'};
+find $gcloud -name "*.sh" -type f | awk '{system("termux-fix-shebang "$0)'};
+find $gcloud -nameo "*.py" -type f | awk '{system("termux-fix-shebang "$0)'};
+
 #psql
 #apt -y install postgresql
 #https://wiki.termux.com/wiki/Postgresql

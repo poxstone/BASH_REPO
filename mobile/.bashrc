@@ -38,3 +38,5 @@ if [ -f '~/bin/google-cloud-sdk/path.bash.inc' ]; then source '~/google-cloud-sd
 # The next line enables shell command completion for gcloud.
 if [ -f '~/bin/google-cloud-sdk/completion.bash.inc' ]; then source '~/bin/google-cloud-sdk/completion.bash.inc'; fi
 
+export PATH='~/bin/google-cloud-sdk/bin':$PATH;
+
