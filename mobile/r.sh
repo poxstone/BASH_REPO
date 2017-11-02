@@ -7,9 +7,10 @@ DIR_WORK_1=$HOME/Projects/ANG2-TEMPLATE/;
 find ~ -name "*.sw[pomn]" -type f -delete;
 pkill -9 node;
 kill -9 $(ps ax | grep -i dev_appserver.py | awk '{print($1)}');
-#open windows, este orden es para dividir las mismas ventanas
-
-python2 $HOME/bin/google-cloud-sdk/bin/dev_appserver.py $DIR_WORK_1 --host 0.0.0.0 & sleep 3 &&
-tmux split-window -p 66 "stylus -u nib -w $DIR_WORK_1/front-app/src/assets/static/css/style.styl";
-tmux split-window -p 50 "cd $DIR_WORK_1/front-app && ng serve" &
-tmux new-window "cd $DIR_WORK_1;vim -S $HOME/vimsession.vim";
+#open windows, este orden es para dividir las mismas ventanatmux new-window -n edit "cd $DIR_WORK_1;vim -S $HOME/vimsession.vim"; & sleep 3 && 
+tmux new-window -n edit "vim -S $HOME/vimsession.vim";
+tmux split-window -p 16 "cd $DIR_WORK_1/front-app && ng serve";
+#tmux new-window -n cons "watch date";
+tmux new-window -n cons "python2 $HOME/bin/google-cloud-sdk/bin/dev_appserver.py $DIR_WORK_1 --host 0.0.0.0";
+tmux split-window -p 50 "stylus -u nib -w $DIR_WORK_1/front-app/src/assets/static/css/style.styl";
+tmux selectp -t edit;
