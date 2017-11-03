@@ -28,7 +28,7 @@ if [[ $(stylus --version 2>&1) == *"command not found"* ]];then
         . $localDir/nvm.sh; . $userDir/.profile;
         # use v node as normal user cation
         nvm use $nodeV >> /dev/null;
-        npm install -g stylus nib bower;
+        npm install -g stylus nib bower @angular/cli;
 EOF
 fi;
 
