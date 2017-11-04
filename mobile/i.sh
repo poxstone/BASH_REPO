@@ -9,6 +9,7 @@ apt -y install python2-dev;
 apt -y install libllvm;
 apt -y install clang;
 apt -y install fftw;
+apt -y install openssh;
 apt -y install git;
 apt -y install autoconf make gcc openssl-dev libffi-dev python2-dev;
 pip2 install ansible;
