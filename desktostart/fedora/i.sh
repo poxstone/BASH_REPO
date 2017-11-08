@@ -3,12 +3,15 @@ INIT_DIR=$(pwd);
 cd cd ~/Downloads/;
 #sudo dnf list;
 sudo dnf check-update -y && sudo dnf upgrade -y; 
+# Install tools
+sudo dnf install vim vim-enhanced tmux htop lynx nmap -y; 
+# Dev tools
 sudo dnf install kernel-devel-$(uname -r) kernel-core-$(uname -r) -y; 
 sudo dnf install https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm -y; 
 # Dev tools
 sudo dnf install redhat-rpm-config -y; 
 sudo dnf install @development-tools -y; 
-sudo dnf install -y dh-autoreconf curl-devel expat-devel gettext-devel openssl-devel apr-devel perl-devel zlib-devel;
+sudo dnf install -y dh-autoreconf curl-devel expat-devel gettext-devel openssl-devel apr-devel perl-devel zlib-devel libvirt;
 sudo dnf install -y asciidoc xmlto docbook2X binutils fedora-packager chrpath autoconf automake;
 sudo dnf install -y gcc gcc-c++ qt-devel libffi-devel dnf-plugins-core python python-devel nasm.x86_64 SDL* ant;
 # epel-release getopt
@@ -46,8 +49,6 @@ sudo dnf install -y ruby ruby-devel rubygem-thor rubygem-bundler;
 sudo dnf install -y ruby-tcltk rubygem-rake rubygem-test-unit;
 sudo gem install rails && sudo dnf install rubygem-rails;
 sudo dnf group install 'Ruby on Rails' -y; 
-# Install tools
-sudo dnf install vim-enhanced tmux htop lynx nmap -y; 
 # install dsn, media apps and tools
 sudo dnf install gnome-color-manager -y; 
 sudo dnf install gstreamer{1,}-{plugin-crystalhd,ffmpeg,plugins-{good,ugly,bad{,-free,-nonfree,-freeworld,-extras}{,-extras}}} libmpg123 lame-libs --setopt=strict=0 -y; 
@@ -222,11 +223,21 @@ echo "
         - dnf install libCg-3.1.0013-4.fc22.x86_64.rpm
         - dnf install lwks-14.0.0-amd64.rpm
     ";
+#gestures
+sudo dnf -y copr enable mhoeher/multitouch;
+sudo dnf -y install libinput-gestures;
+libinput-gestures-setup start; #normal user
+#libinput-gestures-setup autostart #user
+#spootify
+sudo dnf config-manager --add-repo=http://negativo17.org/repos/fedora-spotify.repo;
+sudo dnf install spotify;
+
 cd ~;
 cd $INIT_DIR;
 #CLEAR packages
 sudo dnf clean packages;
 sudo dnf clean all;
 # fix dependences
-dnf update --best --allowerasing;
+sudo dnf update --best --allowerasing;
+sudo dnf remove --duplicates;
 
