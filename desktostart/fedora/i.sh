@@ -229,8 +229,8 @@ sudo dnf -y install libinput-gestures;
 libinput-gestures-setup start; #normal user
 #libinput-gestures-setup autostart #user
 #spootify
-sudo dnf config-manager --add-repo=http://negativo17.org/repos/fedora-spotify.repo;
-sudo dnf install spotify;
+sudo dnf -y config-manager --add-repo=http://negativo17.org/repos/fedora-spotify.repo;
+sudo dnf -y install spotify;
 
 cd ~;
 cd $INIT_DIR;
