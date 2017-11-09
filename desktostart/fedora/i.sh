@@ -52,7 +52,7 @@ sudo dnf group install 'Ruby on Rails' -y;
 # install dsn, media apps and tools
 sudo dnf install gnome-color-manager -y; 
 sudo dnf install gstreamer{1,}-{plugin-crystalhd,ffmpeg,plugins-{good,ugly,bad{,-free,-nonfree,-freeworld,-extras}{,-extras}}} libmpg123 lame-libs --setopt=strict=0 -y; 
-sudo dnf install gimp inkscape krita blender ImageMagick ImageMagick-devel ImageMagick-perl optipng vlc python-vlc npapi-vlc -y; 
+sudo dnf install gimp inkscape krita blender fontforge ImageMagick ImageMagick-devel ImageMagick-perl optipng vlc python-vlc npapi-vlc -y; 
 # install remte desktop windows
 sudo dnf install remmina remmina-plugins-gnome remmina-plugins-rdp remmina-plugins-vnc --allowerasing -y; 
 # remmina-plugins-common
