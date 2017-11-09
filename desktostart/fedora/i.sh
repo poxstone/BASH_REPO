@@ -182,6 +182,9 @@ fi;
 #manual
 echo "
 ---## MANUAL INSTALATTIONS ###--
+    - change language in "sudo vim /etc/locale.conf"
+      LANG="en_US.UTF-8"
+      LC_CTYPE="en_US.UTF-8"
     - chrome: install chrome (download)
     - virtualbox: download), install, and install package extension
     - java: download install and run  this (i.sh) again)
