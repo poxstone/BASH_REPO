@@ -134,24 +134,34 @@ if [ -f '/home/poxstone/bin/google-cloud-sdk/path.bash.inc' ]; then source '/hom
 if [ -f '/home/poxstone/bin/google-cloud-sdk/completion.bash.inc' ]; then source '/home/poxstone/bin/google-cloud-sdk/completion.bash.inc'; fi
 
 #gradle
-PATH=$PATH:'~/bin/gradle-4.0.2/bin';
+export PATH=$PATH:'~/bin/gradle-4.0.2/bin';
 export GRADLE_HOME=$PATH:'~/bin/gradle-4.0.2';
-PATH=$PATH:'~/bin/android-studio/bin';
+export PATH=$PATH:'~/bin/android-studio/bin';
+export PATH=$PATH:'~/bin/google-cloud-sdk/platform/google_appengine';
 
 # geeko and chrome drivers
-PATH=$PATH:'~/bin/browser_drivers';
+export PATH=$PATH:'~/bin/browser_drivers';
+export PATH=$PATH:'~/bin/minikube';
+export PATH=$PATH:'~/bin/helm/';
 
 #docker
 alias cloud-dev='docker rm $(docker ps -qa);docker run -it \
   -v /home/poxstone/Projects:/home/developer/Projects \
+  -v /home/poxstone/run:/home/developer/run \
   -v /home/poxstone/Documents:/home/developer/Documents/\
   -v /home/poxstone/bin:/home/developer/bin \
   -v /home/poxstone/.gitconfig:/home/developer/.gitconfig \
   -v /home/poxstone/.ssh:/home/developer/.ssh \
+  -v /home/poxstone/.boto:/home/developer/.boto \
+  -v /home/poxstone/.config/gcloud:/home/developer/.config/gcloud \
   -v /tmp/.X11-unix:/tmp/.X11-unix \
   -p 8080:8080 \
   -p 8081:8081 \
   -p 8000:8000 \
   -p 5000:5000 \
-  -e DISPLAY=$DISPLAY dev-cloud bash;';
+  -p 8122:22 \
+  -p 8180:80 \
+  -p 81443:443 \
+  -e DISPLAY=$DISPLAY \
+  poxstone/cloud-dev bash;';
 
