@@ -19,6 +19,8 @@ apt -y install tree;
 apt -y install tmux;
 apt -y install nmap;
 apt -y install nodejs;
+pkg -y install dnsutils;
+apt -y install tracepath;
 npm install -g typescript;
 npm install -g @angular/cli stylus nib http-server;
 # vim
