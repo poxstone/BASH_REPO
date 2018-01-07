@@ -1,23 +1,11 @@
 [KDE Keyboard Layout Switcher][Global Shortcuts]
-Switch keyboard layout to Spanish (Latin American)=none
-Switch to Next Keyboard Layout=Ctrl+Alt+K
-switch-to-activity-fecec049-0fdb-445e-9e84-59e73aedd301=none
+Disable Touchpad=none
+Enable Touchpad=none
+Switch to Next Keyboard Layout=none
+Toggle Touchpad=none
 
 [kaccess][Global Shortcuts]
 Toggle Screen Reader On and Off=Meta+Alt+S
-
-[kcm_touchpad][Global Shortcuts]
-Disable Touchpad=Touchpad Off
-Enable Touchpad=Touchpad On
-Toggle Touchpad=Touchpad Toggle
-{579e04f5-394a-49e7-aa48-a114f5a9b216}=Print
-{740613ee-f873-41c4-a89d-a3b41ebaec5c}=Ctrl+Alt+T
-{7ecd3726-bb0d-47e2-8a7c-a93cf5e2fbcc}=Shift+Print
-{a73d7d09-1860-407a-a5dc-9336e9a2d247}=Meta+Shift+Print
-{cbe40917-a585-4151-af6e-1c1a8d29feae}=Ctrl+Alt+Shift+H
-{d03619b6-9b3c-48cc-9d9c-a2aadb485550}=Search
-{e69b6b95-5225-4d88-af6b-c4d67765a5bf}=Meta+Print
-{f1921180-b27a-44ca-b7a3-ecc7ad7d31f1}=Ctrl+Alt+H
 
 [kded5][Global Shortcuts]
 Decrease Keyboard Brightness=Keyboard Brightness Down
@@ -31,6 +19,16 @@ Sleep=Sleep
 Toggle Keyboard Backlight=Keyboard Light On/Off
 display=Display; Meta+P
 
+[khotkeys][Global Shortcuts]
+{00a02679-079b-4504-9e9a-07c7700227c2}=Meta+Print
+{21352e71-12b5-42b7-9d05-7fb90ebbf94a}=Ctrl+Print
+{8c975c63-25df-4528-847c-7fdd01157d67}=Ctrl+Alt+Shift+H
+{c09a631f-4c81-4576-884b-53adf81f9f73}=Ctrl+Alt+H
+{c95b5ae4-4e19-49e5-a5ad-bdb8cca90cb7}=Meta+Shift+Print
+{d03619b6-9b3c-48cc-9d9c-a2aadb485550}=none
+{d19febdf-218c-40cd-a30a-f7e5592ca49b}=Print
+{edc31d78-03f0-4c08-89bf-09efd666a34d}=Ctrl+Alt+T
+
 [kmix][Global Shortcuts]
 decrease_microphone_volume=Microphone Volume Down
 decrease_volume=Volume Down
@@ -40,7 +38,7 @@ mic_mute=Microphone Mute
 mute=Volume Mute
 
 [krunner][Global Shortcuts]
-run command=Alt+Space; Alt+F2
+run command=Alt+Space; Alt+F2; Search
 run command on clipboard contents=Alt+Shift+F2
 
 [ksmserver][Global Shortcuts]
@@ -63,7 +61,6 @@ Invert=Meta+Ctrl+I
 Invert Screen Colors=none
 InvertWindow=Meta+Ctrl+U
 Kill Window=Ctrl+Alt+Esc
-MinimizeAll=Meta+Shift+D
 MoveMouseToCenter=Meta+F6
 MoveMouseToFocus=Meta+F5
 MoveZoomDown=none
@@ -116,6 +113,7 @@ Switch to Screen 5=none
 Switch to Screen 6=none
 Switch to Screen 7=none
 Toggle Window Raise/Lower=none
+ToggleMouseClick=none
 TrackMouse=none
 Walk Through Desktop List=none
 Walk Through Desktop List (Reverse)=none
@@ -199,7 +197,6 @@ Window to Screen 4=none
 Window to Screen 5=none
 Window to Screen 6=none
 Window to Screen 7=none
-WindowGeometry=Ctrl+Shift+F11
 view_actual_size=none
 view_zoom_in=Meta++
 view_zoom_out=Meta+-

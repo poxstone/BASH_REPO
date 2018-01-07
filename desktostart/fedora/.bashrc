@@ -123,20 +123,22 @@ if ! shopt -oq posix; then
   fi
 fi
 
+#node
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 
-# The next line updates PATH for the Google Cloud SDK.
-if [ -f '/home/poxstone/bin/google-cloud-sdk/path.bash.inc' ]; then source '/home/poxstone/bin/google-cloud-sdk/path.bash.inc'; fi
+#pycharm
+export NVM_DIR="$HOME/bin/pycharm-community/bin/";
 
-# The next line enables shell command completion for gcloud.
-if [ -f '/home/poxstone/bin/google-cloud-sdk/completion.bash.inc' ]; then source '/home/poxstone/bin/google-cloud-sdk/completion.bash.inc'; fi
+#android
+export PATH=$PATH:'~/bin/android-studio/bin';
+export ANDROID_HOME=~/Android/Sdk/;
+export PATH=${PATH}:$ANDROID_HOME/tools:$ANDROID_HOME/platform-tools:$ANDROID_HOME/tools/bin;
 
 #gradle
-export PATH=$PATH:'~/bin/gradle-4.0.2/bin';
-export GRADLE_HOME=$PATH:'~/bin/gradle-4.0.2';
-export PATH=$PATH:'~/bin/android-studio/bin';
+export PATH=$PATH:'~/bin/gradle-4.4.1/bin';
+export GRADLE_HOME=$PATH:'~/bin/gradle-4.4.1';
 export PATH=$PATH:'~/bin/google-cloud-sdk/platform/google_appengine';
 
 # geeko and chrome drivers
@@ -165,3 +167,9 @@ alias cloud-dev='docker rm $(docker ps -qa);docker run -it \
   -e DISPLAY=$DISPLAY \
   poxstone/cloud-dev bash;';
 
+
+# The next line updates PATH for the Google Cloud SDK.
+if [ -f '/home/poxstone/bin/google-cloud-sdk/path.bash.inc' ]; then source '/home/poxstone/bin/google-cloud-sdk/path.bash.inc'; fi
+
+# The next line enables shell command completion for gcloud.
+if [ -f '/home/poxstone/bin/google-cloud-sdk/completion.bash.inc' ]; then source '/home/poxstone/bin/google-cloud-sdk/completion.bash.inc'; fi
