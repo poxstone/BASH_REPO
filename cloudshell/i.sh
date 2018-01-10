@@ -1,4 +1,4 @@
-sudo su#!/bin/bash 
+#!/bin/bash 
 userDir=$HOME;
 localDir="/usr/local/nvm";
 #localDir="$HOME/.nvm";

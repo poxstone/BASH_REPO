@@ -119,4 +119,33 @@ export NVM_DIR="/usr/local/nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"  # This loads nvm
 
 # install and ~/.profile change to node 8
-bash ~/Projects/BASH_REPO/cloudshell/i.sh 8;
+#bash ~/Projects/BASH_REPO/cloudshell/i.sh 8;
+
+#docker
+function cloud-dev {
+  name=$(if [ $1 ];then echo $1;else echo "cloud-dev-a";fi;);
+  port=$(if [ $2 ];then echo $2;else echo 8;fi;);
+  tag=$(if  [ $3 ];then echo $3;else echo latest;fi;);
+  #docker rm ${name} 1&2> /dev/null;
+  docker run -it --rm \
+    --name ${name} \
+    -v $HOME/Projects:/home/developer/Projects \
+    -v $HOME/run:/home/developer/run \
+    -v $HOME/Documents:/home/developer/Documents/\
+    -v $HOME/bin:/home/developer/bin \
+    -v $HOME/.gitconfig:/home/developer/.gitconfig \
+    -v $HOME/.ssh:/home/developer/.ssh \
+    -v $HOME/.boto:/home/developer/.boto \
+    -v $HOME/.config/gcloud:/home/developer/.config/gcloud \
+    -v /tmp/.X11-unix:/tmp/.X11-unix \
+    -p ${port}080:8080 \
+    -p ${port}081:8081 \
+    -p ${port}000:8000 \
+    -p ${port}500:5000 \
+    -p ${port}122:22 \
+    -p ${port}180:80 \
+    -p ${port}443:443 \
+    -e DISPLAY=$DISPLAY \
+    poxstone/cloud-dev:${tag} bash;
+}
+
