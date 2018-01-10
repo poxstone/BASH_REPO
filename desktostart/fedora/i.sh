@@ -131,6 +131,8 @@ fi;
 
 #vim
 if ! file ~/.vim || ! file ~/.vim/bundle/;then
+  mkdir -p ~/.vim/autoload;
+  mkdir -p ~/.vim/bundle;
   curl -LSso ~/.vim/autoload/pathogen.vim https://tpo.pe/pathogen.vim; \
   cd ~/.vim/bundle/; \
   for i in https://github.com/mattn/emmet-vim \
