@@ -1,4 +1,5 @@
 
+
 # ~/.bashrc: executed by bash(1) for non-login shells.
 # see /usr/share/doc/bash/examples/startup-files (in the package bash-doc)
 # for examples
@@ -147,26 +148,32 @@ export PATH=$PATH:'~/bin/minikube';
 export PATH=$PATH:'~/bin/helm/';
 
 #docker
-alias cloud-dev='docker rm $(docker ps -qa);docker run -it \
-  -v /home/poxstone/Projects:/home/developer/Projects \
-  -v /home/poxstone/run:/home/developer/run \
-  -v /home/poxstone/Documents:/home/developer/Documents/\
-  -v /home/poxstone/bin:/home/developer/bin \
-  -v /home/poxstone/.gitconfig:/home/developer/.gitconfig \
-  -v /home/poxstone/.ssh:/home/developer/.ssh \
-  -v /home/poxstone/.boto:/home/developer/.boto \
-  -v /home/poxstone/.config/gcloud:/home/developer/.config/gcloud \
-  -v /tmp/.X11-unix:/tmp/.X11-unix \
-  -p 8080:8080 \
-  -p 8081:8081 \
-  -p 8000:8000 \
-  -p 5000:5000 \
-  -p 8122:22 \
-  -p 8180:80 \
-  -p 81443:443 \
-  -e DISPLAY=$DISPLAY \
-  poxstone/cloud-dev bash;';
-
+function cloud-dev {
+  name=$(if [ $1 ];then echo $1;else echo "cloud-dev-a";fi;);
+  port=$(if [ $2 ];then echo $2;else echo 8;fi;);
+  tag=$(if  [ $3 ];then echo $3;else echo latest;fi;);
+  #docker rm ${name} 1&2> /dev/null;
+  docker run -it --rm \
+    --name ${name} \
+    -v $HOME/Projects:/home/developer/Projects \
+    -v $HOME/run:/home/developer/run \
+    -v $HOME/Documents:/home/developer/Documents/\
+    -v $HOME/bin:/home/developer/bin \
+    -v $HOME/.gitconfig:/home/developer/.gitconfig \
+    -v $HOME/.ssh:/home/developer/.ssh \
+    -v $HOME/.boto:/home/developer/.boto \
+    -v $HOME/.config/gcloud:/home/developer/.config/gcloud \
+    -v /tmp/.X11-unix:/tmp/.X11-unix \
+    -p ${port}080:8080 \
+    -p ${port}081:8081 \
+    -p ${port}000:8000 \
+    -p ${port}500:5000 \
+    -p ${port}122:22 \
+    -p ${port}180:80 \
+    -p ${port}443:443 \
+    -e DISPLAY=$DISPLAY \
+    poxstone/cloud-dev:${tag} bash;
+}
 
 # The next line updates PATH for the Google Cloud SDK.
 if [ -f '/home/poxstone/bin/google-cloud-sdk/path.bash.inc' ]; then source '/home/poxstone/bin/google-cloud-sdk/path.bash.inc'; fi
