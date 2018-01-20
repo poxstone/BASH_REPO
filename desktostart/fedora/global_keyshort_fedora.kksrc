@@ -1,11 +1,19 @@
-[KDE Keyboard Layout Switcher][Global Shortcuts]
-Disable Touchpad=none
-Enable Touchpad=none
-Switch to Next Keyboard Layout=none
-Toggle Touchpad=none
-
 [kaccess][Global Shortcuts]
 Toggle Screen Reader On and Off=Meta+Alt+S
+
+[kcm_touchpad][Global Shortcuts]
+Disable Touchpad=none
+Enable Touchpad=Shift+Touchpad Toggle
+Switch to Next Keyboard Layout=none
+Toggle Touchpad=Touchpad Toggle
+{0d2854b3-0a41-4b1b-a344-1749e15d1cc9}=Ctrl+Shift+Print
+{408c4689-3b5d-492c-add3-a23a0859b7e0}=Shift+Print
+{67269ea5-67b6-4590-ab56-9510f528491b}=Print
+{b128d30f-6f1a-455a-b65b-b5df55ab6320}=Ctrl+Print
+{d03619b6-9b3c-48cc-9d9c-a2aadb485550}=none
+{d8ce41ce-8d25-4e3e-b0f6-63afbf30f6ae}=Ctrl+Alt+H
+{dd0db647-b1f7-45bb-8e00-683dc0de6958}=Ctrl+Alt+T
+{f56dab7f-24b1-4fd4-b527-39ed1f2bb1e2}=Ctrl+Alt+Shift+H
 
 [kded5][Global Shortcuts]
 Decrease Keyboard Brightness=Keyboard Brightness Down
@@ -19,16 +27,6 @@ Sleep=Sleep
 Toggle Keyboard Backlight=Keyboard Light On/Off
 display=Display; Meta+P
 
-[khotkeys][Global Shortcuts]
-{00a02679-079b-4504-9e9a-07c7700227c2}=Meta+Print
-{21352e71-12b5-42b7-9d05-7fb90ebbf94a}=Ctrl+Print
-{8c975c63-25df-4528-847c-7fdd01157d67}=Ctrl+Alt+Shift+H
-{c09a631f-4c81-4576-884b-53adf81f9f73}=Ctrl+Alt+H
-{c95b5ae4-4e19-49e5-a5ad-bdb8cca90cb7}=Meta+Shift+Print
-{d03619b6-9b3c-48cc-9d9c-a2aadb485550}=none
-{d19febdf-218c-40cd-a30a-f7e5592ca49b}=Print
-{edc31d78-03f0-4c08-89bf-09efd666a34d}=Ctrl+Alt+T
-
 [kmix][Global Shortcuts]
 decrease_microphone_volume=Microphone Volume Down
 decrease_volume=Volume Down
@@ -38,7 +36,7 @@ mic_mute=Microphone Mute
 mute=Volume Mute
 
 [krunner][Global Shortcuts]
-run command=Alt+Space; Alt+F2; Search
+run command=Alt+Space; Alt+F2
 run command on clipboard contents=Alt+Shift+F2
 
 [ksmserver][Global Shortcuts]
@@ -61,6 +59,7 @@ Invert=Meta+Ctrl+I
 Invert Screen Colors=none
 InvertWindow=Meta+Ctrl+U
 Kill Window=Ctrl+Alt+Esc
+MinimizeAll=Meta+M
 MoveMouseToCenter=Meta+F6
 MoveMouseToFocus=Meta+F5
 MoveZoomDown=none
@@ -113,7 +112,8 @@ Switch to Screen 5=none
 Switch to Screen 6=none
 Switch to Screen 7=none
 Toggle Window Raise/Lower=none
-ToggleMouseClick=none
+ToggleCurrentThumbnail=Meta+Ctrl+T
+ToggleMouseClick=Meta+*
 TrackMouse=none
 Walk Through Desktop List=none
 Walk Through Desktop List (Reverse)=none
@@ -125,8 +125,8 @@ Walk Through Windows=Alt+Tab
 Walk Through Windows (Reverse)=Alt+Shift+Backtab
 Walk Through Windows Alternative=none
 Walk Through Windows Alternative (Reverse)=none
-Walk Through Windows of Current Application=Alt+`
-Walk Through Windows of Current Application (Reverse)=Alt+~
+Walk Through Windows of Current Application=Alt+|
+Walk Through Windows of Current Application (Reverse)=Alt+°
 Walk Through Windows of Current Application Alternative=none
 Walk Through Windows of Current Application Alternative (Reverse)=none
 Window Above Other Windows=none
@@ -137,8 +137,8 @@ Window Grow Horizontal=none
 Window Grow Vertical=none
 Window Lower=none
 Window Maximize=Meta+Shift+Up
-Window Maximize Horizontal=none
-Window Maximize Vertical=none
+Window Maximize Horizontal=Meta+Shift+Right
+Window Maximize Vertical=Meta+Shift+Left
 Window Minimize=Meta+Shift+Down
 Window Move=none
 Window No Border=Meta+Ctrl+Shift+Up
@@ -213,6 +213,7 @@ activate task manager entry 7=Meta+7
 activate task manager entry 8=Meta+8
 activate task manager entry 9=Meta+9
 activate widget 3=Alt+F1
+activate widget 8=Meta+C
 clear-history=none
 clipboard_action=Ctrl+Alt+X
 cycleNextAction=none
