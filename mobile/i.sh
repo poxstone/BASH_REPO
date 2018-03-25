@@ -20,6 +20,7 @@ apt -y install tmux;
 apt -y install nmap;
 apt -y install nodejs;
 pkg -y install dnsutils;
+pkg -y install tsu; # tsu -A su #wrapper for Termux
 apt -y install tracepath;
 npm install -g typescript;
 npm install -g @angular/cli stylus nib http-server;
