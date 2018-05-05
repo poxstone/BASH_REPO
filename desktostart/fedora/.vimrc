@@ -12,6 +12,7 @@ nnoremap <C-H> :Hexmode<CR>
 inoremap <C-H> <Esc>:Hexmode<CR>
 vnoremap <C-H> :<C-U>Hexmet rela  de<CR> 
 let mapleader = ","
+let NERDTreeIgnore = ['\.pyc$']
 nmap <leader>ne :NERDTreeToggle<cr> 
 execute pathogen#infect() 
 call pathogen#helptags() 

@@ -83,9 +83,9 @@ esac
 # enable color support of ls and also add handy aliases
 if [ -x /usr/bin/dircolors ]; then
     test -r ~/.dircolors && eval "$(dircolors -b ~/.dircolors)" || eval "$(dircolors -b)"
-    alias ls='ls --color=auto'
-    #alias dir='dir --color=auto'
-    #alias vdir='vdir --color=auto'
+    alias ls='ls --color=auto';
+    #alias dir='dir --color=auto';
+    #alias vdir='vdir --color=auto';
 
     alias grep='grep --color=auto'
     alias fgrep='fgrep --color=auto'
@@ -130,22 +130,35 @@ export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 
 #pycharm
-export NVM_DIR="$HOME/bin/pycharm-community/bin/";
+#export NVM_DIR="$HOME/bin/pycharm-community/bin/";
 
 #android
 export PATH=$PATH:'~/bin/android-studio/bin';
-export ANDROID_HOME=~/Android/Sdk/;
+export ANDROID_HOME='~/Android/Sdk/';
 export PATH=${PATH}:$ANDROID_HOME/tools:$ANDROID_HOME/platform-tools:$ANDROID_HOME/tools/bin;
+
+#java
+export JAVA_HOME='/usr/java/latest';
+export PATH=$JAVA_HOME'/bin':$PATH;
+
+#maven
+export PATH=$PATH:'~/bin/apache-maven-3.5.2/bin/';
+export MAVEN_HOME='~/bin/apache-maven-3.5.2';
 
 #gradle
 export PATH=$PATH:'~/bin/gradle-4.4.1/bin';
-export GRADLE_HOME=$PATH:'~/bin/gradle-4.4.1';
+export GRADLE_HOME='~/bin/gradle-4.4.1';
 export PATH=$PATH:'~/bin/google-cloud-sdk/platform/google_appengine';
 
 # geeko and chrome drivers
-export PATH=$PATH:'~/bin/browser_drivers';
-export PATH=$PATH:'~/bin/minikube';
+export PATH=$PATH:'~/bin/browser_drivers/';
+export PATH=$PATH:'~/bin/minikube/';
 export PATH=$PATH:'~/bin/helm/';
+export PATH=$PATH:'~/.nvm/versions/node/v8.9.4/bin/node';
+#export PATH=$PATH:'~/bin/chrome-linux/';
+
+# Fluter
+export PATH=$PATH:'~/bin/flutter/bin/';
 
 #docker
 function cloud-dev {
@@ -180,3 +193,18 @@ if [ -f '/home/poxstone/bin/google-cloud-sdk/path.bash.inc' ]; then source '/hom
 
 # The next line enables shell command completion for gcloud.
 if [ -f '/home/poxstone/bin/google-cloud-sdk/completion.bash.inc' ]; then source '/home/poxstone/bin/google-cloud-sdk/completion.bash.inc'; fi
+
+
+function jenkins-run {
+  java -jar ~/bin/jenkins/jenkins.war --httpPort=9090;
+  #docker run -u root --rm -d -p 8080:8080 -p 50000:50000 \
+  #  -v $HOME/bin/jenkins-data:/var/jenkins_home \
+  #  -v /var/run/docker.sock:/var/run/docker.sock \
+  #  jenkinsci/blueocean    
+}
+
+#SAP
+#export LD_LIBRARY_PATH="/home/poxstone/Projects/GCP-SCRIPTS/GRUPO-A-SAP/libs";
+#export DYLD_LIBRARY_PATH="/home/poxstone/Projects/GCP-SCRIPTS/GRUPO-A-SAP/libs";
+#export CLASSPATH="/home/poxstone/Projects/GCP-SCRIPTS/GRUPO-A-SAP/libs/sapjco3.jar";
+

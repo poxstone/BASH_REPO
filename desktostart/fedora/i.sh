@@ -15,7 +15,7 @@ sudo dnf install redhat-rpm-config -y;
 sudo dnf install @development-tools -y; 
 sudo dnf install -y dh-autoreconf vim-enhanced curl-devel expat-devel gettext-devel openssl-devel apr-devel perl-devel zlib-devel libvirt;
 sudo dnf install -y asciidoc xmlto docbook2X binutils fedora-packager chrpath autoconf automake;
-sudo dnf install -y gcc gcc-c++ qt-devel libffi-devel dnf-plugins-core python python-devel nasm.x86_64 SDL* ant dkms kernel-devel dkms kernel-headers;
+sudo dnf install -y gcc gcc-c++ qt-devel libffi-devel dnf-plugins-core python python-devel nasm.x86_64 SDL* ant dkms kernel-devel dkms kernel-headers libstdc++.i686 subversion;
 # epel-release getopt
 sudo dnf install wget -y; 
 sudo dnf install deluge -y; 
