@@ -1,194 +1,248 @@
 #!/bin/bash
+
 INIT_DIR=$(pwd);
 cd ~/Downloads/;
+
 # Install tools
-sudo dnf install vim tmux htop lynx nmap -y; 
-#sudo rpm -qa | grep vim
-#sudo rpm -e vim-minimal-8.0.662-1.fc26.x86_64 --nodeps
-#sudo dnf list;
-sudo dnf check-update -y && sudo dnf upgrade -y; 
-# Dev tools
-sudo dnf install kernel-devel-$(uname -r) kernel-core-$(uname -r) -y; 
-sudo dnf install https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm -y; 
-# Dev tools
-sudo dnf install redhat-rpm-config -y; 
-sudo dnf install @development-tools -y; 
-sudo dnf install -y dh-autoreconf vim-enhanced curl-devel expat-devel gettext-devel openssl-devel apr-devel perl-devel zlib-devel libvirt;
-sudo dnf install -y asciidoc xmlto docbook2X binutils fedora-packager chrpath autoconf automake;
-sudo dnf install -y gcc gcc-c++ qt-devel libffi-devel dnf-plugins-core python python-devel nasm.x86_64 SDL* ant dkms kernel-devel dkms kernel-headers libstdc++.i686 subversion;
-# epel-release getopt
-sudo dnf install wget -y; 
-sudo dnf install deluge -y; 
-sudo dnf install rpm-build lsb -y; 
-sudo dnf install zlib-devel sqlite-devel -y; # instlall for ruby;
-sudo dnf install git-all kdiff3 -y; 
-sudo dnf install openssh openssh-server -y; 
-sudo systemctl enable sshd.service;
-sudo systemctl start sshd.service;
-# python
-sudo pip install --upgrade pip;
-sudo pip install jrnl[encrypted];
-sudo pip install ansible;
-sudo pip install cryptography;
-sudo pip install virtualenv;
-sudo pip install selenium;
-#sudo dnf install python-pandas -y;
-# browser drivers for sellenium
-if ! geckodriver --version || ! chromedriver --version ;then
-    echo "Pendiente instalar los drivers de lo navegadores";
-fi;
-# databases services
-sudo dnf install postgresql-server postgresql-contrib postgresql-devel -y; 
-sudo systemctl enable postgresql;
-#init database with empty data required to initializaed
-if sudo ls /var/lib/pgsql/data ;then
-  sudo postgresql-setup --initdb --unit postgresql;
-fi;
-sudo systemctl start postgresql;
-sudo dnf install pgadmin3 -y; 
-# ruby
-sudo dnf install -y ruby ruby-devel rubygem-thor rubygem-bundler;
-sudo dnf install -y rubygem-rake rubygem-test-unit;
-#sudo gem install rails && sudo dnf install rubygem-rails;
-sudo dnf group install 'Ruby on Rails' -y; 
-# install dsn, media apps and tools
-sudo dnf install gnome-color-manager -y; 
-sudo dnf install gstreamer{1,}-{plugin-crystalhd,ffmpeg,plugins-{good,ugly,bad{,-free,-nonfree,-freeworld,-extras}{,-extras}}} libmpg123 lame-libs --setopt=strict=0 -y; 
-sudo dnf install gimp inkscape krita blender fontforge ImageMagick ImageMagick-devel ImageMagick-perl optipng vlc python-vlc npapi-vlc -y; 
-sudo dnf install mencoder ffmpeg -y; 
-# install remte desktop windows
-sudo dnf install remmina remmina-plugins-gnome remmina-plugins-rdp remmina-plugins-vnc --allowerasing -y; 
-# remmina-plugins-common
-# Apache php
-sudo dnf install httpd -y; 
-sudo systemctl start httpd;
-sudo dnf install php php-common php-pdo_mysql php-pdo php-gd php-mbstring -y; 
-sudo systemctl restart httpd;
-sudo dnf install perl-Net-SSLeay -y; 
-# problems on installation dependences
-#php libraries (moodle)
-# sudo rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm;
-# sudo rpm -Uvh https://mirror.webtatic.com/yum/el7/webtatic-release.rpm;
-# sudo dnf install mod_php71w php71w-common php71w-mbstring php71w-xmlrpc php71w-soap php71w-gd php71w-xml php71w-intl php71w-mysqlnd php71w-cli php71w-mcrypt php71w-ldap -y;
-# sudo dnf install mod_php71w php71w-opcache -y;
-# php 7.1
-# sudo dnf install php71w-fpm php71w-opcache -y;
-#perl-TO-Tty
-sudo systemctl stop httpd;
-# DOCKER
-sudo dnf remove docker docker-common docker-selinux docker-engine-selinux docker-engine -y;
-sudo dnf -y install dnf-plugins-core;
-sudo dnf config-manager --add-repo https://download.docker.com/linux/fedora/docker-ce.repo -y;
-sudo dnf config-manager --set-enabled docker-ce-edge -y;
-sudo dnf config-manager --set-enabled docker-ce-test -y;
-sudo dnf config-manager --set-disabled docker-ce-edge -y;
-sudo dnf check-update -y && sudo dnf update && sudo dnf upgrade -y;
-sudo dnf install docker-ce -y;
-sudo usermod -a -G docker $USER;
-# Docker kompose
-sudo dnf -y install kompose;
-#user to docker group
-sudo groupadd docker;
-sudo gpasswd -a $USER docker;
+function tools {
+  sudo dnf install vim tmux htop lynx nmap -y; 
+  #sudo rpm -qa | grep vim
+  #sudo rpm -e vim-minimal-8.0.662-1.fc26.x86_64 --nodeps
+  #sudo dnf list;
+  sudo dnf check-update -y && sudo dnf upgrade -y; 
+}
 
-# activate docker daemon
-sudo systemctl start docker;
-# docker compose
-sudo pip install docker-compose;
-# Android dev
-# sudo fastboot oem get_unlock_data
-sudo dnf install android-tools -y;
-sudo dnf install zlib.i686 ncurses-libs.i686 bzip2-libs.i686 -y;
-sudo dnf install fastboot -y;
-sudo dnf install usbutils -y;
-#java oracle
-if ! java -version;then
-    if [ -e ~/Downloads/programs/jdk-8u151-linux-x64.rpm ];then
-        sudo rpm -ivh ~/Downloads/programs/jdk-8u151-linux-x64.rpm;
-        # java with alternatives
-        sudo alternatives --install /usr/bin/java java /usr/java/latest/jre/bin/java 200000;
-        sudo alternatives --install /usr/bin/javaws javaws /usr/java/latest/jre/bin/javaws 200000;
-        sudo alternatives --install /usr/lib64/mozilla/plugins/libjavaplugin.so libjavaplugin.so.x86_64 /usr/java/latest/jre/lib/amd64/libnpjp2.so 200000;
-        sudo alternatives --install /usr/bin/javac javac /usr/java/latest/bin/javac 200000;
-        sudo alternatives --install /usr/bin/jar jar /usr/java/latest/bin/jar 200000;
-        # config alternatives
-        sudo alternatives --config java;
-        sudo alternatives --config javac;
-        sudo alternatives --config javaws;
-        # java version
-        java -version;
-    else
-        echo "java rpm no est en la carpeta de descargas";
-    fi;
-fi;
-# gradle java
-if java -version && gradle -v;then
-    echo "gradle and java alternatives alreadyionstalled";
-    sudo dnf install gradle -y;
-else
-    echo '--- Pending install JAVA JDK---';
-fi;
+# Dev tools
+function devTools {
+  sudo dnf install kernel-devel-$(uname -r) kernel-core-$(uname -r) -y; 
+  sudo dnf install https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm -y; 
+  # Dev tools
+  sudo dnf install redhat-rpm-config -y; 
+  sudo dnf install @development-tools -y; 
+  sudo dnf install -y dh-autoreconf vim-enhanced curl-devel expat-devel gettext-devel openssl-devel apr-devel perl-devel zlib-devel libvirt;
+  sudo dnf install -y asciidoc xmlto docbook2X binutils fedora-packager chrpath autoconf automake;
+  sudo dnf install -y gcc gcc-c++ qt-devel libffi-devel dnf-plugins-core python python-devel nasm.x86_64 SDL* ant dkms kernel-devel dkms kernel-headers libstdc++.i686 subversion;
+}
 
-#vim
-if ! file ~/.vim || ! file ~/.vim/bundle/;then
-  mkdir -p ~/.vim/autoload;
-  mkdir -p ~/.vim/bundle;
-  curl -LSso ~/.vim/autoload/pathogen.vim https://tpo.pe/pathogen.vim; \
-  cd ~/.vim/bundle/; \
-  for i in https://github.com/mattn/emmet-vim \
-    https://github.com/scrooloose/nerdtree.git \
-    https://github.com/tomtom/tlib_vim \
-    https://github.com/leafgarland/typescript-vim \
-    https://github.com/MarcWeber/vim-addon-mw-utils \
-    https://github.com/vim-scripts/vim-auto-save \
-    https://github.com/digitaltoad/vim-pug \
-    https://github.com/tpope/vim-sensible \
-    https://github.com/wavded/vim-stylus.git; \
-  do git clone $i;done; \
-  cd ~; \
-  if [ ! -e ~/.vimrc ];then \
-    touch ~/.vimrc; \
-    chmod 775 ~/.vimrc; \
-  fi; \
-  if ! grep ~/.vimrc -e "execute pathogen#infect()";then \
-    printf "set enc=utf-8\nset fileencoding=utf-8set hls\nset number\nset relativenumber\nset tabstop=2\nset shiftwidth=2\nset expandtab\nset cindent\nset wrap! \n" >> ~/.vimrc; \
-    printf "xnoremap p pgvy\nnnoremap <C-H> :Hexmode<CR>\ninoremap <C-H> <Esc>:Hexmode<CR>\nvnoremap <C-H> :<C-U>Hexmet rela  de<CR> \n" >> ~/.vimrc; \
-    printf "let mapleader = \",\"\nnmap <leader>ne :NERDTreeToggle<cr> \n" >> ~/.vimrc; \
-    printf "execute pathogen#infect() \ncall pathogen#helptags() \nsyntax on \nfiletype plugin indent on \n" >> ~/.vimrc; \
+# Epel-release getopt
+function osTools {
+  sudo dnf install wget -y; 
+  sudo dnf install deluge -y; 
+  sudo dnf install rpm-build lsb -y; 
+  sudo dnf install zlib-devel sqlite-devel -y; # instlall for ruby;
+  sudo dnf install git-all kdiff3 -y; 
+  sudo dnf install openssh openssh-server -y; 
+  sudo systemctl enable sshd.service;
+  sudo systemctl start sshd.service;
+
+  #tools iso to usb
+  sudo dnf -y install unetbootin;
+}
+
+# Python
+function pipTools {
+  function removePython {
+    for package in $(sudo pip2 freeze); do sudo pip2 uninstall -y $package; done;
+    sudo dnf reinstall python2 -y;
+  }
+  removePython;
+  sudo pip install jsonschema;
+  sudo pip install requests;
+  sudo pip install --upgrade pip;
+  sudo pip install jrnl[encrypted];
+  sudo pip install ansible;
+  sudo pip install cryptography;
+  sudo pip install virtualenv;
+  sudo pip install selenium;
+  #sudo dnf install python-pandas -y;
+  # browser drivers for sellenium
+  if ! geckodriver --version || ! chromedriver --version ;then
+      echo "Pendiente instalar los drivers de lo navegadores";
   fi;
-fi;
+}
+
+# Databases services
+function databases {
+  sudo dnf install postgresql-server postgresql-contrib postgresql-devel -y; 
+  sudo systemctl enable postgresql;
+  #init database with empty data required to initializaed
+  if sudo ls /var/lib/pgsql/data ;then
+    sudo postgresql-setup --initdb --unit postgresql;
+  fi;
+  sudo systemctl start postgresql;
+  sudo dnf install pgadmin3 -y; 
+}
+
+# Ruby
+function rubyTools {
+  sudo dnf install -y ruby ruby-devel rubygem-thor rubygem-bundler;
+  sudo dnf install -y rubygem-rake rubygem-test-unit;
+  #sudo gem install rails && sudo dnf install rubygem-rails;
+  sudo dnf group install 'Ruby on Rails' -y; 
+}
+
+# Install dsn, media apps and tools
+function mediaTool {
+  sudo dnf install gnome-color-manager -y; 
+  sudo dnf install gstreamer{1,}-{plugin-crystalhd,ffmpeg,plugins-{good,ugly,bad{,-free,-nonfree,-freeworld,-extras}{,-extras}}} libmpg123 lame-libs --setopt=strict=0 -y; 
+  sudo dnf install gimp inkscape krita blender fontforge ImageMagick ImageMagick-devel ImageMagick-perl optipng vlc python-vlc npapi-vlc -y; 
+  sudo dnf install mencoder ffmpeg -y; 
+}
+
+# Install remte desktop windows
+function remote {
+  sudo dnf install remmina remmina-plugins-gnome remmina-plugins-rdp remmina-plugins-vnc --allowerasing -y; 
+}
+
+# Remmina-plugins-common
+# Apache php
+function apachePHP {
+  sudo dnf install httpd -y; 
+  sudo systemctl start httpd;
+  sudo dnf install php php-common php-pdo_mysql php-pdo php-gd php-mbstring -y; 
+  sudo systemctl restart httpd;
+  sudo dnf install perl-Net-SSLeay -y; 
+  # problems on installation dependences
+  #php libraries (moodle)
+  # sudo rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm;
+  # sudo rpm -Uvh https://mirror.webtatic.com/yum/el7/webtatic-release.rpm;
+  # sudo dnf install mod_php71w php71w-common php71w-mbstring php71w-xmlrpc php71w-soap php71w-gd php71w-xml php71w-intl php71w-mysqlnd php71w-cli php71w-mcrypt php71w-ldap -y;
+  # sudo dnf install mod_php71w php71w-opcache -y;
+  # php 7.1
+  # sudo dnf install php71w-fpm php71w-opcache -y;
+  #perl-TO-Tty
+  sudo systemctl stop httpd;
+}
+
+
+# DOCKER
+function dockerTools {
+  sudo dnf remove docker docker-common docker-selinux docker-engine-selinux docker-engine -y;
+  sudo dnf -y install dnf-plugins-core;
+  sudo dnf config-manager --add-repo https://download.docker.com/linux/fedora/docker-ce.repo -y;
+  sudo dnf config-manager --set-enabled docker-ce-edge -y;
+  sudo dnf config-manager --set-enabled docker-ce-test -y;
+  sudo dnf config-manager --set-disabled docker-ce-edge -y;
+  sudo dnf check-update -y && sudo dnf update && sudo dnf upgrade -y;
+  sudo dnf install docker-ce -y;
+  sudo usermod -a -G docker $USER;
+  # Docker kompose
+  sudo dnf -y install kompose;
+  #user to docker group
+  sudo groupadd docker;
+  sudo gpasswd -a $USER docker;
+  # activate docker daemon
+  sudo systemctl start docker;
+  # docker compose
+  sudo pip install docker-compose;
+}
+
+# Android dev
+function javaAndroid {
+  # sudo fastboot oem get_unlock_data
+  sudo dnf install android-tools -y;
+  sudo dnf install zlib.i686 ncurses-libs.i686 bzip2-libs.i686 -y;
+  sudo dnf install fastboot -y;
+  sudo dnf install usbutils -y;
+  #java oracle
+  if ! java -version;then
+      if [ -e ~/Downloads/programs/jdk-8u171-linux-x64.rpm ];then
+          sudo rpm -ivh ~/Downloads/programs/jdk-8u171-linux-x64.rpm;
+          sudo rpm -ivh ~/Downloads/programs/jdk-7u80-linux-x64.rpm;
+          # java with alternatives
+          sudo alternatives --install /usr/bin/java java /usr/java/latest/jre/bin/java 200000;
+          sudo alternatives --install /usr/bin/javaws javaws /usr/java/latest/jre/bin/javaws 200000;
+          sudo alternatives --install /usr/lib64/mozilla/plugins/libjavaplugin.so libjavaplugin.so.x86_64 /usr/java/latest/jre/lib/amd64/libnpjp2.so 200000;
+          sudo alternatives --install /usr/bin/javac javac /usr/java/latest/bin/javac 200000;
+          sudo alternatives --install /usr/bin/jar jar /usr/java/latest/bin/jar 200000;
+          # config alternatives
+          sudo alternatives --config java;
+          sudo alternatives --config javac;
+          sudo alternatives --config javaws;
+          # alternatives
+          sudo alternatives --install /usr/bin/java java /usr/java/jdk1.7.0_80/jre/bin/java 200000;
+          sudo alternatives --install /usr/bin/javac javac /usr/java/jdk1.7.0_80/bin/javac 200000;
+          sudo alternatives --install /usr/bin/jar jar /usr/java/jdk1.7.0_80/bin/jar 200000;
+          sudo alternatives --install /usr/bin/javaws javaws /usr/java/jdk1.7.0_80t/jre/bin/javaws 200000;
+          # java version
+          java -version;
+      else
+          echo "java rpm no est en la carpeta de descargas";
+      fi;
+  fi;
+  # gradle java
+  if java -version && gradle -v;then
+      echo "gradle and java alternatives alreadyionstalled";
+      sudo dnf install gradle -y;
+  else
+      echo '--- Pending install JAVA JDK---';
+  fi;
+}
+
+
+# vim
+function vimConfig {
+  if ! file ~/.vim || ! file ~/.vim/bundle/;then
+    mkdir -p ~/.vim/autoload;
+    mkdir -p ~/.vim/bundle;
+    curl -LSso ~/.vim/autoload/pathogen.vim https://tpo.pe/pathogen.vim; \
+    cd ~/.vim/bundle/; \
+    for i in https://github.com/mattn/emmet-vim \
+      https://github.com/scrooloose/nerdtree.git \
+      https://github.com/tomtom/tlib_vim \
+      https://github.com/leafgarland/typescript-vim \
+      https://github.com/MarcWeber/vim-addon-mw-utils \
+      https://github.com/vim-scripts/vim-auto-save \
+      https://github.com/digitaltoad/vim-pug \
+      https://github.com/tpope/vim-sensible \
+      https://github.com/wavded/vim-stylus.git; \
+    do git clone $i;done; \
+    cd ~; \
+    if [ ! -e ~/.vimrc ];then \
+      touch ~/.vimrc; \
+      chmod 775 ~/.vimrc; \
+    fi; \
+    if ! grep ~/.vimrc -e "execute pathogen#infect()";then \
+      printf "set enc=utf-8\nset fileencoding=utf-8set hls\nset number\nset relativenumber\nset tabstop=2\nset shiftwidth=2\nset expandtab\nset cindent\nset wrap! \n" >> ~/.vimrc; \
+      printf "xnoremap p pgvy\nnnoremap <C-H> :Hexmode<CR>\ninoremap <C-H> <Esc>:Hexmode<CR>\nvnoremap <C-H> :<C-U>Hexmet rela  de<CR> \n" >> ~/.vimrc; \
+      printf "let mapleader = \",\"\nnmap <leader>ne :NERDTreeToggle<cr> \n" >> ~/.vimrc; \
+      printf "execute pathogen#infect() \ncall pathogen#helptags() \nsyntax on \nfiletype plugin indent on \n" >> ~/.vimrc; \
+    fi;
+  fi;
+}
 
 # nodejs
-if node -v;then
-    if [[ $(node -v) != *"v8"* ]];then
-      sudo dnf remove nodejs -y;
-      curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.5/install.sh | bash && \
-      . ~/.nvm/nvm.sh && . ~/.bashrc; \
-      nvm install 8 && nvm use 8 && nvm alias default $(nvm current) && \
-      npm i -g stylus nib pug-cli less less-prefixer watch-less http-server bower;
-    fi;
-else
-    echo '--- Pending install NVM for nodejs---';
-fi;
+function nodeConfig {
+  # nodejs
+  if node -v;then
+      if [[ $(node -v) != *"v8"* ]];then
+        sudo dnf remove nodejs -y;
+        curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.5/install.sh | bash && \
+        . ~/.nvm/nvm.sh && . ~/.bashrc; \
+        nvm install 8 && nvm use 8 && nvm alias default $(nvm current) && \
+        npm i -g stylus nib pug-cli less less-prefixer watch-less http-server bower;
+      fi;
+  else
+      echo '--- Pending install NVM for nodejs---';
+  fi;
+}
 
-#tools iso to usb
-sudo dnf -y install unetbootin;
 
+function mysqlServ {
+  #mysql https://www.if-not-true-then-false.com/2010/install-mysql-on-fedora-centos-red-hat-rhel/
+  if ! mysql -v;then
+    sudo dnf -y install https://dev.mysql.com/get/mysql57-community-release-fc26-10.noarch.rpm;
+    sudo dnf -y --enablerepo=mysql80-community install mysql-community-server;
+    sudo systemctl start mysqld.service;
+    sudo systemctl enable mysqld.service;
+    #password
+    sudo rep 'A temporary password is generated for root@localhost' /var/log/mysqld.log |tail -1;
+    sudo ./usr/bin/mysql_secure_installation;
+  fi;
 
-#mysql https://www.if-not-true-then-false.com/2010/install-mysql-on-fedora-centos-red-hat-rhel/
-if ! mysql -v;then
-  sudo dnf -y install https://dev.mysql.com/get/mysql57-community-release-fc26-10.noarch.rpm;
-  sudo dnf -y --enablerepo=mysql80-community install mysql-community-server;
-  sudo systemctl start mysqld.service;
-  sudo systemctl enable mysqld.service;
-  #password
-  sudo rep 'A temporary password is generated for root@localhost' /var/log/mysqld.log |tail -1;
-  sudo ./usr/bin/mysql_secure_installation;
-fi;
-
-#manual
-echo "
----## MANUAL INSTALATTIONS ###--
+  #manual
+  echo "
+  ---## MANUAL INSTALATTIONS ###--
     - change language in "sudo vim /etc/locale.conf"
       LANG="en_US.UTF-8"
       LC_CTYPE="en_US.UTF-8"
@@ -203,9 +257,10 @@ echo "
           # set password root
           vim /var/log/mysqld.log # and find password
         - sudo /usr/bin/mysql_secure_installation
-          OR
+          AND
           - SHOW VARIABLES LIKE 'validate_password%';
           - SET GLOBAL validate_password_policy=LOW;
+          - SET GLOBAL alidate_password.policy=LOW;
           - ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password AS '123456';
     - workbench: download and install rpm mysql-workbench-community-6.3.9-1.fc26.x86_64.rpm
     - tomcat: (donwload and run in folder)
@@ -234,26 +289,48 @@ echo "
         - dnf install lwks-14.0.0-amd64.rpm
     - install apps progrms folder
         dir_apps=~/Downloads/programs/;for app in $(find $dir_apps -name "*.rpm");do sudo dnf install -y ${dir_app}${app};done;
-    ";
-#install programs dir
-dir_apps=~/Downloads/programs/;
-[ -e $dir_apps ] &&
-for app in $(find $dir_apps -name "*.rpm" -maxdepth 1);do sudo dnf install -y ${dir_app}${app};done;
-#gestures
-sudo dnf -y copr enable mhoeher/multitouch;
-sudo dnf -y install libinput-gestures;
-libinput-gestures-setup start; #normal user
-#libinput-gestures-setup autostart #user
-#spootify
-sudo dnf -y config-manager --add-repo=http://negativo17.org/repos/fedora-spotify.repo;
-sudo dnf -y install spotify;
+  ";
+}
 
-cd ~;
-cd $INIT_DIR;
-#CLEAR packages
-sudo dnf clean packages;
-sudo dnf clean all;
-# fix dependences
-sudo dnf update --best --allowerasing;
-sudo dnf remove --duplicates;
+#install programs dir
+function installRPMs {
+  dir_apps=~/Downloads/programs/;
+  [ -e $dir_apps ] &&
+  for app in $(find $dir_apps -name "*.rpm" -maxdepth 1);do sudo dnf install -y ${dir_app}${app};done;
+  #gestures
+  sudo dnf -y copr enable mhoeher/multitouch;
+  sudo dnf -y install libinput-gestures;
+  libinput-gestures-setup start; #normal user
+  #libinput-gestures-setup autostart #user
+  #spootify
+  sudo dnf -y config-manager --add-repo=http://negativo17.org/repos/fedora-spotify.repo;
+  sudo dnf -y install spotify;
+
+  cd ~;
+  cd $INIT_DIR;
+  #CLEAR packages
+  sudo dnf clean packages;
+  sudo dnf clean all;
+  # fix dependences
+  sudo dnf update --best --allowerasing;
+  sudo dnf remove --duplicates;
+}
+
+function installAll {
+  tools;
+  devTools;
+  osTools;
+  pipTools; # error
+  databases;
+  rubyTools;
+  mediaTool;
+  remote; ## error
+  apachePHP;
+  dockerTools; #docker compose pip
+  javaAndroid; # error by java
+  vimConfig;
+  nodeConfig;
+  mysqlServ;
+  installRPMs;
+}
 
