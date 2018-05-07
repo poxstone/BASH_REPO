@@ -91,7 +91,8 @@ function mediaTool {
 
 # Install remte desktop windows
 function remote {
-  sudo dnf install remmina remmina-plugins-gnome remmina-plugins-rdp remmina-plugins-vnc --allowerasing -y; 
+  #remmina-plugins-gnome;
+  sudo dnf install remmina  remmina-plugins-rdp remmina-plugins-vnc --allowerasing -y; 
 }
 
 # Remmina-plugins-common
@@ -324,6 +325,15 @@ function devPrograms {
   sudo dnf install code -y;
 }
 
+function cleanDnf {
+  sudo dnf clean dbcache;
+  sudo dnf clean expire-cache;
+  sudo dnf clean metadata;
+  sudo dnf clean packages;
+  sudo dnf clean plugins;
+  sudo dnf clean all;
+}
+
 function installAll {
   tools;
   devTools;
@@ -341,5 +351,7 @@ function installAll {
   mysqlServ;
   installRPMs;
   devPrograms;
+  cleanDnf;
 }
+
 
