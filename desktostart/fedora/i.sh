@@ -330,7 +330,7 @@ function cleanDnf {
   sudo dnf clean expire-cache;
   sudo dnf clean metadata;
   sudo dnf clean packages;
-  sudo dnf clean plugins;
+  #sudo dnf clean plugins;
   sudo dnf clean all;
 }
 
