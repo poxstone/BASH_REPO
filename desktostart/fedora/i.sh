@@ -3,13 +3,28 @@
 INIT_DIR=$(pwd);
 cd ~/Downloads/;
 
+function updateSystem {
+  sudo dnf update -y;
+  sudo dnf upgrade -y;
+}
+
 # Install tools
-function tools {
+function toolsOS {
   sudo dnf install vim tmux htop lynx nmap -y; 
   #sudo rpm -qa | grep vim
   #sudo rpm -e vim-minimal-8.0.662-1.fc26.x86_64 --nodeps
   #sudo dnf list;
   sudo dnf check-update -y && sudo dnf upgrade -y; 
+
+  # https://docs.snapcraft.io/core/install-fedora
+  sudo dnf install snapd -y;
+  sudo ln -s /var/lib/snapd/snap /snap;
+}
+
+function removePython {
+    for package in $(sudo pip2 freeze); do sudo pip2 uninstall -y $package; done;
+    sudo dnf reinstall python2 -y;
+    sudo dnf install python python-devel -y;
 }
 
 # Dev tools
@@ -41,20 +56,16 @@ function osTools {
 
 # Python
 function pipTools {
-  function removePython {
-    for package in $(sudo pip2 freeze); do sudo pip2 uninstall -y $package; done;
-    sudo dnf reinstall python2 -y;
-  }
-  removePython;
+  #sudo pip install --upgrade pip; # error on version 10.0.1
+  #sudo pip install pip==9.0.3 # use this if abode fails
   sudo pip install jsonschema;
   sudo pip install requests;
-  sudo pip install --upgrade pip;
   sudo pip install jrnl[encrypted];
   sudo pip install ansible;
   sudo pip install cryptography;
   sudo pip install virtualenv;
   sudo pip install selenium;
-  #sudo dnf install python-pandas -y;
+  sudo dnf install python-pandas -y;
   # browser drivers for sellenium
   if ! geckodriver --version || ! chromedriver --version ;then
       echo "Pendiente instalar los drivers de lo navegadores";
@@ -77,7 +88,10 @@ function databases {
 function rubyTools {
   sudo dnf install -y ruby ruby-devel rubygem-thor rubygem-bundler;
   sudo dnf install -y rubygem-rake rubygem-test-unit;
-  #sudo gem install rails && sudo dnf install rubygem-rails;
+  sudo gem install rails;
+  sudo dnf install rubygem-rails <<EOF
+y
+EOF
   sudo dnf group install 'Ruby on Rails' -y; 
 }
 
@@ -85,8 +99,10 @@ function rubyTools {
 function mediaTool {
   sudo dnf install gnome-color-manager -y; 
   sudo dnf install gstreamer{1,}-{plugin-crystalhd,ffmpeg,plugins-{good,ugly,bad{,-free,-nonfree,-freeworld,-extras}{,-extras}}} libmpg123 lame-libs --setopt=strict=0 -y; 
-  sudo dnf install gimp inkscape krita blender fontforge ImageMagick ImageMagick-devel ImageMagick-perl optipng vlc python-vlc npapi-vlc -y; 
+  # npapi-vlc
+  sudo dnf install gimp inkscape krita blender fontforge ImageMagick ImageMagick-devel ImageMagick-perl optipng vlc python-vlc -y; 
   sudo dnf install mencoder ffmpeg -y; 
+  # snap install inkscape;
 }
 
 # Install remte desktop windows
@@ -140,7 +156,7 @@ function dockerTools {
 
 # Android dev
 function javaAndroid {
-  # sudo fastboot oem get_unlock_data
+  #sudo fastboot oem get_unlock_data
   sudo dnf install android-tools -y;
   sudo dnf install zlib.i686 ncurses-libs.i686 bzip2-libs.i686 -y;
   sudo dnf install fastboot -y;
@@ -164,7 +180,7 @@ function javaAndroid {
           sudo alternatives --install /usr/bin/java java /usr/java/jdk1.7.0_80/jre/bin/java 200000;
           sudo alternatives --install /usr/bin/javac javac /usr/java/jdk1.7.0_80/bin/javac 200000;
           sudo alternatives --install /usr/bin/jar jar /usr/java/jdk1.7.0_80/bin/jar 200000;
-          sudo alternatives --install /usr/bin/javaws javaws /usr/java/jdk1.7.0_80t/jre/bin/javaws 200000;
+          sudo alternatives --install /usr/bin/javaws javaws /usr/java/jdk1.7.0_80/jre/bin/javaws 200000;
           # java version
           java -version;
       else
@@ -238,7 +254,8 @@ function mysqlServ {
     sudo systemctl enable mysqld.service;
     #password
     sudo rep 'A temporary password is generated for root@localhost' /var/log/mysqld.log |tail -1;
-    sudo ./usr/bin/mysql_secure_installation;
+    sudo /usr/bin/mysql_secure_installation
+
   fi;
 
   #manual
@@ -261,7 +278,7 @@ function mysqlServ {
           AND
           - SHOW VARIABLES LIKE 'validate_password%';
           - SET GLOBAL validate_password_policy=LOW;
-          - SET GLOBAL alidate_password.policy=LOW;
+          - SET GLOBAL validate_password.policy=LOW;
           - ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password AS '123456';
     - workbench: download and install rpm mysql-workbench-community-6.3.9-1.fc26.x86_64.rpm
     - tomcat: (donwload and run in folder)
@@ -297,10 +314,10 @@ function mysqlServ {
 function installRPMs {
   dir_apps=~/Downloads/programs/;
   [ -e $dir_apps ] &&
-  for app in $(find $dir_apps -name "*.rpm" -maxdepth 1);do sudo dnf install -y ${dir_app}${app};done;
+  #for app in $(find $dir_apps -name "*.rpm" -maxdepth 1);do sudo dnf install -y ${dir_app}${app};done;
   #gestures
   sudo dnf -y copr enable mhoeher/multitouch;
-  sudo dnf -y install libinput-gestures;
+  sudo dnf -y install libinput-gestures; # ROTO
   libinput-gestures-setup start; #normal user
   #libinput-gestures-setup autostart #user
   #spootify
@@ -309,12 +326,6 @@ function installRPMs {
 
   cd ~;
   cd $INIT_DIR;
-  #CLEAR packages
-  sudo dnf clean packages;
-  sudo dnf clean all;
-  # fix dependences
-  sudo dnf update --best --allowerasing;
-  sudo dnf remove --duplicates;
 }
 
 function devPrograms {
@@ -332,10 +343,17 @@ function cleanDnf {
   sudo dnf clean packages;
   #sudo dnf clean plugins;
   sudo dnf clean all;
+
+  # fix dependences
+  sudo dnf update --best --allowerasing;
+  sudo dnf remove --duplicates;
 }
 
 function installAll {
+  updateSystem;
+  cleanDnf;
   tools;
+  removePython;
   devTools;
   osTools;
   pipTools; # error
@@ -351,7 +369,7 @@ function installAll {
   mysqlServ;
   installRPMs;
   devPrograms;
-  cleanDnf;
+  #cleanDnf;
 }
 
 
