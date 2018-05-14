@@ -254,8 +254,7 @@ function mysqlServ {
     sudo systemctl enable mysqld.service;
     #password
     sudo rep 'A temporary password is generated for root@localhost' /var/log/mysqld.log |tail -1;
-    sudo /usr/bin/mysql_secure_installation
-
+    sudo /usr/bin/mysql_secure_installation;
   fi;
 
   #manual
@@ -311,15 +310,18 @@ function mysqlServ {
 }
 
 #install programs dir
-function installRPMs {
+function installTouch {
   dir_apps=~/Downloads/programs/;
   [ -e $dir_apps ] &&
   #for app in $(find $dir_apps -name "*.rpm" -maxdepth 1);do sudo dnf install -y ${dir_app}${app};done;
   #gestures
   sudo dnf -y copr enable mhoeher/multitouch;
-  sudo dnf -y install libinput-gestures; # ROTO
+  sudo dnf -y install libinput-gestures;
   libinput-gestures-setup start; #normal user
-  #libinput-gestures-setup autostart #user
+  libinput-gestures-setup autostart; #user
+};
+
+function installSpotify{
   #spootify
   sudo dnf -y config-manager --add-repo=http://negativo17.org/repos/fedora-spotify.repo;
   sudo dnf -y install spotify;
@@ -367,7 +369,8 @@ function installAll {
   vimConfig;
   nodeConfig;
   mysqlServ;
-  installRPMs;
+  installTouch;
+  installSpotify;
   devPrograms;
   #cleanDnf;
 }
