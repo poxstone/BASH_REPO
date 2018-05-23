@@ -5,6 +5,7 @@ HOME="$HOME";
 cd ~/Downloads/;
 DEV_USER="developer";
 DEV_PASS="Evo76AUS";
+DEV_PASS2="Ove52SWE";
 
 function updateSystem {
   sudo yum update -y;
@@ -13,7 +14,8 @@ function updateSystem {
   sudo yum clean all;
   wget https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm;
   yum install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm;
-
+  # remove default sdk
+  sudo yum remove -y google-cloud-sdk;
 }
 
 function createUser {
@@ -25,6 +27,7 @@ EOF
   sudo usermod -aG wheel $DEV_USER;
 sudo su $DEV_USER <<EOF
   mkdir -p ~/Downloads/ ~/bin/;
+  touch .bashrc;
   touch .bash_profile;
   # require password
   echo "Type password \"$DEV_PASS\"";
@@ -47,7 +50,7 @@ function mountDisk {
 
 # Install tools
 function toolsOS {
-  sudo yum install vim tmux htop lynx nmap -y; 
+  sudo yum install vim tmux htop lynx nmap tcpdump iotop -y; 
 }
 
 # Dev tools
@@ -74,13 +77,13 @@ function devTools {
   sudo make altinstall;
   local STRING_PYTHON_LIB="export LD_LIBRARY_PATH=/usr/local/lib:/usr/local/bin/python2.7:$LD_LIBRARY_PATH";
   local STRING_PY_ALIAS="alias python=/usr/local/bin/python2.7";
-  sudo echo "$STRING_PYTHON_LIB" >> ~/.bash_profile;
-  sudo echo "$STRING_PY_ALIAS" >> ~/.bash_profile;
+  sudo echo "$STRING_PYTHON_LIB" >> ~/.bashrc;
+  sudo echo "$STRING_PY_ALIAS" >> ~/.bashrc;
   sudo su $DEV_USER <<EOF
-  echo "$STRING_PYTHON_LIB" >> ~/.bash_profile;
-  echo "$STRING_PY_ALIAS" >> ~/.bash_profile;
+  echo "$STRING_PYTHON_LIB" >> ~/.bashrc;
+  echo "$STRING_PY_ALIAS" >> ~/.bashrc;
 EOF
-  bash ~/.bash_profile && sudo bash ~/.bash_profile;
+  bash ~/.bashrc && sudo bash ~/.bashrc;
 
   #sudo wget https://bitbucket.org/pypa/setuptools/raw/bootstrap/ez_setup.py;
   sudo wget https://bootstrap.pypa.io/ez_setup.py;
@@ -138,6 +141,11 @@ function databases {
     sudo postgresql-setup initdb postgresql;
   fi;
   sudo systemctl start postgresql;
+  sudo passwd postgres <<EOF
+$DEV_PASS2
+$DEV_PASS2
+EOF
+
   sudo yum install pgadmin3 -y; 
 }
 
@@ -250,9 +258,9 @@ function javaAndroid {
       sudo unzip -d /opt/gradle gradle-3.4.1-bin.zip;
 
       local STRING_GRADLE_LIB="export PATH=$PATH:/opt/gradle/gradle-3.4.1/bin";
-      sudo echo "$STRING_GRADLE_LIB" >> ~/.bash_profile;
+      sudo echo "$STRING_GRADLE_LIB" >> ~/.bashrc;
       sudo su $DEV_USER <<EOF
-      echo "$STRING_GRADLE_LIB" >> ~/.bash_profile;
+      echo "$STRING_GRADLE_LIB" >> ~/.bashrc;
 EOF
   else
       echo '--- Pending install JAVA JDK---';
@@ -309,56 +317,81 @@ function nodeConfig {
 
 
 function mysqlServ {
-  #mysql https://www.if-not-true-then-false.com/2010/install-mysql-on-fedora-centos-red-hat-rhel/
   if ! mysql -v;then
 
     sudo yum install -y mariadb-server;
     sudo systemctl start mariadb;
     sudo systemctl enable mariadb;
-    sudo mysql_secure_installation;
+    echo "see ";
+    sudo mysql_secure_installation <<EOF
 
-    sudo yum -y --enablerepo=mysql80-community install mysql-community-server;
-    sudo systemctl start mysqld.service;
-    sudo systemctl enable mysqld.service;
-    #password
-    sudo rep 'A temporary password is generated for root@localhost' /var/log/mysqld.log |tail -1;
-    sudo /usr/bin/mysql_secure_installation;
+y
+$DEV_PASS2
+$DEV_PASS2
+y
+n
+n
+y
+EOF
+
   fi;
+}
 
+function installGraphicVnc {
+  sudo yum groupinstall -y "KDE Plasma Workspaces";
+  sudo yum install -y tigervnc-server;
+  sudo cp /lib/systemd/system/vncserver@.service /etc/systemd/system/vncserver@:1.service;
+  echo "change <USER> for \"$DEV_USER\"";
+  sudo vim /etc/systemd/system/vncserver@:1.service;
+  sudo firewall-cmd --permanent --zone=public --add-service vnc-server;
+  sudo firewall-cmd --reload;
+  echo "set pass \"$DEV_PASS\"";
+  sudo su - $DEV_USER <<EOF
+    vncserver
+EOF
+  sudo systemctl daemon-reload;
+  sudo systemctl enable vncserver@:1.service;
+  sudo systemctl start vncserver@:1.service;
+
+  # xrdp
+  sudo rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm;
+  sudo yum -y install xrdp tigervnc-server;
+  sudo systemctl start xrdp;
+  sudo systemctl enable xrdp;
+  sudo firewall-cmd --permanent --add-port=3389/tcp;
+  sudo firewall-cmd --reload;
+  sudo chcon --type=bin_t /usr/sbin/xrdp;
+  sudo chcon --type=bin_t /usr/sbin/xrdp-sesman;
+  echo "edit xsrdp with: 
+  [globals]
+  crypt_level=low
+  channel_code=1
+
+  [vnc1]
+  name=vncserver
+  lib=libvnc.so
+  ip=localhost
+  port=5901
+  username=$DEV_USER
+  password=$DEV_PASS
+  ";
+  sudo vim /etc/xrdp/xrdp.ini;
+  sudo systemctl daemon-reload;
+  sudo systemctl restart xrdp;
+
+}
+
+
+function manualSteps {
   #manual
   echo "
   ---## MANUAL INSTALATTIONS ###--
     - change language in "sudo vim /etc/locale.conf"
       LANG="en_US.UTF-8"
       LC_CTYPE="en_US.UTF-8"
-    - chrome: install chrome (download)
-    - virtualbox: download), install, and install package extension
-    - java: download install and run  this (i.sh) again)
-        - .bashrc > export JAVA_HOME='/usr/java/jdk1.8.0_131'
-    - mysql: (donwlad and install):
-        - sudo yum install mysql-community-server
-        - sudo systemctl start mysqld.service
-        - sudo systemctl enable mysqld.service
-          # set password root
-          vim /var/log/mysqld.log # and find password
-        - sudo /usr/bin/mysql_secure_installation
-          AND
-          - SHOW VARIABLES LIKE 'validate_password%';
-          - SET GLOBAL validate_password_policy=LOW;
-          - SET GLOBAL validate_password.policy=LOW;
-          - ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password AS '123456';
     - workbench: download and install rpm mysql-workbench-community-6.3.9-1.fc26.x86_64.rpm
     - tomcat: (donwload and run in folder)
-    - nvm: (download): https://github.com/creationix/nvm
-        - curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.2/install.sh | bash
-        export NVM_DIR='$HOME/.nvm'
-        [ -s '$NVM_DIR/nvm.sh' ] && \. '$NVM_DIR/nvm.sh'  # This loads nvm
-        [ -s '$NVM_DIR/bash_completion' ] && \. '$NVM_DIR/bash_completion'  # This loads nvm bash_completion
-    - etcher: from zio for install usb live
     - postgres: (autoinstall and complete configuration):
-        - sudo su - postgres
-        - \password postgres
-            admin
         - config files to md5:
             - sudo vim /var/lib/pgsql/data/pg_hba.conf # change all to md5
                 local   all             all                                     md5
@@ -374,49 +407,23 @@ function mysqlServ {
         - yum install lwks-14.0.0-amd64.rpm
     - install apps progrms folder
         dir_apps=~/Downloads/programs/;for app in $(find $dir_apps -name "*.rpm");do sudo yum install -y ${dir_app}${app};done;
+    - install chrome:
+        - sudo yum install -y google-chrome-stable_current_x86_64.rpm
   ";
-}
-
-#install programs dir
-function installTouch {
-  dir_apps=~/Downloads/programs/;
-  [ -e $dir_apps ] &&
-  #for app in $(find $dir_apps -name "*.rpm" -maxdepth 1);do sudo yum install -y ${dir_app}${app};done;
-  #gestures
-  sudo yum -y copr enable mhoeher/multitouch;
-  sudo yum -y install libinput-gestures;
-  libinput-gestures-setup start; #normal user
-  libinput-gestures-setup autostart; #user
-};
-
-function installSpotify{
-  #spootify
-  sudo yum -y config-manager --add-repo=http://negativo17.org/repos/fedora-spotify.repo;
-  sudo yum -y install spotify;
-
-  cd ~;
-  cd $INIT_DIR;
 }
 
 function devPrograms {
   # https://code.visualstudio.com/docs/setup/linux
-  sudo rpm --import https://packages.microsoft.com/keys/microsoft.asc
+  sudo rpm --import https://packages.microsoft.com/keys/microsoft.asc;
   sudo sh -c 'echo -e "[code]\nname=Visual Studio Code\nbaseurl=https://packages.microsoft.com/yumrepos/vscode\nenabled=1\ngpgcheck=1\ngpgkey=https://packages.microsoft.com/keys/microsoft.asc" > /etc/yum.repos.d/vscode.repo'
   sudo yum check-update -y;
   sudo yum install code -y;
 }
 
 function cleanDnf {
-  sudo yum clean dbcache;
-  sudo yum clean expire-cache;
-  sudo yum clean metadata;
-  sudo yum clean packages;
-  #sudo yum clean plugins;
   sudo yum clean all;
-
-  # fix dependences
-  sudo yum update --best --allowerasing;
-  sudo yum remove --duplicates;
+  sudo rpm --rebuilddb;
+  sudo yum update -y;
 }
 
 function installAll {
