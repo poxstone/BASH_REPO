@@ -243,8 +243,17 @@ function javaAndroid {
   fi;
   # gradle java
   if java -version && gradle -v;then
-      echo "gradle and java alternatives alreadyionstalled";
-      sudo yum install gradle -y;
+      sudo mkdir /opt/gradle;
+      sudo chmod -R 775 /opt/gradle;
+      cd /opt/gradle;
+      sudo wget  https://services.gradle.org/distributions/gradle-3.4.1-bin.zip; 
+      sudo unzip -d /opt/gradle gradle-3.4.1-bin.zip;
+
+      local STRING_GRADLE_LIB="export PATH=$PATH:/opt/gradle/gradle-3.4.1/bin";
+      sudo echo "$STRING_GRADLE_LIB" >> ~/.bash_profile;
+      sudo su $DEV_USER <<EOF
+      echo "$STRING_GRADLE_LIB" >> ~/.bash_profile;
+EOF
   else
       echo '--- Pending install JAVA JDK---';
   fi;
@@ -302,7 +311,12 @@ function nodeConfig {
 function mysqlServ {
   #mysql https://www.if-not-true-then-false.com/2010/install-mysql-on-fedora-centos-red-hat-rhel/
   if ! mysql -v;then
-    sudo yum -y install https://dev.mysql.com/get/mysql57-community-release-fc26-10.noarch.rpm;
+
+    sudo yum install -y mariadb-server;
+    sudo systemctl start mariadb;
+    sudo systemctl enable mariadb;
+    sudo mysql_secure_installation;
+
     sudo yum -y --enablerepo=mysql80-community install mysql-community-server;
     sudo systemctl start mysqld.service;
     sudo systemctl enable mysqld.service;
