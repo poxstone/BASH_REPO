@@ -55,8 +55,8 @@ function devTools {
   # Dev tools
   sudo yum install -y redhat-rpm-config;
   sudo yum groupinstall -y --disablerepo=\* --enablerepo=base,updates,cr "Development Tools";
-  sudo yum install -y dh-autoreconf vim-enhanced curl-devel expat-devel gettext-devel openssl-devel apr-devel perl-devel zlib-devel libvirt;
-  sudo yum install -y asciidoc xmlto docbook2X binutils fedora-packager chrpath autoconf automake;
+  sudo yum install -y dh-autoreconf vim-enhanced curl-devel expat-devel gettext-devel openssl-devel apr-devel perl-devel zlib-devel libvirt gtkmm30 libgdkmm-3.0.so.1 proj proj;
+  sudo yum install -y asciidoc xmlto docbook2X binutils fedora-packager chrpath autoconf automake ;
   sudo yum install -y gcc gcc-c++ qt-devel libffi-devel dnf-plugins-core python python-devel nasm.x86_64 SDL* ant dkms kernel-devel dkms kernel-headers libstdc++.i686 subversion;
   sudo yum install -y wget deluge rpm-build lsb zlib-devel sqlite-devel git-all kdiff3 openssh openssh-server ncurses-devel bzip2-devel;
   sudo yum install -y yum-utils device-mapper-persistent-data lvm2;
@@ -89,6 +89,9 @@ EOF
 
   sudo yum-config-manager --add-repo http://download.opensuse.org/repositories/home:/fengshuo:/zeromq/CentOS_CentOS-6/home:fengshuo:zeromq.repo;
   sudo yum install -y python-devel zeromq zeromq-devel;
+  # 40 is less priority than 60ss
+  sudo alternatives --install /bin/python python /usr/bin/python2 40;
+  sudo alternatives --install /bin/python python /usr/local/bin/python2.7 50;  sudo alternatives --install /bin/python python /usr/local/bin/python2.7 50;
   cd;
 
   sudo systemctl enable sshd.service;
@@ -122,6 +125,7 @@ function pipTools {
   sudo pip install --upgrade graphlab-create;
 
   sudo yum -y install python-devel python-nose python-setuptools gcc gcc-gfortran gcc-c++ blas-devel lapack-devel atlas-devel;
+  sudo yum install -y  python2-crypto python-paramiko;
   sudo pip install --upgrade seaborn;
   # browser drivers for sellenium
   if ! geckodriver --version || ! chromedriver --version ;then
@@ -323,6 +327,7 @@ function mysqlServ {
     #password
     sudo rep 'A temporary password is generated for root@localhost' /var/log/mysqld.log |tail -1;
     sudo /usr/bin/mysql_secure_installation;
+    
   fi;
 
   #manual
@@ -417,6 +422,49 @@ function cleanDnf {
   # fix dependences
   sudo yum update --best --allowerasing;
   sudo yum remove --duplicates;
+}
+
+function graphicUI {
+  sudo yum groupinstall "KDE Plasma Workspaces" tigervnc-server -y;
+  sudo cp /lib/systemd/system/vncserver@.service /etc/systemd/system/vncserver@:1.service
+  sudo vim /etc/systemd/system/vncserver@:1.service;
+  sudo firewall-cmd --permanent --zone=public --add-service vnc-server;
+  sudo firewall-cmd --reload;
+  vncserver;
+  sudo systemctl daemon-reload;
+  sudo systemctl enable vncserver@:1.service;
+  sudo systemctl start vncserver@:1.service;
+
+  #xedp
+  sudo yum groupinstall "GNOME Desktop";
+  sudo rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm;
+  sudo yum -y install xrdp tigervnc-server;
+  echo "edit and paste:
+  [globals]
+  crypt_level=low
+  channel_code=1
+
+  [vnc1]
+  name=vncserver
+  lib=libvnc.so
+  ip=localhost
+  port=5901
+  username=$DEV_USER
+  password=$DEV_PASS
+  ";
+  sudo vim /etc/xrdp/xrdp.ini;
+
+  sudo systemctl start xrdp;
+  sudo systemctl enable xrdp;
+  sudo firewall-cmd --permanent --add-port=3389/tcp;
+  sudo firewall-cmd --reload;
+  sudo chcon --type=bin_t /usr/sbin/xrdp;
+  sudo chcon --type=bin_t /usr/sbin/xrdp-sesman;
+  # sudo vim -o .vncrc .vnc/xstartup /etc/systemd/system/vncserver@:1.service /etc/xrdp/xrdp.ini .vnc/config
+
+  # menu editable gnome
+  sudo yum install alacarte -y;
+
 }
 
 function installAll {
