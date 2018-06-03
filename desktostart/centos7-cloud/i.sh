@@ -396,7 +396,8 @@ function installGraphicVnc {
   #sudo vim /etc/systemd/system/vncserver@:1.service;
   sudo firewall-cmd --permanent --zone=public --add-service vnc-server;
   sudo firewall-cmd --reload;
-  sudo su - $DEV_USER <<EOF
+  echo "pass password: \"${DEV_PASS}\"";
+  sudo su $DEV_USER <<EOF
     vncserver
 EOF
   sudo systemctl daemon-reload;
@@ -424,7 +425,6 @@ password=$DEV_PASS
 " >> /etc/xrdp/xrdp.ini;
 
   fi;
-
 
   sudo systemctl start xrdp;
   sudo systemctl enable xrdp;
