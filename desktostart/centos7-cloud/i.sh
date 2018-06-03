@@ -396,9 +396,10 @@ function installGraphicVnc {
   #sudo vim /etc/systemd/system/vncserver@:1.service;
   sudo firewall-cmd --permanent --zone=public --add-service vnc-server;
   sudo firewall-cmd --reload;
-  echo "pass password: \"${DEV_PASS}\"";
-  sudo su $DEV_USER <<EOF
-    vncserver
+  
+  sudo -u developer vncserver <<EOF
+$DEV_PASS
+$DEV_PASS
 EOF
   sudo systemctl daemon-reload;
   sudo systemctl enable vncserver@:1.service;
