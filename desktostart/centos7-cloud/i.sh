@@ -1,11 +1,11 @@
 #!/bin/bash
-
 INIT_DIR=$(pwd);
 HOME="$HOME";
-cd ~/Downloads/;
 DEV_USER="developer";
 DEV_PASS="Evo76AUS";
 DEV_PASS2="Ove52SWE";
+HOME_USER="/home/$DEV_USER/";
+
 
 function updateSystem {
   sudo yum update -y;
@@ -18,23 +18,27 @@ function updateSystem {
   sudo yum remove -y google-cloud-sdk;
 }
 
+function cleanDnf {
+  sudo yum clean all;
+  sudo rpm --rebuilddb;
+  sudo yum update -y;
+}
+
+function restoreHomePermissions {
+  sudo chown -R $DEV_USER:$DEV_USER $HOME_USER;
+}
+
 function createUser {
   sudo useradd $DEV_USER;
+  sudo usermod -aG wheel $DEV_USER;
+  sudo mkdir -p $HOME_USER/Downloads/ $HOME_USER/Documents/ $HOME_USER/bin/;
+  sudo touch $HOME_USER/.bashrc $HOME_USER/.bash_profile;
+  restoreHomePermissions;
   sudo passwd $DEV_USER <<EOF
 $DEV_PASS
 $DEV_PASS
 EOF
-  sudo usermod -aG wheel $DEV_USER;
-sudo su $DEV_USER <<EOF
-  mkdir -p ~/Downloads/ ~/bin/;
-  touch .bashrc;
-  touch .bash_profile;
-  # require password
-  echo "Type password \"$DEV_PASS\"";
-  sudo ls;
-EOF
 }
-
 
 function mountDisk {
   sudo mount /dev/sdb /home/;
@@ -47,10 +51,9 @@ function mountDisk {
     fi;
 }
 
-
 # Install tools
-function toolsOS {
-  sudo yum install vim tmux htop lynx nmap tcpdump iotop -y; 
+function mainTools {
+  sudo yum install vim tmux htop lynx nmap tcpdump iotop -y;
 }
 
 # Dev tools
@@ -61,11 +64,13 @@ function devTools {
   sudo yum install -y dh-autoreconf vim-enhanced curl-devel expat-devel gettext-devel openssl-devel apr-devel perl-devel zlib-devel libvirt gtkmm30 libgdkmm-3.0.so.1 proj proj;
   sudo yum install -y asciidoc xmlto docbook2X binutils fedora-packager chrpath autoconf automake ;
   sudo yum install -y gcc gcc-c++ qt-devel libffi-devel dnf-plugins-core python python-devel nasm.x86_64 SDL* ant dkms kernel-devel dkms kernel-headers libstdc++.i686 subversion;
-  sudo yum install -y wget deluge rpm-build lsb zlib-devel sqlite-devel git-all kdiff3 openssh openssh-server ncurses-devel bzip2-devel;
+  sudo yum install -y wget deluge rpm-build lsb sqlite-devel git-all kdiff3 openssh openssh-server ncurses-devel bzip2-devel;
   sudo yum install -y yum-utils device-mapper-persistent-data lvm2;
+  sudo yum install -y libX11-devel freetype-devel libxcb-devel libxslt-devel libgcrypt-devel libxml2-devel gnutls-devel libpng-devel libjpeg-turbo-devel libtiff-devel gstreamer-devel dbus-devel fontconfig-devel;
 
   # python update (https://gist.github.com/guy4261/0e9f4081f1c6b078b436)
   # python update (https://tecadmin.net/install-python-2-7-on-centos-rhel/)
+  sudo yum install -y python-pip;
   cd /opt/;
   sudo wget --no-check-certificate https://www.python.org/ftp/python/2.7.15/Python-2.7.15.tar.xz;
   sudo tar xf Python-2.7.15.tar.xz;
@@ -77,13 +82,13 @@ function devTools {
   sudo make altinstall;
   local STRING_PYTHON_LIB="export LD_LIBRARY_PATH=/usr/local/lib:/usr/local/bin/python2.7:$LD_LIBRARY_PATH";
   local STRING_PY_ALIAS="alias python=/usr/local/bin/python2.7";
-  sudo echo "$STRING_PYTHON_LIB" >> ~/.bashrc;
-  sudo echo "$STRING_PY_ALIAS" >> ~/.bashrc;
+  sudo echo "$STRING_PYTHON_LIB" >> ${HOME_USER}.bashrc;
+  sudo echo "$STRING_PY_ALIAS" >> ${HOME_USER}.bashrc;
   sudo su $DEV_USER <<EOF
-  echo "$STRING_PYTHON_LIB" >> ~/.bashrc;
-  echo "$STRING_PY_ALIAS" >> ~/.bashrc;
+  echo "$STRING_PYTHON_LIB" >> ${HOME_USER}.bashrc;
+  echo "$STRING_PY_ALIAS" >> ${HOME_USER}.bashrc;
 EOF
-  bash ~/.bashrc && sudo bash ~/.bashrc;
+  bash ${HOME_USER}.bashrc && sudo bash ${HOME_USER}.bashrc;
 
   #sudo wget https://bitbucket.org/pypa/setuptools/raw/bootstrap/ez_setup.py;
   sudo wget https://bootstrap.pypa.io/ez_setup.py;
@@ -94,7 +99,15 @@ EOF
   sudo yum install -y python-devel zeromq zeromq-devel;
   # 40 is less priority than 60ss
   sudo alternatives --install /bin/python python /usr/bin/python2 40;
-  sudo alternatives --install /bin/python python /usr/local/bin/python2.7 50;  sudo alternatives --install /bin/python python /usr/local/bin/python2.7 50;
+  sudo alternatives --install /bin/python python /usr/local/bin/python2.7 50;
+  sudo alternatives --install /bin/python python /usr/bin/python2 40;
+  sudo alternatives --install /bin/python python /usr/local/bin/python2.7 50;
+
+  # Change default python version
+  sudo alternatives --config python <<EOF
+2
+EOF
+
   cd;
 
   sudo systemctl enable sshd.service;
@@ -103,8 +116,12 @@ EOF
 
 # Python
 function pipTools {
+  # Change python versión for install pip
+  sudo alternatives --config python <<EOF
+2
+EOF
+
   # ojo determinar cualde los siguientes generan error
-  sudo yum install -y python-pip;
   sudo pip install --upgrade pip;
   sudo pip install --upgrade koji;
   sudo pip install --upgrade pyzmq;
@@ -121,15 +138,20 @@ function pipTools {
   sudo pip install --upgrade cryptography;
   sudo pip install --upgrade virtualenv;
   sudo pip install --upgrade selenium;
-  sudo yum install python-pandas -y;
-
-  sudo yum install -y libpng-devel freetype freetype-devel;
   sudo pip install --upgrade matplotlib;
   sudo pip install --upgrade graphlab-create;
-
-  sudo yum -y install python-devel python-nose python-setuptools gcc gcc-gfortran gcc-c++ blas-devel lapack-devel atlas-devel;
-  sudo yum install -y  python2-crypto python-paramiko;
   sudo pip install --upgrade seaborn;
+
+  # Change python versión for continue yum installations
+  sudo alternatives --config python <<EOF
+1
+EOF
+
+  sudo yum install -y libpng-devel freetype freetype-devel;
+  sudo yum install -y python-pandas;
+  sudo yum install -y python-devel python-nose python-setuptools gcc gcc-gfortran gcc-c++ blas-devel lapack-devel atlas-devel;
+  sudo yum install -y python2-crypto python-paramiko;
+
   # browser drivers for sellenium
   if ! geckodriver --version || ! chromedriver --version ;then
       echo "Pendiente instalar los drivers de lo navegadores";
@@ -138,7 +160,7 @@ function pipTools {
 
 # Databases services
 function databases {
-  sudo yum install postgresql-server postgresql-contrib postgresql-devel -y; 
+  sudo yum install -y postgresql-server postgresql-contrib postgresql-devel;
   sudo systemctl enable postgresql;
   #init database with empty data required to initializaed
   if sudo ls /var/lib/pgsql/data ;then
@@ -150,7 +172,7 @@ $DEV_PASS2
 $DEV_PASS2
 EOF
 
-  sudo yum install pgadmin3 -y; 
+  sudo yum install -y pgadmin3;
 }
 
 # Ruby
@@ -165,29 +187,30 @@ function mediaTool {
   sudo rpm --import http://li.nux.ro/download/nux/RPM-GPG-KEY-nux.ro;
   sudo rpm -Uvh http://li.nux.ro/download/nux/dextop/el7/x86_64/nux-dextop-release-0-5.el7.nux.noarch.rpm;
 
-  sudo yum install gnome-color-manager -y; 
+  sudo yum install -y gnome-color-manager;
   # To fix
-  sudo yum install gstreamer{1,}-{plugin-crystalhd,ffmpeg,plugins-{good,ugly,bad{,-free,-nonfree,-freeworld,-extras}{,-extras}}} libmpg123 lame-libs --setopt=strict=0 -y; 
+  sudo yum install -y gstreamer{1,}-{plugin-crystalhd,ffmpeg,plugins-{good,ugly,bad{,-free,-nonfree,-freeworld,-extras}{,-extras}}} libmpg123 lame-libs --setopt=strict=0;
   # npapi-vlc
-  sudo yum install gimp inkscape blender fontforge ImageMagick ImageMagick-devel ImageMagick-perl optipng -y; 
-  sudo yum install ffmpeg ffmpeg-devel -y;
+  sudo yum install -y gimp inkscape blender fontforge ImageMagick ImageMagick-devel ImageMagick-perl optipng;
+  sudo yum install -y ffmpeg ffmpeg-devel;
   # snap install inkscape;
 }
 
 # Install remte desktop windows
 function remote {
   #remmina-plugins-gnome;
-  sudo yum install remmina  remmina-plugins-rdp remmina-plugins-vnc -y; 
+  sudo yum install -y remmina remmina-plugins-rdp remmina-plugins-vnc;
 }
+
 
 # Remmina-plugins-common
 # Apache php
 function apachePHP {
-  sudo yum install httpd -y; 
+  sudo yum install -y httpd;
   sudo systemctl start httpd;
-  sudo yum install php php-common php-pdo_mysql php-pdo php-gd php-mbstring -y; 
+  sudo yum install -y php php-common php-pdo_mysql php-pdo php-gd php-mbstring;
   sudo systemctl restart httpd;
-  sudo yum install perl-Net-SSLeay -y; 
+  sudo yum install -y perl-Net-SSLeay;
   # problems on installation dependences
   # sudo yum install php71w-fpm php71w-opcache -y;
   #perl-TO-Tty
@@ -223,15 +246,15 @@ function dockerTools {
 # Android dev
 function javaAndroid {
   #sudo fastboot oem get_unlock_data
-  sudo yum install android-tools -y;
-  sudo yum install zlib.i686 ncurses-libs.i686 bzip2-libs.i686 -y;
-  sudo yum install fastboot -y;
-  sudo yum install usbutils -y;
+  sudo yum install -y android-tools;
+  sudo yum install -y zlib.i686 ncurses-libs.i686 bzip2-libs.i686;
+  sudo yum install -y fastboot;
+  sudo yum install -y usbutils;
   #java oracle
   if ! java -version;then
-      if [ -e ~/Downloads/programs/jdk-8u171-linux-x64.rpm ];then
-          sudo rpm -ivh ~/Downloads/programs/jdk-8u171-linux-x64.rpm;
-          sudo rpm -ivh ~/Downloads/programs/jdk-7u80-linux-x64.rpm;
+      if [ -e ${HOME_USER}Downloads/programs/jdk-8u171-linux-x64.rpm ];then
+          sudo rpm -ivh ${HOME_USER}Downloads/programs/jdk-8u171-linux-x64.rpm;
+          sudo rpm -ivh ${HOME_USER}Downloads/programs/jdk-7u80-linux-x64.rpm;
           # java with alternatives
           sudo alternatives --install /usr/bin/java java /usr/java/latest/jre/bin/java 200000;
           sudo alternatives --install /usr/bin/javaws javaws /usr/java/latest/jre/bin/javaws 200000;
@@ -258,76 +281,85 @@ function javaAndroid {
       sudo mkdir /opt/gradle;
       sudo chmod -R 775 /opt/gradle;
       cd /opt/gradle;
-      sudo wget  https://services.gradle.org/distributions/gradle-3.4.1-bin.zip; 
+      sudo wget  https://services.gradle.org/distributions/gradle-3.4.1-bin.zip;
       sudo unzip -d /opt/gradle gradle-3.4.1-bin.zip;
 
       local STRING_GRADLE_LIB="export PATH=$PATH:/opt/gradle/gradle-3.4.1/bin";
-      sudo echo "$STRING_GRADLE_LIB" >> ~/.bashrc;
+      sudo echo "$STRING_GRADLE_LIB" >> ${HOME_USER}.bashrc;
       sudo su $DEV_USER <<EOF
-      echo "$STRING_GRADLE_LIB" >> ~/.bashrc;
+      echo "$STRING_GRADLE_LIB" >> ${HOME_USER}.bashrc;
 EOF
   else
       echo '--- Pending install JAVA JDK---';
   fi;
 }
 
-
 # vim
 function vimConfig {
-  if ! file ~/.vim || ! file ~/.vim/bundle/;then
-    mkdir -p ~/.vim/autoload;
-    mkdir -p ~/.vim/bundle;
-    curl -LSso ~/.vim/autoload/pathogen.vim https://tpo.pe/pathogen.vim; \
-    cd ~/.vim/bundle/; \
-    for i in https://github.com/mattn/emmet-vim \
-      https://github.com/scrooloose/nerdtree.git \
-      https://github.com/tomtom/tlib_vim \
-      https://github.com/leafgarland/typescript-vim \
-      https://github.com/MarcWeber/vim-addon-mw-utils \
-      https://github.com/vim-scripts/vim-auto-save \
-      https://github.com/digitaltoad/vim-pug \
-      https://github.com/tpope/vim-sensible \
-      https://github.com/wavded/vim-stylus.git; \
-    do git clone $i;done; \
-    cd ~; \
-    if [ ! -e ~/.vimrc ];then \
-      touch ~/.vimrc; \
-      chmod 775 ~/.vimrc; \
-    fi; \
-    if ! grep ~/.vimrc -e "execute pathogen#infect()";then \
-      printf "set enc=utf-8\nset fileencoding=utf-8set hls\nset number\nset relativenumber\nset tabstop=2\nset shiftwidth=2\nset expandtab\nset cindent\nset wrap! \n" >> ~/.vimrc; \
-      printf "xnoremap p pgvy\nnnoremap <C-H> :Hexmode<CR>\ninoremap <C-H> <Esc>:Hexmode<CR>\nvnoremap <C-H> :<C-U>Hexmet rela  de<CR> \n" >> ~/.vimrc; \
-      printf "let mapleader = \",\"\nnmap <leader>ne :NERDTreeToggle<cr> \n" >> ~/.vimrc; \
-      printf "execute pathogen#infect() \ncall pathogen#helptags() \nsyntax on \nfiletype plugin indent on \n" >> ~/.vimrc; \
-    fi;
+  sudo mkdir -p ${HOME_USER}.vim/autoload;
+  sudo mkdir -p ${HOME_USER}.vim/bundle;
+  sudo curl -LSso ${HOME_USER}.vim/autoload/pathogen.vim https://tpo.pe/pathogen.vim;
+  cd $HOME_USER.vim/bundle/;
+
+  for i in https://github.com/mattn/emmet-vim \
+    https://github.com/scrooloose/nerdtree.git \
+    https://github.com/tomtom/tlib_vim \
+    https://github.com/leafgarland/typescript-vim \
+    https://github.com/MarcWeber/vim-addon-mw-utils \
+    https://github.com/vim-scripts/vim-auto-save \
+    https://github.com/digitaltoad/vim-pug \
+    https://github.com/tpope/vim-sensible \
+    https://github.com/wavded/vim-stylus.git; \
+  do
+    sudo git clone $i;
+  done;
+
+  cd ${HOME_USER};
+
+  if [ ! -e ${HOME_USER}.vimrc ];then \
+    sudo touch ${HOME_USER}.vimrc; \
+    sudo chmod 775 ${HOME_USER}.vimrc; \
   fi;
+
+  if ! sudo grep ${HOME_USER}.vimrc -e "execute pathogen#infect()";then \
+    sudo printf "set enc=utf-8\nset fileencoding=utf-8set hls\nset number\nset relativenumber\nset tabstop=2\nset shiftwidth=2\nset expandtab\nset cindent\nset wrap! \n" >> ${HOME_USER}.vimrc; \
+    sudo printf "xnoremap p pgvy\nnnoremap <C-H> :Hexmode<CR>\ninoremap <C-H> <Esc>:Hexmode<CR>\nvnoremap <C-H> :<C-U>Hexmet rela  de<CR> \n" >> ${HOME_USER}.vimrc; \
+    sudo printf "let mapleader = \",\"\nnmap <leader>ne :NERDTreeToggle<cr> \n" >> ${HOME_USER}.vimrc; \
+    sudo printf "execute pathogen#infect() \ncall pathogen#helptags() \nsyntax on \nfiletype plugin indent on \n" >> ${HOME_USER}.vimrc; \
+  fi;
+
+  cd $HOME_USER;
+  sudo chown -R ${DEV_USER}:${DEV_USER} $HOME_USER;
 }
 
 # nodejs
 function nodeConfig {
   # nodejs
-  if node -v;then
-      if [[ $(node -v) != *"v8"* ]];then
-        sudo yum remove nodejs -y;
-        curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.5/install.sh | bash && \
-        . ~/.nvm/nvm.sh && . ~/.bashrc; \
-        nvm install 8 && nvm use 8 && nvm alias default $(nvm current) && \
-        npm i -g stylus nib pug-cli less less-prefixer watch-less http-server bower;
-      fi;
-  else
-      echo '--- Pending install NVM for nodejs---';
+  sudo yum remove nodejs -y;
+  if [ ! -e ${HOME_USER}/.nvm ];then
+    sudo su $DEV_USER <<EOF
+    echo ${HOME_USER};
+    curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.11/install.sh | bash;
+    source ${HOME_USER}.nvm/nvm.sh;
+    source ${HOME_USER}.bashrc;
+    nvm install 8;
+    nvm use 8;
+    nvm alias default $(nvm current);
+    npm i -g stylus nib pug-cli less less-prefixer watch-less http-server bower;
+EOF
   fi;
 }
 
 
-function mysqlServ {
-  if ! mysql -v;then
+function installMariaDB {
+  if [[ ! "$(which mysql -i)" ]];then
 
     sudo yum install -y mariadb-server;
     sudo systemctl start mariadb;
     sudo systemctl enable mariadb;
     sudo mysql_secure_installation <<EOF
 
+$DEV_PASS2
 y
 $DEV_PASS2
 $DEV_PASS2
@@ -337,25 +369,33 @@ n
 y
 EOF
 
-    sudo yum -y --enablerepo=mysql80-community install mysql-community-server;
-    sudo systemctl start mysqld.service;
-    sudo systemctl enable mysqld.service;
-    #password
-    sudo rep 'A temporary password is generated for root@localhost' /var/log/mysqld.log |tail -1;
-    sudo /usr/bin/mysql_secure_installation;
+    sudo systemctl start mariadb.service;
+    sudo systemctl enable mariadb.service;
+
+    # client
+    wget https://dbeaver.io/files/dbeaver-ce-latest-stable.x86_64.rpm;
+    sudo rpm -ivh dbeaver-ce-latest-stable.x86_64.rpm;
 
   fi;
 }
 
+function devPrograms {
+  # https://code.visualstudio.com/docs/setup/linux
+  sudo rpm --import https://packages.microsoft.com/keys/microsoft.asc;
+  sudo sh -c 'echo -e "[code]\nname=Visual Studio Code\nbaseurl=https://packages.microsoft.com/yumrepos/vscode\nenabled=1\ngpgcheck=1\ngpgkey=https://packages.microsoft.com/keys/microsoft.asc" > /etc/yum.repos.d/vscode.repo'
+  sudo yum check-update -y;
+  sudo yum install -y code;
+}
+
 function installGraphicVnc {
-  sudo yum groupinstall -y "KDE Plasma Workspaces";
-  sudo yum install -y tigervnc-server;
-  sudo cp /lib/systemd/system/vncserver@.service /etc/systemd/system/vncserver@:1.service;
+  sudo yum groupinstall -y "KDE Plasma Workspaces" tigervnc-server;
+  sudo cp /lib/systemd/system/vncserver@.service /etc/systemd/system/vncserver@:1.service
   echo "change <USER> for \"$DEV_USER\"";
-  sudo vim /etc/systemd/system/vncserver@:1.service;
+  # replace user in service file
+  sudo sed -i -e "s/<USER>/$DEV_USER/g" /etc/systemd/system/vncserver@:1.service;
+  #sudo vim /etc/systemd/system/vncserver@:1.service;
   sudo firewall-cmd --permanent --zone=public --add-service vnc-server;
   sudo firewall-cmd --reload;
-  echo "set pass \"$DEV_PASS\"";
   sudo su - $DEV_USER <<EOF
     vncserver
 EOF
@@ -363,34 +403,54 @@ EOF
   sudo systemctl enable vncserver@:1.service;
   sudo systemctl start vncserver@:1.service;
 
-  # xrdp
+  #xedp
+  #sudo yum groupinstall "GNOME Desktop";
   sudo rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm;
-  sudo yum -y install xrdp tigervnc-server;
+  sudo yum install -y xrdp tigervnc-server;
+  sudo sed -i -e "s/autorun=.*/autorun=$DEV_USER/g" /etc/xrdp/xrdp.ini;
+  sudo sed -i -e "s/crypt_level=.*/crypt_level=low/g" /etc/xrdp/xrdp.ini;
+  if [[ ! $(grep -ne "channel_code=" /etc/xrdp/xrdp.ini) ]];then
+    grep -m1 -nE "crypt_level" /etc/xrdp/xrdp.ini | awk -F ":" '{system("sed -i -e \""$1"s/"$2"/"$2"\\nchannel_code=1/\" /etc/xrdp/xrdp.ini")}';
+  fi;
+
+  if [[ ! $(grep -ne "\[vnc1\]" /etc/xrdp/xrdp.ini) ]];then
+  echo "[vnc1]
+name=vncserver
+lib=libvnc.so
+ip=localhost
+port=5901
+username=$DEV_USER
+password=$DEV_PASS
+" >> /etc/xrdp/xrdp.ini;
+
+  fi;
+
+
   sudo systemctl start xrdp;
   sudo systemctl enable xrdp;
   sudo firewall-cmd --permanent --add-port=3389/tcp;
   sudo firewall-cmd --reload;
   sudo chcon --type=bin_t /usr/sbin/xrdp;
   sudo chcon --type=bin_t /usr/sbin/xrdp-sesman;
-  echo "edit xsrdp with: 
-  [globals]
-  crypt_level=low
-  channel_code=1
+  # sudo vim -o .vncrc .vnc/xstartup /etc/systemd/system/vncserver@:1.service /etc/xrdp/xrdp.ini .vnc/config
 
-  [vnc1]
-  name=vncserver
-  lib=libvnc.so
-  ip=localhost
-  port=5901
-  username=$DEV_USER
-  password=$DEV_PASS
-  ";
-  sudo vim /etc/xrdp/xrdp.ini;
-  sudo systemctl daemon-reload;
-  sudo systemctl restart xrdp;
+  # menu editable gnome
+  sudo yum install -y alacarte;
 
 }
 
+function installWine {
+  cd /usr/src;
+  sudo wget http://dl.winehq.org/wine/source/3.0/wine-3.0.tar.xz;
+  sudo tar -Jxvf wine-3.0.tar.xz;
+  sudo chmod -R 755 wine-3.0;
+  cd wine-3.0;
+  sudo ./configure  --enable-win64;
+  sudo make;
+  sudo make install;
+  wine64 --version;
+  # wine putty.exe;
+}
 
 function manualSteps {
   #manual
@@ -399,7 +459,6 @@ function manualSteps {
     - change language in "sudo vim /etc/locale.conf"
       LANG="en_US.UTF-8"
       LC_CTYPE="en_US.UTF-8"
-    - workbench: download and install rpm mysql-workbench-community-6.3.9-1.fc26.x86_64.rpm
     - tomcat: (donwload and run in folder)
     - postgres: (autoinstall and complete configuration):
         - config files to md5:
@@ -416,76 +475,20 @@ function manualSteps {
         - yum install libCg-3.1.0013-4.fc22.x86_64.rpm
         - yum install lwks-14.0.0-amd64.rpm
     - install apps progrms folder
-        dir_apps=~/Downloads/programs/;for app in $(find $dir_apps -name "*.rpm");do sudo yum install -y ${dir_app}${app};done;
+        dir_apps=${HOME_USER}Downloads/programs/;for app in $(find $dir_apps -name "*.rpm");do sudo yum install -y ${dir_app}${app};done;
     - install chrome:
         - sudo yum install -y google-chrome-stable_current_x86_64.rpm
   ";
 }
 
-function devPrograms {
-  # https://code.visualstudio.com/docs/setup/linux
-  sudo rpm --import https://packages.microsoft.com/keys/microsoft.asc;
-  sudo sh -c 'echo -e "[code]\nname=Visual Studio Code\nbaseurl=https://packages.microsoft.com/yumrepos/vscode\nenabled=1\ngpgcheck=1\ngpgkey=https://packages.microsoft.com/keys/microsoft.asc" > /etc/yum.repos.d/vscode.repo'
-  sudo yum check-update -y;
-  sudo yum install code -y;
-}
-
-function cleanDnf {
-  sudo yum clean all;
-  sudo rpm --rebuilddb;
-  sudo yum update -y;
-}
-
-function graphicUI {
-  sudo yum groupinstall "KDE Plasma Workspaces" tigervnc-server -y;
-  sudo cp /lib/systemd/system/vncserver@.service /etc/systemd/system/vncserver@:1.service
-  sudo vim /etc/systemd/system/vncserver@:1.service;
-  sudo firewall-cmd --permanent --zone=public --add-service vnc-server;
-  sudo firewall-cmd --reload;
-  vncserver;
-  sudo systemctl daemon-reload;
-  sudo systemctl enable vncserver@:1.service;
-  sudo systemctl start vncserver@:1.service;
-
-  #xedp
-  sudo yum groupinstall "GNOME Desktop";
-  sudo rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm;
-  sudo yum -y install xrdp tigervnc-server;
-  echo "edit and paste:
-  [globals]
-  crypt_level=low
-  channel_code=1
-
-  [vnc1]
-  name=vncserver
-  lib=libvnc.so
-  ip=localhost
-  port=5901
-  username=$DEV_USER
-  password=$DEV_PASS
-  ";
-  sudo vim /etc/xrdp/xrdp.ini;
-
-  sudo systemctl start xrdp;
-  sudo systemctl enable xrdp;
-  sudo firewall-cmd --permanent --add-port=3389/tcp;
-  sudo firewall-cmd --reload;
-  sudo chcon --type=bin_t /usr/sbin/xrdp;
-  sudo chcon --type=bin_t /usr/sbin/xrdp-sesman;
-  # sudo vim -o .vncrc .vnc/xstartup /etc/systemd/system/vncserver@:1.service /etc/xrdp/xrdp.ini .vnc/config
-
-  # menu editable gnome
-  sudo yum install alacarte -y;
-
-}
-
 function installAll {
+  createUser;
   updateSystem;
   cleanDnf;
-  tools;
-  removePython;
+  #mountDisk;
+  mainTools;
+  installGraphicVnc;
   devTools;
-  osTools;
   pipTools; # error
   databases;
   rubyTools;
@@ -496,11 +499,9 @@ function installAll {
   javaAndroid; # error by java
   vimConfig;
   nodeConfig;
-  mysqlServ;
-  installTouch;
-  installSpotify;
+  installMariaDB;
+  manualSteps;
   devPrograms;
-  #cleanDnf;
+  cleanDnf;
 }
-
 
