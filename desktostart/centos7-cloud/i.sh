@@ -30,7 +30,7 @@ function restoreHomePermissions {
 
 function setPython {
   local version = 2;
-  if [[ $1 == "new" ]];then
+  if [[ $1 == "old" ]];then
     version=1;
   else
     version=2;
@@ -483,8 +483,15 @@ function devPrograms {
   #eclipse
   local eclipse_version="eclipse-inst-linux64";
   wget -O $eclipse_version "https://www.eclipse.org/downloads/download.php?file=/oomph/epp/oxygen/R2/${eclipse_version}.tar.gz";
-  tar -xvzf ${eclipse_version};
+  tar -xvzf ${eclipse_version}.tar.gz;
   mv -rf ${eclipse_version} ${HOME_USER}/bin/;
+  restoreHomePermissions;
+
+  #cloud sdk
+  local gcloud_version="google-cloud-sdk-183.0.0-linux-x86_64";
+  wget "https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/${gcloud_version}.tar.gz";
+  tar -xvzf ${gcloud_version}.tar.gz;
+  mv -rf ${gcloud_version} ${HOME_USER}/bin/;
   restoreHomePermissions;
 
 }
