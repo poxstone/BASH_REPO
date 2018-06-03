@@ -536,6 +536,7 @@ EOF
 }
 
 function installWine {
+  setPython "old";
   cleanDnf;
   cd /usr/src;
   sudo wget http://dl.winehq.org/wine/source/3.0/wine-3.0.tar.xz;
@@ -601,5 +602,6 @@ function installAll {
   installWine;
   cleanDnf;
   manualSteps;
+  setPython "new";
 }
 
