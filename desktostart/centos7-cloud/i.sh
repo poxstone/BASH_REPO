@@ -505,10 +505,10 @@ function devPrograms {
   restoreHomePermissions;
 
   #eclipse
-  local eclipse_version="eclipse-inst-linux64";
-  wget -O $eclipse_version "https://www.eclipse.org/downloads/download.php?file=/oomph/epp/oxygen/R2/${eclipse_version}.tar.gz";
+  local eclipse_version="eclipse-jee-oxygen-3a-linux-gtk-x86_64";
+  wget "http://eclipse.c3sl.ufpr.br/technology/epp/downloads/release/oxygen/3a/${eclipse_version}.tar.gz";
   tar -xvzf ${eclipse_version}.tar.gz;
-  mv -f ${eclipse_version} ${HOME_USER}/bin/;
+  mv -f eclipse ${HOME_USER}/bin/;
   restoreHomePermissions;
 
   #cloud sdk
@@ -580,6 +580,11 @@ function manualSteps {
   cd;
 }
 
+function cleanInstallFiles {
+  cd;
+  sudo rm -rf *;
+}
+
 function installAll {
   createUser;
   updateSystem;
@@ -604,5 +609,6 @@ function installAll {
   cleanDnf;
   manualSteps;
   setPython "new";
+  cleanInstallFiles;
 }
 
