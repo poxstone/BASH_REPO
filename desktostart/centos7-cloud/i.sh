@@ -192,7 +192,8 @@ function installGraphicVnc {
   #sudo vim /etc/systemd/system/vncserver@:1.service;
   sudo firewall-cmd --permanent --zone=public --add-service vnc-server;
   sudo firewall-cmd --reload;
-
+  
+  # login as user and pass command
   sudo -u developer vncserver <<EOF
 $DEV_PASS
 $DEV_PASS
@@ -492,28 +493,42 @@ function devPrograms {
   local pycharm_version="pycharm-community-2018.1.4";
   wget "https://download.jetbrains.com/python/${pycharm_version}.tar.gz";
   tar -xvzf ${pycharm_version}.tar.gz;
-  mv -rf ${pycharm_version} ${HOME_USER}/bin/;
+  mv -f ${pycharm_version} ${HOME_USER}/bin/;
   restoreHomePermissions;
 
   #eclipse
   local eclipse_version="eclipse-inst-linux64";
   wget -O $eclipse_version "https://www.eclipse.org/downloads/download.php?file=/oomph/epp/oxygen/R2/${eclipse_version}.tar.gz";
   tar -xvzf ${eclipse_version}.tar.gz;
-  mv -rf ${eclipse_version} ${HOME_USER}/bin/;
+  mv -f ${eclipse_version} ${HOME_USER}/bin/;
   restoreHomePermissions;
 
   #cloud sdk
-  
   local gcloud_version="google-cloud-sdk-183.0.0-linux-x86_64";
   wget "https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/${gcloud_version}.tar.gz";
   tar -xvzf ${gcloud_version}.tar.gz;
-  mv -rf ${gcloud_version} ${HOME_USER}/bin/;
+  mv -f google-cloud-sdk ${HOME_USER}/bin/;
   restoreHomePermissions;
   setPython "new";
+  sudo -u developer ${HOME_USER}/bin/google-cloud-sdk/install.sh <<EOF
+Y
+Y
+
+EOF
+
+  sudo -i -u developer gcloud components install beta alpha \
+  app-engine-python app-engine-python-extras kubectl \
+  app-engine-java app-engine-php app-engine-go pubsub-emulator \
+  cloud-datastore-emulator gcd-emulator \
+  docker-credential-gcr kubectl <<EOF
+Y
+EOF
+  setPython "old";
 
 }
 
 function installWine {
+  cleanDnf;
   cd /usr/src;
   sudo wget http://dl.winehq.org/wine/source/3.0/wine-3.0.tar.xz;
   sudo tar -Jxvf wine-3.0.tar.xz;
@@ -574,9 +589,9 @@ function installAll {
   vimConfig;
   nodeConfig;
   installMariaDB;
-  manualSteps;
   devPrograms;
   installWine;
   cleanDnf;
+  manualSteps;
 }
 
