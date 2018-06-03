@@ -185,7 +185,7 @@ function pipTools {
 
 function installGraphicVnc {
   sudo yum groupinstall -y "KDE Plasma Workspaces" tigervnc-server;
-  sudo cp /lib/systemd/system/vncserver@.service /etc/systemd/system/vncserver@:1.service
+  sudo cp /lib/systemd/system/vncserver@.service /etc/systemd/system/vncserver@:1.service;
   echo "change <USER> for \"$DEV_USER\"";
   # replace user in service file
   sudo sed -i -e "s/<USER>/$DEV_USER/g" /etc/systemd/system/vncserver@:1.service;
@@ -232,7 +232,7 @@ password=$DEV_PASS
   fi;
 
   # Disable kde and enable gnome
-  if [[ "$(grep -nE \"^exec /etc/X11/xinit/xinitrc\" ${HOME_USER}.vnc/xstartup)" ]];then
+  if [[ ! "$(grep -nE \"^gnome-session\" ${HOME_USER}.vnc/xstartup)" ]];then
     sudo sed -i -e "s#exec /etc/X11/xinit/xinitrc#\#exec /etc/X11/xinit/xinitrc#g" ${HOME_USER}.vnc/xstartup;
 
     echo "
@@ -242,6 +242,8 @@ xsetroot -solid grey
 vncconfig -iconic &
 gnome-session &" >> ${HOME_USER}.vnc/xstartup;
   fi;
+
+  sudo systemctl restart vncserver@:1.service;
 
  # Enable vnc
   sudo systemctl start xrdp;
@@ -576,7 +578,6 @@ function installAll {
   cleanDnf;
   #mountDisk;
   mainTools;
-  installGraphicVnc;
   devTools;
   pipTools; # error
   databases;
@@ -590,6 +591,7 @@ function installAll {
   nodeConfig;
   installMariaDB;
   devPrograms;
+  installGraphicVnc;
   installWine;
   cleanDnf;
   manualSteps;
