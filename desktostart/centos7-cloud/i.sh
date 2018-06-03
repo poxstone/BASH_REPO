@@ -51,6 +51,12 @@ function createUser {
 $DEV_PASS
 $DEV_PASS
 EOF
+  # create ssh leave white spaces for enters
+  sudo -i -u $DEV_USER ssh-keygen <<EOF
+
+
+
+EOF
 }
 
 function mountDisk {
