@@ -129,7 +129,7 @@ EOF
 # Python
 function pipTools {
   # Change python versión for install pip
-  setPython "old";
+  setPython "new";
 
   # ojo determinar cualde los siguientes generan error
   sudo pip install --upgrade pip;
@@ -153,7 +153,7 @@ function pipTools {
   sudo pip install --upgrade seaborn;
 
   # Change python versión for continue yum installations
-  setPython "new";
+  setPython "old";
 
   sudo yum install -y libpng-devel freetype freetype-devel;
   sudo yum install -y python-pandas;
