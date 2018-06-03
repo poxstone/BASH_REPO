@@ -44,7 +44,7 @@ EOF
 function createUser {
   sudo useradd $DEV_USER;
   sudo usermod -aG wheel $DEV_USER;
-  sudo mkdir -p $HOME_USER/Downloads/ $HOME_USER/Documents/ $HOME_USER/bin/;
+  sudo mkdir -p $HOME_USER/Downloads/ $HOME_USER/Documents/ $HOME_USER/bin/ $HOME_USER/Projects/;
   sudo touch $HOME_USER/.bashrc $HOME_USER/.bash_profile;
   restoreHomePermissions;
   sudo passwd $DEV_USER <<EOF
