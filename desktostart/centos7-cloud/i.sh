@@ -396,7 +396,7 @@ function installGraphicVnc {
   #sudo vim /etc/systemd/system/vncserver@:1.service;
   sudo firewall-cmd --permanent --zone=public --add-service vnc-server;
   sudo firewall-cmd --reload;
-  
+
   sudo -u developer vncserver <<EOF
 $DEV_PASS
 $DEV_PASS
@@ -409,6 +409,8 @@ EOF
   #sudo yum groupinstall "GNOME Desktop";
   sudo rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm;
   sudo yum install -y xrdp tigervnc-server;
+  
+  #config VNC
   sudo sed -i -e "s/autorun=.*/autorun=$DEV_USER/g" /etc/xrdp/xrdp.ini;
   sudo sed -i -e "s/crypt_level=.*/crypt_level=low/g" /etc/xrdp/xrdp.ini;
   if [[ ! $(grep -ne "channel_code=" /etc/xrdp/xrdp.ini) ]];then
@@ -426,7 +428,25 @@ password=$DEV_PASS
 " >> /etc/xrdp/xrdp.ini;
 
   fi;
+  
+  # set resolution
+  if [[ ! "$( grep -nE "^geometry" ${HOME_USER}.vnc/config)" ]];then
+    echo "geometry=1280x720,720x1280,1024x768,1280x1024,800x600" >> ${HOME_USER}.vnc/config;
+  fi;
 
+  # Disable kde and enable gnome
+  if [[ "$(grep -nE \"^exec /etc/X11/xinit/xinitrc\" ${HOME_USER}.vnc/xstartup)" ]];then
+    sudo sed -i -e "s#exec /etc/X11/xinit/xinitrc#\#exec /etc/X11/xinit/xinitrc#g" ${HOME_USER}.vnc/xstartup;
+
+    echo "
+[ -x /etc/vnc/xstartup ] && exec /etc/vnc/xstartup
+[ -r \$HOME/.Xresources ] && xrdb \$HOME/.Xresources
+xsetroot -solid grey
+vncconfig -iconic &
+gnome-session &" >> ${HOME_USER}.vnc/xstartup;
+  fi;
+
+ # Enable vnc
   sudo systemctl start xrdp;
   sudo systemctl enable xrdp;
   sudo firewall-cmd --permanent --add-port=3389/tcp;
