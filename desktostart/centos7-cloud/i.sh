@@ -577,6 +577,7 @@ function manualSteps {
     - install chrome:
         - sudo yum install -y google-chrome-stable_current_x86_64.rpm
   ";
+  cd;
 }
 
 function installAll {
