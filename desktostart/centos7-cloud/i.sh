@@ -131,26 +131,38 @@ function pipTools {
   # Change python versión for install pip
   setPython "new";
 
-  # ojo determinar cualde los siguientes generan error
-  sudo pip install --upgrade pip;
-  sudo pip install --upgrade koji;
-  sudo pip install --upgrade pyzmq;
+  #remove for errors
+  sudo pip uninstall -y jrnl;
+  sudo pip uninstall -y rpkg;
+
+  sudo pip install --upgrade pip; # also validate
+  sudo pip install --upgrade setuptools;
+  sudo pip install --upgrade ez_setup;
+  sudo easy_install -U setuptools;
+  sudo pip install --upgrade pyOpenSSL;
   sudo pip install --upgrade jinja2;
+  sudo pip install --upgrade pyudev;
+  sudo pip install --upgrade dnspython;
+  sudo pip install --upgrade pyzmq;
   sudo pip install --upgrade pygments;
   sudo pip install --upgrade tornado;
   sudo pip install --upgrade jsonschema;
   sudo pip install --upgrade ipython;
-  sudo pip install --upgrade "ipython[notebook]";
-  sudo pip install --upgrade requests;
-  sudo pip install --upgrade jrnl[encrypted];
-  sudo pip install --upgrade jrnl; ## pendiente
+  sudo pip install --upgrade python-dateutil;
+  sudo pip install --upgrade "ipython[notebook]"; ## obs4rve
+  sudo pip install --upgrade requests; # observe
   sudo pip install --upgrade ansible;
   sudo pip install --upgrade cryptography;
   sudo pip install --upgrade virtualenv;
-  sudo pip install --upgrade selenium;
-  sudo pip install --upgrade matplotlib;
-  sudo pip install --upgrade graphlab-create;
+  sudo pip install --upgrade selenium; # observe
+  sudo pip install --upgrade graphlab-create; # observe
   sudo pip install --upgrade seaborn;
+  sudo pip install --upgrade jrnl[encrypted]; # error  jupiter
+  sudo pip install --upgrade rpm-py-installer; # not found
+  sudo pip install --upgrade koji; # se daña
+
+  # no installed please
+  #sudo pip install --upgrade jrnl; # error python-dateutil
 
   # Change python versión for continue yum installations
   setPython "old";
@@ -159,6 +171,10 @@ function pipTools {
   sudo yum install -y python-pandas;
   sudo yum install -y python-devel python-nose python-setuptools gcc gcc-gfortran gcc-c++ blas-devel lapack-devel atlas-devel;
   sudo yum install -y python2-crypto python-paramiko;
+
+  # install again in old version
+  pip install --upgrade jupyter-client;
+  pip install --upgrade rpkg;
 
   # browser drivers for sellenium
   if ! geckodriver --version || ! chromedriver --version ;then
