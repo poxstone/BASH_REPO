@@ -10,10 +10,10 @@ HOME_USER="/home/$DEV_USER/";
 function updateSystem {
   sudo yum update -y;
   sudo yum upgrade -y;
-  sudo yum install epel-release -y;
   sudo yum clean all;
   wget https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm;
   yum install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm;
+  sudo yum install epel-release -y;
   # remove default sdk
   sudo yum remove -y google-cloud-sdk;
 }
@@ -66,7 +66,8 @@ function devTools {
   sudo yum install -y gcc gcc-c++ qt-devel libffi-devel dnf-plugins-core python python-devel nasm.x86_64 SDL* ant dkms kernel-devel dkms kernel-headers libstdc++.i686 subversion;
   sudo yum install -y wget deluge rpm-build lsb sqlite-devel git-all kdiff3 openssh openssh-server ncurses-devel bzip2-devel;
   sudo yum install -y yum-utils device-mapper-persistent-data lvm2;
-  sudo yum install -y libX11-devel freetype-devel libxcb-devel libxslt-devel libgcrypt-devel libxml2-devel gnutls-devel libpng-devel libjpeg-turbo-devel libtiff-devel gstreamer-devel dbus-devel fontconfig-devel;
+  sudo yum install -y libX11-devel freetype-devel libxcb-devel libxslt-devel libgcrypt-devel libxml2-devel gnutls-devel libpng-devel libjpeg-turbo-devel libtiff-devel gstreamer-devel dbus-devel fontconfig-devel libappindicator;
+  sudo yum install -y libappindicator-gtk3;
 
   # python update (https://gist.github.com/guy4261/0e9f4081f1c6b078b436)
   # python update (https://tecadmin.net/install-python-2-7-on-centos-rhel/)
@@ -156,6 +157,79 @@ EOF
   if ! geckodriver --version || ! chromedriver --version ;then
       echo "Pendiente instalar los drivers de lo navegadores";
   fi;
+}
+
+function installGraphicVnc {
+  sudo yum groupinstall -y "KDE Plasma Workspaces" tigervnc-server;
+  sudo cp /lib/systemd/system/vncserver@.service /etc/systemd/system/vncserver@:1.service
+  echo "change <USER> for \"$DEV_USER\"";
+  # replace user in service file
+  sudo sed -i -e "s/<USER>/$DEV_USER/g" /etc/systemd/system/vncserver@:1.service;
+  #sudo vim /etc/systemd/system/vncserver@:1.service;
+  sudo firewall-cmd --permanent --zone=public --add-service vnc-server;
+  sudo firewall-cmd --reload;
+
+  sudo -u developer vncserver <<EOF
+$DEV_PASS
+$DEV_PASS
+EOF
+  sudo systemctl daemon-reload;
+  sudo systemctl enable vncserver@:1.service;
+  sudo systemctl start vncserver@:1.service;
+
+  #xedp
+  #sudo yum groupinstall "GNOME Desktop";
+  sudo rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm;
+  sudo yum install -y xrdp tigervnc-server;
+  
+  #config VNC
+  sudo sed -i -e "s/autorun=.*/autorun=$DEV_USER/g" /etc/xrdp/xrdp.ini;
+  sudo sed -i -e "s/crypt_level=.*/crypt_level=low/g" /etc/xrdp/xrdp.ini;
+  if [[ ! $(grep -ne "channel_code=" /etc/xrdp/xrdp.ini) ]];then
+    grep -m1 -nE "crypt_level" /etc/xrdp/xrdp.ini | awk -F ":" '{system("sed -i -e \""$1"s/"$2"/"$2"\\nchannel_code=1/\" /etc/xrdp/xrdp.ini")}';
+  fi;
+
+  if [[ ! $(grep -ne "\[vnc1\]" /etc/xrdp/xrdp.ini) ]];then
+  echo "[vnc1]
+name=vncserver
+lib=libvnc.so
+ip=localhost
+port=5901
+username=$DEV_USER
+password=$DEV_PASS
+" >> /etc/xrdp/xrdp.ini;
+
+  fi;
+  
+  # set resolution
+  if [[ ! "$( grep -nE "^geometry" ${HOME_USER}.vnc/config)" ]];then
+    echo "geometry=1280x720,720x1280,1024x768,1280x1024,800x600" >> ${HOME_USER}.vnc/config;
+  fi;
+
+  # Disable kde and enable gnome
+  if [[ "$(grep -nE \"^exec /etc/X11/xinit/xinitrc\" ${HOME_USER}.vnc/xstartup)" ]];then
+    sudo sed -i -e "s#exec /etc/X11/xinit/xinitrc#\#exec /etc/X11/xinit/xinitrc#g" ${HOME_USER}.vnc/xstartup;
+
+    echo "
+[ -x /etc/vnc/xstartup ] && exec /etc/vnc/xstartup
+[ -r \$HOME/.Xresources ] && xrdb \$HOME/.Xresources
+xsetroot -solid grey
+vncconfig -iconic &
+gnome-session &" >> ${HOME_USER}.vnc/xstartup;
+  fi;
+
+ # Enable vnc
+  sudo systemctl start xrdp;
+  sudo systemctl enable xrdp;
+  sudo firewall-cmd --permanent --add-port=3389/tcp;
+  sudo firewall-cmd --reload;
+  sudo chcon --type=bin_t /usr/sbin/xrdp;
+  sudo chcon --type=bin_t /usr/sbin/xrdp-sesman;
+  # sudo vim -o .vncrc .vnc/xstartup /etc/systemd/system/vncserver@:1.service /etc/xrdp/xrdp.ini .vnc/config
+
+  # menu editable gnome
+  sudo yum install -y alacarte;
+
 }
 
 # Databases services
@@ -385,78 +459,25 @@ function devPrograms {
   sudo sh -c 'echo -e "[code]\nname=Visual Studio Code\nbaseurl=https://packages.microsoft.com/yumrepos/vscode\nenabled=1\ngpgcheck=1\ngpgkey=https://packages.microsoft.com/keys/microsoft.asc" > /etc/yum.repos.d/vscode.repo'
   sudo yum check-update -y;
   sudo yum install -y code;
-}
 
-function installGraphicVnc {
-  sudo yum groupinstall -y "KDE Plasma Workspaces" tigervnc-server;
-  sudo cp /lib/systemd/system/vncserver@.service /etc/systemd/system/vncserver@:1.service
-  echo "change <USER> for \"$DEV_USER\"";
-  # replace user in service file
-  sudo sed -i -e "s/<USER>/$DEV_USER/g" /etc/systemd/system/vncserver@:1.service;
-  #sudo vim /etc/systemd/system/vncserver@:1.service;
-  sudo firewall-cmd --permanent --zone=public --add-service vnc-server;
-  sudo firewall-cmd --reload;
+  #chrome
+  local chrome_version="google-chrome-stable_current_x86_64.rpm";
+  wget https://dl.google.com/linux/direct/google-chrome-stable_current_x86_64.rpm;
+  sudo rpm -Uvh ${chrome_version};
 
-  sudo -u developer vncserver <<EOF
-$DEV_PASS
-$DEV_PASS
-EOF
-  sudo systemctl daemon-reload;
-  sudo systemctl enable vncserver@:1.service;
-  sudo systemctl start vncserver@:1.service;
+  #pycharm
+  local pycharm_version="pycharm-community-2018.1.4";
+  wget "https://download.jetbrains.com/python/${pycharm_version}.tar.gz";
+  tar -xvzf ${pycharm_version}.tar.gz;
+  mv ${pycharm_version} ${HOME_USER}/bin/;
+  restoreHomePermissions;
 
-  #xedp
-  #sudo yum groupinstall "GNOME Desktop";
-  sudo rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm;
-  sudo yum install -y xrdp tigervnc-server;
-  
-  #config VNC
-  sudo sed -i -e "s/autorun=.*/autorun=$DEV_USER/g" /etc/xrdp/xrdp.ini;
-  sudo sed -i -e "s/crypt_level=.*/crypt_level=low/g" /etc/xrdp/xrdp.ini;
-  if [[ ! $(grep -ne "channel_code=" /etc/xrdp/xrdp.ini) ]];then
-    grep -m1 -nE "crypt_level" /etc/xrdp/xrdp.ini | awk -F ":" '{system("sed -i -e \""$1"s/"$2"/"$2"\\nchannel_code=1/\" /etc/xrdp/xrdp.ini")}';
-  fi;
-
-  if [[ ! $(grep -ne "\[vnc1\]" /etc/xrdp/xrdp.ini) ]];then
-  echo "[vnc1]
-name=vncserver
-lib=libvnc.so
-ip=localhost
-port=5901
-username=$DEV_USER
-password=$DEV_PASS
-" >> /etc/xrdp/xrdp.ini;
-
-  fi;
-  
-  # set resolution
-  if [[ ! "$( grep -nE "^geometry" ${HOME_USER}.vnc/config)" ]];then
-    echo "geometry=1280x720,720x1280,1024x768,1280x1024,800x600" >> ${HOME_USER}.vnc/config;
-  fi;
-
-  # Disable kde and enable gnome
-  if [[ "$(grep -nE \"^exec /etc/X11/xinit/xinitrc\" ${HOME_USER}.vnc/xstartup)" ]];then
-    sudo sed -i -e "s#exec /etc/X11/xinit/xinitrc#\#exec /etc/X11/xinit/xinitrc#g" ${HOME_USER}.vnc/xstartup;
-
-    echo "
-[ -x /etc/vnc/xstartup ] && exec /etc/vnc/xstartup
-[ -r \$HOME/.Xresources ] && xrdb \$HOME/.Xresources
-xsetroot -solid grey
-vncconfig -iconic &
-gnome-session &" >> ${HOME_USER}.vnc/xstartup;
-  fi;
-
- # Enable vnc
-  sudo systemctl start xrdp;
-  sudo systemctl enable xrdp;
-  sudo firewall-cmd --permanent --add-port=3389/tcp;
-  sudo firewall-cmd --reload;
-  sudo chcon --type=bin_t /usr/sbin/xrdp;
-  sudo chcon --type=bin_t /usr/sbin/xrdp-sesman;
-  # sudo vim -o .vncrc .vnc/xstartup /etc/systemd/system/vncserver@:1.service /etc/xrdp/xrdp.ini .vnc/config
-
-  # menu editable gnome
-  sudo yum install -y alacarte;
+  #eclipse
+  local eclipse_version="eclipse-inst-linux64";
+  wget -O $eclipse_version "https://www.eclipse.org/downloads/download.php?file=/oomph/epp/oxygen/R2/${eclipse_version}.tar.gz";
+  tar -xvzf ${eclipse_version};
+  mv ${eclipse_version} ${HOME_USER}/bin/;
+  restoreHomePermissions;
 
 }
 
