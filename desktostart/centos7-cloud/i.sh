@@ -157,12 +157,13 @@ function pipTools {
   sudo pip install --upgrade selenium; # observe
   sudo pip install --upgrade graphlab-create; # observe
   sudo pip install --upgrade seaborn;
-  sudo pip install --upgrade jrnl[encrypted]; # error  jupiter
+  
   sudo pip install --upgrade rpm-py-installer; # not found
   sudo pip install --upgrade koji; # se daña
 
   # no installed please
   #sudo pip install --upgrade jrnl; # error python-dateutil
+  #sudo pip install --upgrade jrnl[encrypted]; # error  jupiter
 
   # Change python versión for continue yum installations
   setPython "old";
@@ -276,7 +277,7 @@ EOF
 function rubyTools {
   sudo yum install -y ruby ruby-devel rubygem-thor rubygem-bundler;
   sudo yum install -y rubygem-rake rubygem-test-unit;
-  sudo gem install rails;
+  #sudo gem install rails; # error
 }
 
 # Install dsn, media apps and tools
@@ -450,12 +451,11 @@ EOF
 
 
 function installMariaDB {
-  if [[ ! "$(which mysql -i)" ]];then
 
-    sudo yum install -y mariadb-server;
-    sudo systemctl start mariadb;
-    sudo systemctl enable mariadb;
-    sudo mysql_secure_installation <<EOF
+  sudo yum install -y mariadb-server;
+  sudo systemctl start mariadb;
+  sudo systemctl enable mariadb;
+  sudo mysql_secure_installation <<EOF
 
 $DEV_PASS2
 y
@@ -467,14 +467,13 @@ n
 y
 EOF
 
-    sudo systemctl start mariadb.service;
-    sudo systemctl enable mariadb.service;
+  sudo systemctl start mariadb.service;
+  sudo systemctl enable mariadb.service;
 
-    # client
-    wget https://dbeaver.io/files/dbeaver-ce-latest-stable.x86_64.rpm;
-    sudo rpm -ivh dbeaver-ce-latest-stable.x86_64.rpm;
+  # client
+  wget https://dbeaver.io/files/dbeaver-ce-latest-stable.x86_64.rpm;
+  sudo rpm -ivh dbeaver-ce-latest-stable.x86_64.rpm;
 
-  fi;
 }
 
 function devPrograms {
@@ -504,11 +503,13 @@ function devPrograms {
   restoreHomePermissions;
 
   #cloud sdk
+  
   local gcloud_version="google-cloud-sdk-183.0.0-linux-x86_64";
   wget "https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/${gcloud_version}.tar.gz";
   tar -xvzf ${gcloud_version}.tar.gz;
   mv -rf ${gcloud_version} ${HOME_USER}/bin/;
   restoreHomePermissions;
+  setPython "new";
 
 }
 
