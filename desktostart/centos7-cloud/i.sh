@@ -245,7 +245,7 @@ password=$DEV_PASS
 [ -x /etc/vnc/xstartup ] && exec /etc/vnc/xstartup
 [ -r \$HOME/.Xresources ] && xrdb \$HOME/.Xresources
 xsetroot -solid grey
-vncconfig -iconic &
+#vncconfig -iconic &
 gnome-session &" >> ${HOME_USER}.vnc/xstartup;
   fi;
 
