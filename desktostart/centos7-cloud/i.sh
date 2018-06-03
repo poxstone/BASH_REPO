@@ -200,7 +200,7 @@ function installGraphicVnc {
   sudo firewall-cmd --reload;
   
   # login as user and pass command
-  sudo -u developer vncserver <<EOF
+  sudo -u $DEV_USER vncserver <<EOF
 $DEV_PASS
 $DEV_PASS
 EOF
@@ -518,13 +518,13 @@ function devPrograms {
   mv -f google-cloud-sdk ${HOME_USER}/bin/;
   restoreHomePermissions;
   setPython "new";
-  sudo -u developer ${HOME_USER}/bin/google-cloud-sdk/install.sh <<EOF
+  sudo -u $DEV_USER ${HOME_USER}/bin/google-cloud-sdk/install.sh <<EOF
 Y
 Y
 
 EOF
 
-  sudo -i -u developer gcloud components install beta alpha \
+  sudo -i -u $DEV_USER gcloud components install beta alpha \
   app-engine-python app-engine-python-extras kubectl \
   app-engine-java app-engine-php app-engine-go pubsub-emulator \
   cloud-datastore-emulator gcd-emulator \
