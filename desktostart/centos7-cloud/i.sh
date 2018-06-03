@@ -28,6 +28,19 @@ function restoreHomePermissions {
   sudo chown -R $DEV_USER:$DEV_USER $HOME_USER;
 }
 
+function setPython {
+  local version = 2;
+  if [[ $1 == "new" ]];then
+    version=1;
+  else
+    version=2;
+  fi;
+  
+  sudo alternatives --config python <<EOF
+$version
+EOF
+}
+
 function createUser {
   sudo useradd $DEV_USER;
   sudo usermod -aG wheel $DEV_USER;
@@ -86,8 +99,8 @@ function devTools {
   sudo echo "$STRING_PYTHON_LIB" >> ${HOME_USER}.bashrc;
   sudo echo "$STRING_PY_ALIAS" >> ${HOME_USER}.bashrc;
   sudo su $DEV_USER <<EOF
-  echo "$STRING_PYTHON_LIB" >> ${HOME_USER}.bashrc;
-  echo "$STRING_PY_ALIAS" >> ${HOME_USER}.bashrc;
+  #echo "$STRING_PYTHON_LIB" >> ${HOME_USER}.bashrc;
+  #echo "$STRING_PY_ALIAS" >> ${HOME_USER}.bashrc;
 EOF
   bash ${HOME_USER}.bashrc && sudo bash ${HOME_USER}.bashrc;
 
@@ -105,9 +118,7 @@ EOF
   sudo alternatives --install /bin/python python /usr/local/bin/python2.7 50;
 
   # Change default python version
-  sudo alternatives --config python <<EOF
-2
-EOF
+  setPython "old";
 
   cd;
 
@@ -118,9 +129,7 @@ EOF
 # Python
 function pipTools {
   # Change python versión for install pip
-  sudo alternatives --config python <<EOF
-2
-EOF
+  setPython "old";
 
   # ojo determinar cualde los siguientes generan error
   sudo pip install --upgrade pip;
@@ -144,9 +153,7 @@ EOF
   sudo pip install --upgrade seaborn;
 
   # Change python versión for continue yum installations
-  sudo alternatives --config python <<EOF
-1
-EOF
+  setPython "new";
 
   sudo yum install -y libpng-devel freetype freetype-devel;
   sudo yum install -y python-pandas;
@@ -294,7 +301,8 @@ function apachePHP {
 
 # DOCKER
 function dockerTools {
-  sudo yum remove docker docker-client docker-client-latest docker-common docker-latest docker-latest-logrotate docker-logrotate docker-selinux docker-engine-selinux docker-engine;
+
+  sudo yum remove -y docker docker-client docker-client-latest docker-common docker-latest docker-latest-logrotate docker-logrotate docker-selinux docker-engine-selinux docker-engine;
   sudo yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo;
   sudo yum-config-manager --enable docker-ce-edge;
   sudo yum-config-manager --enable docker-ce-test;
@@ -469,14 +477,14 @@ function devPrograms {
   local pycharm_version="pycharm-community-2018.1.4";
   wget "https://download.jetbrains.com/python/${pycharm_version}.tar.gz";
   tar -xvzf ${pycharm_version}.tar.gz;
-  mv ${pycharm_version} ${HOME_USER}/bin/;
+  mv -rf ${pycharm_version} ${HOME_USER}/bin/;
   restoreHomePermissions;
 
   #eclipse
   local eclipse_version="eclipse-inst-linux64";
   wget -O $eclipse_version "https://www.eclipse.org/downloads/download.php?file=/oomph/epp/oxygen/R2/${eclipse_version}.tar.gz";
   tar -xvzf ${eclipse_version};
-  mv ${eclipse_version} ${HOME_USER}/bin/;
+  mv -rf ${eclipse_version} ${HOME_USER}/bin/;
   restoreHomePermissions;
 
 }
@@ -544,6 +552,7 @@ function installAll {
   installMariaDB;
   manualSteps;
   devPrograms;
+  installWine;
   cleanDnf;
 }
 
