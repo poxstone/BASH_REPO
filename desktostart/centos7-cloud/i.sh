@@ -514,7 +514,7 @@ function devPrograms {
   restoreHomePermissions;
 
   #cloud sdk
-  local gcloud_version="google-cloud-sdk-183.0.0-linux-x86_64";
+  local gcloud_version="google-cloud-sdk-203.0.0-linux-x86_64";
   wget "https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/${gcloud_version}.tar.gz";
   tar -xvzf ${gcloud_version}.tar.gz;
   mv -f google-cloud-sdk ${HOME_USER}/bin/;
@@ -534,15 +534,7 @@ EOF
 Y
 EOF
 
-  sudo -i -u $DEV_USER gcloud components update <<EOF
-Yexport PATH="/home/poxstone/.nvm/versions/node/v8.11.2/bin:/usr/lib64/qt-3.3/bin:/usr/local/bin:/bin:/usr/bin:/usr/local/sbin:/usr/sbin:/home/poxstone/.local/bin:/home/poxst
-one/bin:/home/poxstone/.local/bin:/home/poxstone/bin";
-
-export PATH=$PATH:/home/poxstone/bin/google-cloud-sdk/bin:/home/poxstone/.nvm/versions/node/v8.11.2/bin:/usr/lib64/qt-3.3/bin:/usr/local/bin:/bin:/usr/bin:/usr/local/sbin:/u
-sr/sbin:/home/poxstone/.local/bin:/home/poxstone/bin:/home/poxstone/.local/bin:/home/poxstone/bin:/home/poxstone/.local/bin:/home/poxstone/bin:/opt/gradle/gradle-3.4.1/bin
-export LD_LIBRARY_PATH=/usr/local/lib:/usr/local/bin/python2.7:
-alias python=/usr/local/bin/python2.7;
-EOF
+  sudo -i -u $DEV_USER gcloud components update;
   setPython "old";
 
 }
