@@ -102,8 +102,10 @@ function devTools {
   sudo make altinstall;
   local STRING_PYTHON_LIB="export LD_LIBRARY_PATH=/usr/local/lib:/usr/local/bin/python2.7:$LD_LIBRARY_PATH";
   local STRING_PY_ALIAS="alias python=/usr/local/bin/python2.7";
+  local STRING_APPENGINE_OVERWRITE="sed -i '1s/.*/#\!\/usr\/bin\/env python2.7/' \"\$(which dev_appserver.py)\";";
   sudo echo "$STRING_PYTHON_LIB" >> ${HOME_USER}.bashrc;
   sudo echo "$STRING_PY_ALIAS" >> ${HOME_USER}.bashrc;
+  sudo echo "$STRING_APPENGINE_OVERWRITE" >> ${HOME_USER}.bashrc;
   sudo su $DEV_USER <<EOF
   #echo "$STRING_PYTHON_LIB" >> ${HOME_USER}.bashrc;
   #echo "$STRING_PY_ALIAS" >> ${HOME_USER}.bashrc;
@@ -530,6 +532,16 @@ EOF
   cloud-datastore-emulator gcd-emulator \
   docker-credential-gcr kubectl <<EOF
 Y
+EOF
+
+  sudo -i -u $DEV_USER gcloud components update <<EOF
+Yexport PATH="/home/poxstone/.nvm/versions/node/v8.11.2/bin:/usr/lib64/qt-3.3/bin:/usr/local/bin:/bin:/usr/bin:/usr/local/sbin:/usr/sbin:/home/poxstone/.local/bin:/home/poxst
+one/bin:/home/poxstone/.local/bin:/home/poxstone/bin";
+
+export PATH=$PATH:/home/poxstone/bin/google-cloud-sdk/bin:/home/poxstone/.nvm/versions/node/v8.11.2/bin:/usr/lib64/qt-3.3/bin:/usr/local/bin:/bin:/usr/bin:/usr/local/sbin:/u
+sr/sbin:/home/poxstone/.local/bin:/home/poxstone/bin:/home/poxstone/.local/bin:/home/poxstone/bin:/home/poxstone/.local/bin:/home/poxstone/bin:/opt/gradle/gradle-3.4.1/bin
+export LD_LIBRARY_PATH=/usr/local/lib:/usr/local/bin/python2.7:
+alias python=/usr/local/bin/python2.7;
 EOF
   setPython "old";
 
