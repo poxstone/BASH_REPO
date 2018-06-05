@@ -51,7 +51,9 @@ function createUser {
 $DEV_PASS
 $DEV_PASS
 EOF
-  # create ssh leave white spaces for enters
+  
+  echo "Please press enter fo continue...";
+  # create ssh leave white spaces for enter
   sudo -i -u $DEV_USER ssh-keygen <<EOF
 
 
@@ -102,10 +104,8 @@ function devTools {
   sudo make altinstall;
   local STRING_PYTHON_LIB="export LD_LIBRARY_PATH=/usr/local/lib:/usr/local/bin/python2.7:$LD_LIBRARY_PATH";
   local STRING_PY_ALIAS="alias python=/usr/local/bin/python2.7";
-  local STRING_APPENGINE_OVERWRITE="sed -i '1s/.*/#\!\/usr\/bin\/env python2.7/' \"\$(which dev_appserver.py)\";";
   sudo echo "$STRING_PYTHON_LIB" >> ${HOME_USER}.bashrc;
   sudo echo "$STRING_PY_ALIAS" >> ${HOME_USER}.bashrc;
-  sudo echo "$STRING_APPENGINE_OVERWRITE" >> ${HOME_USER}.bashrc;
   sudo su $DEV_USER <<EOF
   #echo "$STRING_PYTHON_LIB" >> ${HOME_USER}.bashrc;
   #echo "$STRING_PY_ALIAS" >> ${HOME_USER}.bashrc;
@@ -193,12 +193,14 @@ function pipTools {
 
 function installGraphicVnc {
   sudo yum groupinstall -y "KDE Plasma Workspaces" tigervnc-server;
+  sudo yum install -y xrdp tigervnc-server;
+
   sudo cp /lib/systemd/system/vncserver@.service /etc/systemd/system/vncserver@:1.service;
-  echo "change <USER> for \"$DEV_USER\"";
   # replace user in service file
   sudo sed -i -e "s/<USER>/$DEV_USER/g" /etc/systemd/system/vncserver@:1.service;
   #sudo vim /etc/systemd/system/vncserver@:1.service;
   sudo firewall-cmd --permanent --zone=public --add-service vnc-server;
+  sudo firewall-cmd --permanent --add-port=3389/tcp;
   sudo firewall-cmd --reload;
   
   # login as user and pass command
@@ -206,15 +208,12 @@ function installGraphicVnc {
 $DEV_PASS
 $DEV_PASS
 EOF
+
   sudo systemctl daemon-reload;
   sudo systemctl enable vncserver@:1.service;
   sudo systemctl start vncserver@:1.service;
 
   #xedp
-  #sudo yum groupinstall "GNOME Desktop";
-  sudo rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm;
-  sudo yum install -y xrdp tigervnc-server;
-  
   #config VNC
   sudo sed -i -e "s/autorun=.*/autorun=$DEV_USER/g" /etc/xrdp/xrdp.ini;
   sudo sed -i -e "s/crypt_level=.*/crypt_level=low/g" /etc/xrdp/xrdp.ini;
@@ -253,11 +252,10 @@ gnome-session &" >> ${HOME_USER}.vnc/xstartup;
 
   sudo systemctl restart vncserver@:1.service;
 
- # Enable vnc
+  # Enable vnc
   sudo systemctl start xrdp;
   sudo systemctl enable xrdp;
-  sudo firewall-cmd --permanent --add-port=3389/tcp;
-  sudo firewall-cmd --reload;
+
   sudo chcon --type=bin_t /usr/sbin/xrdp;
   sudo chcon --type=bin_t /usr/sbin/xrdp-sesman;
   # sudo vim -o .vncrc .vnc/xstartup /etc/systemd/system/vncserver@:1.service /etc/xrdp/xrdp.ini .vnc/config
@@ -360,48 +358,41 @@ function javaAndroid {
   sudo yum install -y zlib.i686 ncurses-libs.i686 bzip2-libs.i686;
   sudo yum install -y fastboot;
   sudo yum install -y usbutils;
-  #java oracle
-  if ! java -version;then
-      if [ -e ${HOME_USER}Downloads/programs/jdk-8u171-linux-x64.rpm ];then
-          sudo rpm -ivh ${HOME_USER}Downloads/programs/jdk-8u171-linux-x64.rpm;
-          sudo rpm -ivh ${HOME_USER}Downloads/programs/jdk-7u80-linux-x64.rpm;
-          # java with alternatives
-          sudo alternatives --install /usr/bin/java java /usr/java/latest/jre/bin/java 200000;
-          sudo alternatives --install /usr/bin/javaws javaws /usr/java/latest/jre/bin/javaws 200000;
-          sudo alternatives --install /usr/lib64/mozilla/plugins/libjavaplugin.so libjavaplugin.so.x86_64 /usr/java/latest/jre/lib/amd64/libnpjp2.so 200000;
-          sudo alternatives --install /usr/bin/javac javac /usr/java/latest/bin/javac 200000;
-          sudo alternatives --install /usr/bin/jar jar /usr/java/latest/bin/jar 200000;
-          # config alternatives
-          sudo alternatives --config java;
-          sudo alternatives --config javac;
-          sudo alternatives --config javaws;
-          # alternatives
-          sudo alternatives --install /usr/bin/java java /usr/java/jdk1.7.0_80/jre/bin/java 200000;
-          sudo alternatives --install /usr/bin/javac javac /usr/java/jdk1.7.0_80/bin/javac 200000;
-          sudo alternatives --install /usr/bin/jar jar /usr/java/jdk1.7.0_80/bin/jar 200000;
-          sudo alternatives --install /usr/bin/javaws javaws /usr/java/jdk1.7.0_80/jre/bin/javaws 200000;
-          # java version
-          java -version;
-      else
-          echo "java rpm no est en la carpeta de descargas";
-      fi;
-  fi;
-  # gradle java
-  if java -version && gradle -v;then
-      sudo mkdir /opt/gradle;
-      sudo chmod -R 775 /opt/gradle;
-      cd /opt/gradle;
-      sudo wget  https://services.gradle.org/distributions/gradle-3.4.1-bin.zip;
-      sudo unzip -d /opt/gradle gradle-3.4.1-bin.zip;
+  #java oracle 8
+  local java_8="jdk-8u172-linux-x64";
+  wget "http://download.oracle.com/otn-pub/java/jdk/8u172-b11/a58eab1ec242421181065cdc37240b08/jdk-8u172-linux-x64.rpm?AuthParam=1528171145_762e53af24f72a13ba85e8be6afe98c9";
+  mv "jdk-8u172-linux-x64.rpm?AuthParam=1528171145_762e53af24f72a13ba85e8be6afe98c9" "${java_8}.rpm";
+  sudo rpm -ivh ${java_8}.rpm;
 
-      local STRING_GRADLE_LIB="export PATH=$PATH:/opt/gradle/gradle-3.4.1/bin";
-      sudo echo "$STRING_GRADLE_LIB" >> ${HOME_USER}.bashrc;
-      sudo su $DEV_USER <<EOF
-      echo "$STRING_GRADLE_LIB" >> ${HOME_USER}.bashrc;
-EOF
-  else
-      echo '--- Pending install JAVA JDK---';
-  fi;
+  # java with alternatives
+  sudo alternatives --install /usr/bin/java java /usr/java/latest/jre/bin/java 200000;
+  sudo alternatives --install /usr/bin/javaws javaws /usr/java/latest/jre/bin/javaws 200000;
+  sudo alternatives --install /usr/bin/javac javac /usr/java/latest/bin/javac 200000;
+  sudo alternatives --install /usr/bin/jar jar /usr/java/latest/bin/jar 200000;
+  # config alternatives
+  sudo alternatives --config java;
+  sudo alternatives --config javac;
+  sudo alternatives --config javaws;
+  # alternatives
+  #sudo alternatives --install /usr/bin/java java /usr/java/jdk1.7.0_80/jre/bin/java 200000;
+  #sudo alternatives --install /usr/bin/javac javac /usr/java/jdk1.7.0_80/bin/javac 200000;
+  #sudo alternatives --install /usr/bin/jar jar /usr/java/jdk1.7.0_80/bin/jar 200000;
+  #sudo alternatives --install /usr/bin/javaws javaws /usr/java/jdk1.7.0_80/jre/bin/javaws 200000;
+  # java version
+  java -version;
+
+  # gradle java
+  local gradle_version="gradle-3.4.1";
+  sudo mkdir $HOME_USER/bin/gradle/;
+  wget "https://services.gradle.org/distributions/${gradle_version}-bin.zip";
+  unzip ${gradle_version}-bin.zip;
+  mv ${gradle_version} $HOME_USER/bin/gradle/;
+  restoreHomePermissions;
+
+  local STRING_GRADLE_LIB="export PATH=\$PATH:~/bin/gradle/${gradle_version}/bin;";
+  sudo echo "$STRING_GRADLE_LIB" >> ${HOME_USER}.bashrc;
+  cd;
+
 }
 
 # vim
@@ -481,13 +472,16 @@ EOF
   sudo systemctl start mariadb.service;
   sudo systemctl enable mariadb.service;
 
-  # client
-  wget https://dbeaver.io/files/dbeaver-ce-latest-stable.x86_64.rpm;
-  sudo rpm -ivh dbeaver-ce-latest-stable.x86_64.rpm;
-
 }
 
 function devPrograms {
+
+  cd;
+
+  # client java
+  wget https://dbeaver.io/files/dbeaver-ce-latest-stable.x86_64.rpm;
+  sudo rpm -ivh dbeaver-ce-latest-stable.x86_64.rpm;
+
   # https://code.visualstudio.com/docs/setup/linux
   sudo rpm --import https://packages.microsoft.com/keys/microsoft.asc;
   sudo sh -c 'echo -e "[code]\nname=Visual Studio Code\nbaseurl=https://packages.microsoft.com/yumrepos/vscode\nenabled=1\ngpgcheck=1\ngpgkey=https://packages.microsoft.com/keys/microsoft.asc" > /etc/yum.repos.d/vscode.repo'
@@ -514,26 +508,28 @@ function devPrograms {
   restoreHomePermissions;
 
   #cloud sdk
+  
   local gcloud_version="google-cloud-sdk-203.0.0-linux-x86_64";
   wget "https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/${gcloud_version}.tar.gz";
   tar -xvzf ${gcloud_version}.tar.gz;
   mv -f google-cloud-sdk ${HOME_USER}/bin/;
   restoreHomePermissions;
   setPython "new";
-  sudo -u $DEV_USER ${HOME_USER}/bin/google-cloud-sdk/install.sh <<EOF
-Y
-Y
 
-EOF
+  echo "PLEASE: press Y and enter to continue...";
+  sudo -i -u $DEV_USER ${HOME_USER}/bin/google-cloud-sdk/install.sh;
 
   sudo -i -u $DEV_USER gcloud components install beta alpha \
   app-engine-python app-engine-python-extras kubectl \
   app-engine-java app-engine-php app-engine-go pubsub-emulator \
   cloud-datastore-emulator gcd-emulator \
-  docker-credential-gcr kubectl <<EOF
-Y
-EOF
+  docker-credential-gcr kubectl;
 
+  # add to path
+  local STRING_APPENGINE_OVERWRITE="sed -i '1s/.*/#\!\/usr\/bin\/env python2.7/' \"\$(which dev_appserver.py)\";";
+  sudo echo "$STRING_APPENGINE_OVERWRITE" >> ${HOME_USER}.bashrc;
+
+  # update gcloud
   sudo -i -u $DEV_USER gcloud components update;
   setPython "old";
 
@@ -609,6 +605,7 @@ function installAll {
   installMariaDB;
   devPrograms;
   installGraphicVnc;
+  cleanDnf;
   installWine;
   cleanDnf;
   manualSteps;
