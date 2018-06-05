@@ -165,6 +165,8 @@ function pipTools {
   sudo pip install --upgrade selenium; # observe
   sudo pip install --upgrade graphlab-create; # observe
   sudo pip install --upgrade seaborn;
+  sudo pip install --upgrade oauth2client;
+
   
   sudo pip install --upgrade rpm-py-installer; # not found
   sudo pip install --upgrade koji; # se daña
@@ -335,7 +337,7 @@ function dockerTools {
   sudo yum-config-manager --disable docker-ce-edge;
   sudo yum install -y docker-ce;
   sudo systemctl start docker;
-  sudo systemctl enable docker
+  sudo systemctl enable docker;
 
   sudo usermod -a -G docker $USER;
   sudo usermod -a -G docker $DEV_USER;
