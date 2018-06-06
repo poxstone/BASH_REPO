@@ -88,6 +88,8 @@ function devTools {
   sudo yum install -y wget deluge rpm-build lsb sqlite-devel git-all kdiff3 openssh openssh-server ncurses-devel bzip2-devel;
   sudo yum install -y yum-utils device-mapper-persistent-data lvm2 p7zip unrar;
   sudo yum install -y libX11-devel freetype-devel libxcb-devel libxslt-devel libgcrypt-devel libxml2-devel gnutls-devel libpng-devel libjpeg-turbo-devel libtiff-devel gstreamer-devel dbus-devel fontconfig-devel libappindicator;
+  sudo yum install samba-winbind-clients -y;
+  sudo yum install -y glibc-devel.{i686,x86_64} libgcc.{i686,x86_64} libX11-devel.{i686,x86_64} freetype-devel.{i686,x86_64} gnutls-devel.{i686,x86_64} libxml2-devel.{i686,x86_64} libjpeg-turbo-devel.{i686,x86_64} libpng-devel.{i686,x86_64} libXrender-devel.{i686,x86_64} alsa-lib-devel.{i686,x86_64};
   sudo yum install -y libappindicator-gtk3;
 
   # python update (https://gist.github.com/guy4261/0e9f4081f1c6b078b436)
@@ -543,13 +545,24 @@ function installWine {
   cd /usr/src;
   sudo wget http://dl.winehq.org/wine/source/3.0/wine-3.0.tar.xz;
   sudo tar -Jxvf wine-3.0.tar.xz;
-  sudo chmod -R 755 wine-3.0;
-  cd wine-3.0;
+  mv wine-3.0 wine64;
+  sudo chmod -R 755 wine64;
+  cp -rfa wine64 wine32;
+  #64
+  cd wine64;
   sudo ./configure  --enable-win64;
   sudo make;
   sudo make install;
-  wine64 --version;
+  #32
+  cd ../wine32;
+  sudo ./configure;
+  sudo make;
+  sudo make install;
+
+  #wine64 --version;
+  #wine --version;
   # wine putty.exe;
+
 }
 
 function manualSteps {
