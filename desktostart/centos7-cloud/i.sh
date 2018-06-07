@@ -362,9 +362,13 @@ function javaAndroid {
   sudo yum install -y zlib.i686 ncurses-libs.i686 bzip2-libs.i686;
   sudo yum install -y fastboot;
   sudo yum install -y usbutils;
+
+  #java
+  sudo yum install -y java-1.8.0-openjdk-devel;
+
   #java oracle 8
   local java_8="jdk-8u172-linux-x64";
-  wget "http://download.oracle.com/otn-pub/java/jdk/8u172-b11/a58eab1ec242421181065cdc37240b08/jdk-8u172-linux-x64.rpm?AuthParam=1528171145_762e53af24f72a13ba85e8be6afe98c9";
+  wget "http://download.oracle.com/otn-pub/java/jdk/9u172-b11/a58eab1ec242421181065cdc37240b08/jdk-8u172-linux-x64.rpm?AuthParam=1528171145_762e53af24f72a13ba85e8be6afe98c9";
   mv "jdk-8u172-linux-x64.rpm?AuthParam=1528171145_762e53af24f72a13ba85e8be6afe98c9" "${java_8}.rpm";
   sudo rpm -ivh ${java_8}.rpm;
 
