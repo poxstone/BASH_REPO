@@ -518,8 +518,13 @@ function devPrograms {
   mv -f eclipse ${HOME_USER}/bin/;
   restoreHomePermissions;
 
+  #sts spring
+  wget "http://download.springsource.com/release/STS/3.9.4.RELEASE/dist/e4.7/spring-tool-suite-3.9.4.RELEASE-e4.7.3a-linux-gtk-x86_64.tar.gz";
+  tar -xvzf spring-tool-suite-3.9.4.RELEASE-e4.7.3a-linux-gtk-x86_64.tar.gz;
+  mv -f sts-bundle ${HOME_USER}/bin/;
 
-  # gradle java
+
+  #gradle java
   function addGradle {
     local gradle_version="$1";
     sudo mkdir -p $HOME_USER/bin/gradle/;
