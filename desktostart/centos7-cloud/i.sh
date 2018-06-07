@@ -58,6 +58,7 @@ EOF
 
 
 
+
 EOF
 }
 
@@ -364,23 +365,32 @@ function javaAndroid {
   sudo yum install -y usbutils;
 
   #java
+  sudo yum install -y java-1.7.0-openjdk-devel;
   sudo yum install -y java-1.8.0-openjdk-devel;
 
   #java oracle 8
-  local java_8="jdk-8u172-linux-x64";
-  wget "http://download.oracle.com/otn-pub/java/jdk/9u172-b11/a58eab1ec242421181065cdc37240b08/jdk-8u172-linux-x64.rpm?AuthParam=1528171145_762e53af24f72a13ba85e8be6afe98c9";
-  mv "jdk-8u172-linux-x64.rpm?AuthParam=1528171145_762e53af24f72a13ba85e8be6afe98c9" "${java_8}.rpm";
-  sudo rpm -ivh ${java_8}.rpm;
-
+  function addJavaOracle {
+    local java_8="jdk-8u172-linux-x64";
+    wget "http://download.oracle.com/otn-pub/java/jdk/9u172-b11/a58eab1ec242421181065cdc37240b08/jdk-8u172-linux-x64.rpm?AuthParam=1528171145_762e53af24f72a13ba85e8be6afe98c9";
+    mv "jdk-8u172-linux-x64.rpm?AuthParam=1528171145_762e53af24f72a13ba85e8be6afe98c9" "${java_8}.rpm";
+    sudo rpm -ivh ${java_8}.rpm;
+  }
+  
   # java with alternatives
   sudo alternatives --install /usr/bin/java java /usr/java/latest/jre/bin/java 200000;
   sudo alternatives --install /usr/bin/javaws javaws /usr/java/latest/jre/bin/javaws 200000;
   sudo alternatives --install /usr/bin/javac javac /usr/java/latest/bin/javac 200000;
   sudo alternatives --install /usr/bin/jar jar /usr/java/latest/bin/jar 200000;
   # config alternatives
-  sudo alternatives --config java;
-  sudo alternatives --config javac;
-  sudo alternatives --config javaws;
+  sudo alternatives --config java <<EOF
+2
+EOF
+  sudo alternatives --config javac <<EOF
+2
+EOF
+  sudo alternatives --config javaws <<EOF
+1
+EOF
   # alternatives
   #sudo alternatives --install /usr/bin/java java /usr/java/jdk1.7.0_80/jre/bin/java 200000;
   #sudo alternatives --install /usr/bin/javac javac /usr/java/jdk1.7.0_80/bin/javac 200000;
@@ -388,18 +398,6 @@ function javaAndroid {
   #sudo alternatives --install /usr/bin/javaws javaws /usr/java/jdk1.7.0_80/jre/bin/javaws 200000;
   # java version
   java -version;
-
-  # gradle java
-  local gradle_version="gradle-3.4.1";
-  sudo mkdir $HOME_USER/bin/gradle/;
-  wget "https://services.gradle.org/distributions/${gradle_version}-bin.zip";
-  unzip ${gradle_version}-bin.zip;
-  mv ${gradle_version} $HOME_USER/bin/gradle/;
-  restoreHomePermissions;
-
-  local STRING_GRADLE_LIB="export PATH=\$PATH:~/bin/gradle/${gradle_version}/bin;";
-  sudo echo "$STRING_GRADLE_LIB" >> ${HOME_USER}.bashrc;
-  cd;
 
 }
 
@@ -515,30 +513,72 @@ function devPrograms {
   mv -f eclipse ${HOME_USER}/bin/;
   restoreHomePermissions;
 
-  #cloud sdk
-  
+
+  # gradle java
+  function addGradle {
+    local gradle_version="$1";
+    sudo mkdir -p $HOME_USER/bin/gradle/;
+    wget "https://services.gradle.org/distributions/${gradle_version}-bin.zip";
+    unzip ${gradle_version}-bin.zip;
+    mv ${gradle_version} $HOME_USER/bin/gradle/;
+    restoreHomePermissions;
+  }
+
+  addGradle "gradle-3.5.1";
+  addGradle "gradle-4.8";
+
+  local STRING_GRADLE_LIB="export PATH=\$PATH:~/bin/gradle/gradle-4.8/bin;";
+  sudo echo "$STRING_GRADLE_LIB" >> ${HOME_USER}.bashrc;
+
+  # tomcat
+  function addTomcat {
+    local tomcat_version="$1";
+    local tomcat_subversion="$2";
+    sudo mkdir -p $HOME_USER/bin/tomcat/;
+    wget "http://apache.uniminuto.edu/tomcat/tomcat-${tomcat_version}/v${tomcat_subversion}/bin/apache-tomcat-${tomcat_subversion}.tar.gz";
+    tar -xvzf "apache-tomcat-${tomcat_subversion}.tar.gz";
+    mv -f "apache-tomcat-${tomcat_subversion}" ${HOME_USER}/bin/tomcat/;
+    restoreHomePermissions;
+  }
+
+  addTomcat "8" "8.5.31";
+  addTomcat "8" "8.0.52";
+
+  # git
+  sudo -i -u git config --global user.name "${DEV_USER}";
+  sudo -i -u git config --global user.email "${DEV_USER}@instance.vnc"  addTomcat "7" "7.0.88";
+
+  # cloud sdk
   local gcloud_version="google-cloud-sdk-203.0.0-linux-x86_64";
   wget "https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/${gcloud_version}.tar.gz";
   tar -xvzf ${gcloud_version}.tar.gz;
   mv -f google-cloud-sdk ${HOME_USER}/bin/;
   restoreHomePermissions;
   setPython "new";
+;
 
   echo "PLEASE: press Y and enter to continue...";
-  sudo -i -u $DEV_USER ${HOME_USER}/bin/google-cloud-sdk/install.sh;
+  sudo -i -u $DEV_USER ${HOME_USER}/bin/google-cloud-sdk/install.sh <<EOF
+
+EOF
 
   sudo -i -u $DEV_USER gcloud components install beta alpha \
   app-engine-python app-engine-python-extras kubectl \
   app-engine-java app-engine-php app-engine-go pubsub-emulator \
   cloud-datastore-emulator gcd-emulator \
-  docker-credential-gcr kubectl;
+  docker-credential-gcr kubectl <<EOF
+y
+EOF
 
   # add to path
   local STRING_APPENGINE_OVERWRITE="sed -i '1s/.*/#\!\/usr\/bin\/env python2.7/' \"\$(which dev_appserver.py)\";";
   sudo echo "$STRING_APPENGINE_OVERWRITE" >> ${HOME_USER}.bashrc;
 
   # update gcloud
-  sudo -i -u $DEV_USER gcloud components update;
+  sudo -i -u $DEV_USER gcloud components update <<EOF
+y
+EOF
+
   setPython "old";
 
 }
