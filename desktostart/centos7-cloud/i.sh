@@ -283,6 +283,11 @@ function databases {
 $DEV_PASS2
 $DEV_PASS2
 EOF
+  # config
+  sudo sed -i -e "s/\(\( peer\)\|\( ident\)\)/ md5/g" /var/lib/pgsql/data/pg_hba.conf;
+  sudo sed -i -e "s/^#listen_addresses/listen_addresses/g" /var/lib/pgsql/data/postgresql.conf;
+  sudo sed -i -e "s/^#port/port/g" /var/lib/pgsql/data/postgresql.conf;
+  sudo systemctl restart postgresql.service
 
   sudo yum install -y pgadmin3;
 }
