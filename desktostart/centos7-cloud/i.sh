@@ -565,7 +565,6 @@ function devPrograms {
   mv -f google-cloud-sdk ${HOME_USER}/bin/;
   restoreHomePermissions;
   setPython "new";
-;
 
   echo "PLEASE: press Y and enter to continue...";
   sudo -i -u $DEV_USER ${HOME_USER}/bin/google-cloud-sdk/install.sh <<EOF
