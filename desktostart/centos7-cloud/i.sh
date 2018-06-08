@@ -239,7 +239,7 @@ password=$DEV_PASS
   
   # set resolution
   if [[ ! "$( grep -nE "^geometry" ${HOME_USER}.vnc/config)" ]];then
-    echo "geometry=1366x768,720x1280,1024x768,1280x1024,800x600" >> ${HOME_USER}.vnc/config;
+    echo "geometry=1366x920,720x1280,640x480,800x600,1024x768,1280x800,1280x960,1280x1024,1360x768,1400x1050,1600x1200,1680x1050,1920x1200,1920x1080" >> ${HOME_USER}.vnc/config;
   fi;
 
   # Disable kde and enable gnome
