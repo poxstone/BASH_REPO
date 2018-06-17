@@ -1,6 +1,11 @@
 #!/bin/bash
 INIT_DIR=$(pwd);
 HOME="$HOME";
+PROJECT=`curl "http://metadata.google.internal/computeMetadata/v1/project/project-id" -H "Metadata-Flavor: Google"`;
+BUCKET_GET="${PROJECT}.appspot.com";
+JAVA_RPMS="jdk-8u171-linux-x64.rpm jdk-7u80-linux-x64.rpm";
+JAVA_INSTALL="latest jdk1.7.0_80 jdk1.8.0_171-amd64";
+
 DEV_USER="developer";
 DEV_PASS="Evo76AUS";
 DEV_PASS2="Ove52SWE";
@@ -375,32 +380,65 @@ function javaAndroid {
 
   #java oracle 8
   function addJavaOracle {
-    local java_8="jdk-8u172-linux-x64";
-    wget "http://download.oracle.com/otn-pub/java/jdk/9u172-b11/a58eab1ec242421181065cdc37240b08/jdk-8u172-linux-x64.rpm?AuthParam=1528171145_762e53af24f72a13ba85e8be6afe98c9";
-    mv "jdk-8u172-linux-x64.rpm?AuthParam=1528171145_762e53af24f72a13ba85e8be6afe98c9" "${java_8}.rpm";
-    sudo rpm -ivh ${java_8}.rpm;
+    local java_version="${1}";
+    sudo rpm -ivh ${java_version};
   }
-  
-  # java with alternatives
-  sudo alternatives --install /usr/bin/java java /usr/java/latest/jre/bin/java 200000;
-  sudo alternatives --install /usr/bin/javaws javaws /usr/java/latest/jre/bin/javaws 200000;
-  sudo alternatives --install /usr/bin/javac javac /usr/java/latest/bin/javac 200000;
-  sudo alternatives --install /usr/bin/jar jar /usr/java/latest/bin/jar 200000;
-  # config alternatives
-  sudo alternatives --config java <<EOF
-2
+
+  for java_to_install in ${JAVA_RPMS} {
+    addJavaOracle "${java_to_install}";
+  }
+
+  # alternatives links following
+  # /usr/bin/java    -> /etc/alternatives/java    -> /usr/java/jdk1.8.0_171-amd64/jre/bin/java
+  # /usr/bin/javac   -> /etc/alternatives/javac   -> /usr/java/jdk1.8.0_171-amd64/bin/javac
+  # /usr/bin/jar     -> /etc/alternatives/jar     -> /usr/java/jdk1.8.0_171-amd64/bin/jar
+  # /usr/bin/javaws  -> /etc/alternatives/javaws  -> /usr/java/jdk1.8.0_171-amd64/jre/bin/javaws
+
+  # TIP: for fix REMOVE all alternatives with "remove_alternatives_java" and reinstall with "install_alternatives_java";
+
+  function restore_alternatives_java {
+    # Alternatives
+    sudo rm -rf /usr/bin/java;
+    sudo rm -rf /usr/bin/javaws;
+    sudo rm -rf /usr/bin/javac;
+    sudo rm -rf /usr/bin/jar;
+  }
+
+
+  function install_alternatives_java {
+    local java_version="$1";
+
+    sudo alternatives --install /usr/bin/java   java   /usr/java/${java_version}/jre/bin/java   2000;
+    sudo alternatives --install /usr/bin/javaws javaws /usr/java/${java_version}/jre/bin/javaws 2000;
+    sudo alternatives --install /usr/bin/javac  javac  /usr/java/${java_version}/bin/javac      2000;
+    sudo alternatives --install /usr/bin/jar    jar    /usr/java/${java_version}/bin/jar        2000;
+  }
+
+  function select_alternative_java {
+    local num="$1";
+    sudo alternatives --config <<EOF
+$num
 EOF
-  sudo alternatives --config javac <<EOF
-2
-EOF
-  sudo alternatives --config javaws <<EOF
-1
-EOF
-  # alternatives
-  #sudo alternatives --install /usr/bin/java java /usr/java/jdk1.7.0_80/jre/bin/java 200000;
-  #sudo alternatives --install /usr/bin/javac javac /usr/java/jdk1.7.0_80/bin/javac 200000;
-  #sudo alternatives --install /usr/bin/jar jar /usr/java/jdk1.7.0_80/bin/jar 200000;
-  #sudo alternatives --install /usr/bin/javaws javaws /usr/java/jdk1.7.0_80/jre/bin/javaws 200000;
+  }
+
+  function remove_alternatives_java {
+    local java_version="$1";
+
+    sudo alternatives --remove java   /usr/java/${java_version}/jre/bin/java;
+    sudo alternatives --remove javaws /usr/java/${java_version}/jre/bin/javaws;
+    sudo alternatives --remove javac  /usr/java/${java_version}/bin/javac;
+    sudo alternatives --remove jar    /usr/java/${java_version}/bin/jar;
+  }
+
+
+
+  for java_to_install in ${JAVA_INSTALL};do
+    install_alternatives_java "${java_to_install}";
+  done;
+
+
+  select_alternative_java 3;
+
   # java version
   java -version;
 
