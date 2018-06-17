@@ -1,5 +1,3 @@
-
-
 # ~/.bashrc: executed by bash(1) for non-login shells.
 # see /usr/share/doc/bash/examples/startup-files (in the package bash-doc)
 # for examples
@@ -102,7 +100,7 @@ alias l='ls -CF'
 
 # Add an "alert" alias for long running commands.  Use like so:
 #   sleep 10; alert
-alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo error)" "$(history|tail -n1|sed -e '\''s/^\s*[0-9]\+\s*//;s/[;&|]\s*alert$//'\'')"'
+#alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo error)" "$(history|tail -n1|sed -e '\''s/^\s*[0-9]\+\s*//;s/[;&|]\s*alert$//'\'')"'
 
 # Alias definitions.
 # You may want to put all your additions into a separate file like
@@ -139,16 +137,15 @@ export PATH=${PATH}:$ANDROID_HOME/tools:$ANDROID_HOME/platform-tools:$ANDROID_HO
 
 #java
 export JAVA_HOME='/usr/java/latest';
-export PATH=$JAVA_HOME'/bin':$PATH;
+export JDK_HOME="${JAVA_HOME}";
 
 #maven
 export PATH=$PATH:'~/bin/apache-maven-3.5.2/bin/';
 export MAVEN_HOME='~/bin/apache-maven-3.5.2';
 
 #gradle
-export PATH=$PATH:'~/bin/gradle-4.4.1/bin';
-export GRADLE_HOME='~/bin/gradle-4.4.1';
-export PATH=$PATH:'~/bin/google-cloud-sdk/platform/google_appengine';
+export PATH=$PATH:'~/bin/gradle/gradle-3.5/bin';
+export GRADLE_HOME='~/bin/gradle/gradle-3.5/';
 
 # geeko and chrome drivers
 export PATH=$PATH:'~/bin/browser_drivers/';
@@ -159,6 +156,9 @@ export PATH=$PATH:'~/.nvm/versions/node/v8.9.4/bin/node';
 
 # Fluter
 export PATH=$PATH:'~/bin/flutter/bin/';
+
+# SNAP
+export PATH=$PATH:'/snap/bin/';
 
 #docker
 function cloud-dev {
@@ -188,11 +188,16 @@ function cloud-dev {
     poxstone/cloud-dev:${tag} bash;
 }
 
+function mysqlStart {
+  docker run --rm --name mysql -p 3306:3306 -v $HOME/Documents/mysqldb/:/var/lib/mysql -e MYSQL_DATABASE=cloudkey -e MYSQL_ROOT_PASSWORD=Ove52SWE -e MYSQL_USER=admin -e MYSQL_PASSWORD=Ove52SWE -d mysql:5.7;
+}
+
 # The next line updates PATH for the Google Cloud SDK.
 if [ -f '/home/poxstone/bin/google-cloud-sdk/path.bash.inc' ]; then source '/home/poxstone/bin/google-cloud-sdk/path.bash.inc'; fi
 
 # The next line enables shell command completion for gcloud.
 if [ -f '/home/poxstone/bin/google-cloud-sdk/completion.bash.inc' ]; then source '/home/poxstone/bin/google-cloud-sdk/completion.bash.inc'; fi
+export PATH=$PATH:'~/bin/google-cloud-sdk/platform/google_appengine';
 
 
 function jenkins-run {
