@@ -380,8 +380,9 @@ function javaAndroid {
 
   #java oracle 8
   function addJavaOracle {
-    local java_version="${1}";
-    sudo rpm -ivh ${java_version};
+    local java_rpm="${1}";
+    wget "https://storage.googleapis.com/${BUCKET_GET}/${java_rpm}";
+    sudo rpm -ivh ${java_rpm};
   }
 
   for java_to_install in ${JAVA_RPMS} {
