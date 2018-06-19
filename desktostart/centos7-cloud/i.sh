@@ -393,9 +393,9 @@ function javaAndroid {
     sudo rpm -ivh ${java_rpm};
   }
 
-  for java_to_install in ${JAVA_RPMS} {
+  for java_to_install in ${JAVA_RPMS};do
     addJavaOracle "${java_to_install}";
-  }
+  done;
 
   # alternatives links following
   # /usr/bin/java    -> /etc/alternatives/java    -> /usr/java/jdk1.8.0_171-amd64/jre/bin/java
