@@ -8,3 +8,4 @@ curl -O curl -O https://raw.githubusercontent.com/poxstone/BASH_REPO/master/desk
 source i.sh;
 installAll;
 ```
+_
