@@ -231,15 +231,23 @@ EOF
     grep -m1 -nE "crypt_level" /etc/xrdp/xrdp.ini | awk -F ":" '{system("sed -i -e \""$1"s/"$2"/"$2"\\nchannel_code=1/\" /etc/xrdp/xrdp.ini")}';
   fi;
 
+
   if [[ ! $(grep -ne "\[vnc1\]" /etc/xrdp/xrdp.ini) ]];then
-  echo "[vnc1]
-name=vncserver
-lib=libvnc.so
-ip=localhost
-port=5901
-username=$DEV_USER
-password=$DEV_PASS
-" >> /etc/xrdp/xrdp.ini;
+  local session_line="$(grep -m1 -ne "; Session types" /etc/xrdp/xrdp.ini | awk -F ':' '{print($1)}')";
+  session_line=$((session_line+2));
+  local config_session="[vnc1]\\\n\
+name=vncserver\\\n\
+lib=libvnc.so\\\n\
+ip=localhost\\\n\
+port=5901\\\n\
+username=$DEV_USER\\\n\
+password=$DEV_PASS\\\n\
+xserverbpp=24\\\n\
+delay_ms=250\\\n\
+max_bpp=128\\\n\
+use_compression=yes\\\n\
+";
+  sudo echo "" | sudo awk -v _session_line="${session_line}" -v _config_session="${config_session}" '{print("sed -i -e \""_session_line"s/.*/"_config_session"/\" /etc/xrdp/xrdp.ini")}';
 
   fi;
   
@@ -626,6 +634,9 @@ EOF
   sudo -i -u $DEV_USER gcloud components update <<EOF
 y
 EOF
+
+  local STRING_CERBOT="alias cerbot=\"docker run --rm -it -p 443:443 -v \$HOME/cerbot:/etc/letsencrypt -v \$HOME/cerbot/log:/var/log/letsencrypt quay.io/letsencrypt/letsencrypt:latest\";";
+  sudo echo "$STRING_CERBOT" >> ${HOME_USER}.bashrc;
 
   setPython "old";
 
