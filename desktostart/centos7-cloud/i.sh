@@ -651,7 +651,7 @@ function devPrograms {
 
   echo "PLEASE: press Y and enter to continue...";
   sudo -i -u $DEV_USER ${HOME_USER}/bin/google-cloud-sdk/install.sh <<EOF
-
+y
 EOF
 
   sudo -i -u $DEV_USER gcloud components install beta alpha \
@@ -744,7 +744,7 @@ function installAll {
   if [[ ! "$(which tmux)" ]];then
     updateSystem;
     mainTools;
-    echo "please type \"tmux\" and execute: \"./i.sh\"";
+    echo "Please type \"tmux\" and execute: \"source ./i.sh\"";
   else
     initInfo;
     createUser;
@@ -773,4 +773,8 @@ function installAll {
   fi;
 }
 
-installAll;
+echo "Do you want install (y):";
+read isInstall;
+if [[ $isInstall == "y" || $isInstall == "Y"  ]];then
+  installAll;
+fi;
