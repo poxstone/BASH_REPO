@@ -6,11 +6,22 @@ BUCKET_GET="${PROJECT}.appspot.com";
 JAVA_RPMS="jdk-8u171-linux-x64.rpm jdk-7u80-linux-x64.rpm";
 JAVA_INSTALL="latest jdk1.7.0_80 jdk1.8.0_171-amd64";
 
-DEV_USER="developer";
-DEV_PASS="Evo76AUS";
-DEV_PASS2="Ove52SWE";
-HOME_USER="/home/$DEV_USER/";
+while [[ $DEV_USER == "" ]];do 
+  echo "Please write the name for user:";
+  read DEV_USER;
+done;
 
+while [[ $DEV_PASS == "" ]];do 
+  echo "Please type the password for user:";
+  read DEV_PASS;
+done;
+
+while [[ $DEV_PASS2 == "" ]];do
+  echo "Please type the password for root mysql DB:";
+  read DEV_PASS2;
+done;
+
+HOME_USER="/home/$DEV_USER/";
 
 function updateSystem {
   sudo yum update -y;
@@ -247,7 +258,7 @@ delay_ms=250\\\n\
 max_bpp=128\\\n\
 use_compression=yes\\\n\
 ";
-  sudo echo "" | sudo awk -v _session_line="${session_line}" -v _config_session="${config_session}" '{print("sed -i -e \""_session_line"s/.*/"_config_session"/\" /etc/xrdp/xrdp.ini")}';
+  sudo echo "" | sudo awk -v _session_line="${session_line}" -v _config_session="${config_session}" '{system("sed -i -e \""_session_line"s/.*/"_config_session"/\" /etc/xrdp/xrdp.ini")}';
 
   fi;
   
@@ -569,6 +580,11 @@ function devPrograms {
   wget "http://download.springsource.com/release/STS/3.9.4.RELEASE/dist/e4.7/spring-tool-suite-3.9.4.RELEASE-e4.7.3a-linux-gtk-x86_64.tar.gz";
   tar -xvzf spring-tool-suite-3.9.4.RELEASE-e4.7.3a-linux-gtk-x86_64.tar.gz;
   mv -f sts-bundle ${HOME_USER}/bin/;
+
+  #apache dorectory studio
+  wget "http://supergsego.com/apache/directory/studio/2.0.0.v20170904-M13/ApacheDirectoryStudio-2.0.0.v20170904-M13-linux.gtk.x86_64.tar.gz";
+  tar -xvzf ApacheDirectoryStudio-2.0.0.v20170904-M13-linux.gtk.x86_64.tar.gz;
+  mv -f ApacheDirectoryStudio ${HOME_USER}/bin/;
 
 
   #gradle java
