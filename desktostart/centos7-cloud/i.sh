@@ -651,10 +651,10 @@ function devPrograms {
   sudo -i -u $DEV_USER ${HOME_USER}/bin/google-cloud-sdk/install.sh <<EOF
 y
 EOF
-  if [[ "$(cat $HOME_USER/.bashrc)" == *"google-cloud-sdk"* ]];then
+  if [[ ! "$(cat $HOME_USER/.bashrc)" == *"google-cloud-sdk"* ]];then
     sudo -i -u $DEV_USER ${HOME_USER}/bin/google-cloud-sdk/install.sh;
   fi;
-  
+
   sudo -i -u $DEV_USER gcloud components install beta alpha \
   app-engine-python app-engine-python-extras kubectl \
   app-engine-java app-engine-php app-engine-go pubsub-emulator \
