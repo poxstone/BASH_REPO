@@ -6,22 +6,25 @@ BUCKET_GET="${PROJECT}.appspot.com";
 JAVA_RPMS="jdk-8u171-linux-x64.rpm jdk-7u80-linux-x64.rpm";
 JAVA_INSTALL="latest jdk1.7.0_80 jdk1.8.0_171-amd64";
 
-while [[ $DEV_USER == "" ]];do 
-  echo "Please write the name for user:";
-  read DEV_USER;
-done;
+function initInfo {
+  while [[ $DEV_USER == "" ]];do 
+    echo "Please write the name for user:";
+    read DEV_USER;
+  done;
 
-while [[ $DEV_PASS == "" ]];do 
-  echo "Please type the password for user:";
-  read DEV_PASS;
-done;
+  while [[ $DEV_PASS == "" ]];do 
+    echo "Please type the password for user:";
+    read DEV_PASS;
+  done;
 
-while [[ $DEV_PASS2 == "" ]];do
-  echo "Please type the password for root mysql DB:";
-  read DEV_PASS2;
-done;
+  while [[ $DEV_PASS2 == "" ]];do
+    echo "Please type the password for root mysql DB:";
+    read DEV_PASS2;
+  done;
 
-HOME_USER="/home/$DEV_USER/";
+  HOME_USER="/home/$DEV_USER/";
+}
+
 
 function updateSystem {
   sudo yum update -y;
@@ -720,30 +723,37 @@ function cleanInstallFiles {
 }
 
 function installAll {
-  createUser;
-  updateSystem;
-  cleanDnf;
-  #mountDisk;
-  mainTools;
-  devTools;
-  pipTools; # error
-  databases;
-  rubyTools;
-  mediaTool;
-  remote; ## error
-  apachePHP;
-  dockerTools; #docker compose pip
-  javaAndroid; # error by java
-  vimConfig;
-  nodeConfig;
-  installMariaDB;
-  devPrograms;
-  installGraphicVnc;
-  cleanDnf;
-  installWine;
-  cleanDnf;
-  manualSteps;
-  setPython "new";
-  cleanInstallFiles;
+  
+  if [[ ! "$(which tmux)" ]];then
+    updateSystem;
+    mainTools;
+    echo "please type \"tmux\" and execute: \"./i.sh\"";
+  else
+    initInfo;
+    createUser;
+    cleanDnf;
+    #mountDisk;
+    devTools;
+    pipTools; # error
+    databases;
+    rubyTools;
+    mediaTool;
+    remote; ## error
+    apachePHP;
+    dockerTools; #docker compose pip
+    javaAndroid; # error by java
+    vimConfig;
+    nodeConfig;
+    installMariaDB;
+    devPrograms;
+    installGraphicVnc;
+    cleanDnf;
+    installWine;
+    cleanDnf;
+    manualSteps;
+    setPython "new";
+    cleanInstallFiles;
+  fi;
 }
 
+installAll;
