@@ -5,6 +5,7 @@ PROJECT=`curl "http://metadata.google.internal/computeMetadata/v1/project/projec
 BUCKET_GET="${PROJECT}.appspot.com";
 JAVA_RPMS="jdk-8u171-linux-x64.rpm jdk-7u80-linux-x64.rpm";
 JAVA_INSTALL="latest jdk1.7.0_80 jdk1.8.0_171-amd64";
+GRAPH_INTERFACE=1;
 
 function initInfo {
   while [[ $DEV_USER == "" ]];do 
@@ -21,6 +22,16 @@ function initInfo {
     echo "Please type the password for root mysql DB:";
     read DEV_PASS2;
   done;
+
+  echo "interface 1=\"KDE Plasma Workspaces\" or  2=\"xfce4\" ";
+  read GRAPH_INTERFACE;
+  if [[ $GRAPH_INTERFACE == 2 ]];then
+    echo "xfce4 selected";
+  else
+    echo "KDE selected";
+  fi;
+
+  
 
   HOME_USER="/home/$DEV_USER/";
 }
@@ -216,7 +227,13 @@ function pipTools {
 }
 
 function installGraphicVnc {
-  sudo yum groupinstall -y "KDE Plasma Workspaces" tigervnc-server;
+  if [[ $GRAPH_INTERFACE == 1 ]];then
+    sudo yum groupinstall -y "KDE Plasma Workspaces" tigervnc-server;
+  else 
+   sudo yum install tightvncserver -y;
+   sudo yum install -y xfce4 xfce4-goodies;
+  fi;
+  
   sudo yum install -y xrdp tigervnc-server;
 
   sudo cp /lib/systemd/system/vncserver@.service /etc/systemd/system/vncserver@:1.service;
