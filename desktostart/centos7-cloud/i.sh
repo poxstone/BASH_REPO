@@ -23,15 +23,11 @@ function initInfo {
     read DEV_PASS2;
   done;
 
-  echo "interface 1=\"KDE Plasma Workspaces\" or  2=\"xfce4\" ";
+  echo "Interface to install:";
+  echo "1 = KDE Plasma Workspaces";
+  echo "2 = xfce4";
+  echo "3 = GNOME Desktop";
   read GRAPH_INTERFACE;
-  if [[ $GRAPH_INTERFACE == 2 ]];then
-    echo "xfce4 selected";
-  else
-    echo "KDE selected";
-  fi;
-
-  
 
   HOME_USER="/home/$DEV_USER/";
 }
@@ -90,6 +86,10 @@ EOF
 
 
 EOF
+
+  # enable ssh
+  sudo sed -i -e "s/PasswordAuthentication no/PasswordAuthentication yes/g"  /etc/ssh/sshd_config;
+  sudo systemctl restart sshd;
 }
 
 function mountDisk {
@@ -227,13 +227,21 @@ function pipTools {
 }
 
 function installGraphicVnc {
+  #sudo yum groupinstall -y "Server with GUI" -y;
+
   if [[ $GRAPH_INTERFACE == 1 ]];then
-    sudo yum groupinstall -y "KDE Plasma Workspaces" tigervnc-server;
-  else 
-   sudo yum install tightvncserver -y;
-   sudo yum install -y xfce4 xfce4-goodies;
+    sudo yum groupinstall -y "KDE Plasma Workspaces";
+  elif [[ $GRAPH_INTERFACE == 2 ]];then
+    sudo yum groupinstall -y "Xfce";
+  elif [[ $GRAPH_INTERFACE == 3 ]];then
+    sudo yum groupinstall -y "GNOME Desktop";
   fi;
+
+  # optimized 
+  sudo yum install -y x2goserver x2goserver-xsession;
   
+  # standar
+  #sudo yum install tightvncserver -y; # not avalible
   sudo yum install -y xrdp tigervnc-server;
 
   sudo cp /lib/systemd/system/vncserver@.service /etc/systemd/system/vncserver@:1.service;
