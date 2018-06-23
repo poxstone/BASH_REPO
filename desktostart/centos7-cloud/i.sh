@@ -661,6 +661,11 @@ function devPrograms {
   sudo -i -u git config --global user.name "${DEV_USER}";
   sudo -i -u git config --global user.email "${DEV_USER}@instance.vnc"  addTomcat "7" "7.0.88";
 
+  # docker cerbot
+  local STRING_CERBOT="alias cerbot=\"docker run --rm -it -p 443:443 -v \$HOME/cerbot:/etc/letsencrypt -v \$HOME/cerbot/log:/var/log/letsencrypt quay.io/letsencrypt/letsencrypt:latest\";";
+  sudo echo "${STRING_CERBOT}" >> ${HOME_USER}/.bashrc;
+
+
   # cloud sdk
   local gcloud_version="google-cloud-sdk-203.0.0-linux-x86_64";
   wget "https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/${gcloud_version}.tar.gz";
@@ -693,9 +698,6 @@ EOF
   sudo -i -u $DEV_USER gcloud components update <<EOF
 y
 EOF
-
-  local STRING_CERBOT="alias cerbot=\"docker run --rm -it -p 443:443 -v \$HOME/cerbot:/etc/letsencrypt -v \$HOME/cerbot/log:/var/log/letsencrypt quay.io/letsencrypt/letsencrypt:latest\";";
-  sudo echo "${STRING_CERBOT}" >> ${HOME_USER}/.bashrc;
 
   setPython "old";
 
