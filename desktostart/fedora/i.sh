@@ -108,7 +108,9 @@ function mediaTool {
 # Install remte desktop windows
 function remote {
   #remmina-plugins-gnome;
-  sudo dnf install remmina  remmina-plugins-rdp remmina-plugins-vnc --allowerasing -y; 
+  sudo dnf install -y remmina  remmina-plugins-rdp remmina-plugins-vnc --allowerasing;
+  sudo dnf install -y vinagre;
+  sudo dnf install -y x2goclient;
 }
 
 # Remmina-plugins-common
