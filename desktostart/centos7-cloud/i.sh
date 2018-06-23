@@ -236,7 +236,7 @@ function installGraphicVnc {
     XINIT_STRIG="startkde &";
   elif [[ $GRAPH_INTERFACE == 2 ]];then
     sudo yum groupinstall -y "Xfce";
-    XINIT_STRIG="xfce4-session & start xfce4 &";
+    XINIT_STRIG="xfce4-session & start xfce4 & xfce4-panel &";
   elif [[ $GRAPH_INTERFACE == 3 ]];then
     sudo yum groupinstall -y "GNOME Desktop";
     XINIT_STRIG="gnome-session &";
