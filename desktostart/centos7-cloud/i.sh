@@ -25,7 +25,7 @@ function initInfo {
 
   echo "Interface to install:";
   echo "1 = KDE Plasma Workspaces";
-  echo "2 = xfce4";
+  echo "2 = xfce";
   echo "3 = GNOME Desktop";
   read GRAPH_INTERFACE;
 
@@ -229,16 +229,24 @@ function pipTools {
 function installGraphicVnc {
   #sudo yum groupinstall -y "Server with GUI" -y;
 
+  local XINIT_STRIG="";
+
   if [[ $GRAPH_INTERFACE == 1 ]];then
     sudo yum groupinstall -y "KDE Plasma Workspaces";
+    XINIT_STRIG="startkde &";
   elif [[ $GRAPH_INTERFACE == 2 ]];then
     sudo yum groupinstall -y "Xfce";
+    XINIT_STRIG="xfce4-session & start xfce4 &";
   elif [[ $GRAPH_INTERFACE == 3 ]];then
     sudo yum groupinstall -y "GNOME Desktop";
+    XINIT_STRIG="gnome-session &";
   fi;
 
   # optimized 
   sudo yum install -y x2goserver x2goserver-xsession;
+  # enable ssh
+  sudo sed -i -e "s/PasswordAuthentication no/PasswordAuthentication yes/g"  /etc/ssh/sshd_config;
+  sudo systemctl restart sshd;
   
   # standar
   #sudo yum install tightvncserver -y; # not avalible
@@ -304,7 +312,8 @@ use_compression=yes\\\n\
 [ -r \$HOME/.Xresources ] && xrdb \$HOME/.Xresources
 xsetroot -solid grey
 #vncconfig -iconic &
-gnome-session &" >> ${HOME_USER}.vnc/xstartup;
+${XINIT_STRIG}" >> ${HOME_USER}.vnc/xstartup;
+
   fi;
 
   sudo systemctl restart vncserver@:1.service;
@@ -589,6 +598,9 @@ function devPrograms {
   local chrome_version="google-chrome-stable_current_x86_64.rpm";
   wget https://dl.google.com/linux/direct/google-chrome-stable_current_x86_64.rpm;
   sudo rpm -Uvh ${chrome_version};
+
+  # firefox
+  sudo yum install -y firefox;
 
   #pycharm
   local pycharm_version="pycharm-community-2018.1.4";
