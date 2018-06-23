@@ -374,7 +374,7 @@ function installAll {
   installTouch;
   installSpotify;
   devPrograms;
-  #cleanDnf;
+  cleanDnf;
 }
 
 
