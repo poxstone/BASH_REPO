@@ -137,13 +137,13 @@ function devTools {
   sudo make altinstall;
   local STRING_PYTHON_LIB="export LD_LIBRARY_PATH=/usr/local/lib:/usr/local/bin/python2.7:$LD_LIBRARY_PATH";
   local STRING_PY_ALIAS="alias python=/usr/local/bin/python2.7";
-  sudo echo "$STRING_PYTHON_LIB" >> ${HOME_USER}.bashrc;
-  sudo echo "$STRING_PY_ALIAS" >> ${HOME_USER}.bashrc;
+  sudo echo "$STRING_PYTHON_LIB" >> ${HOME_USER}/.bashrc;
+  sudo echo "$STRING_PY_ALIAS" >> ${HOME_USER}/.bashrc;
   sudo su $DEV_USER <<EOF
-  #echo "$STRING_PYTHON_LIB" >> ${HOME_USER}.bashrc;
-  #echo "$STRING_PY_ALIAS" >> ${HOME_USER}.bashrc;
+  #echo "$STRING_PYTHON_LIB" >> ${HOME_USER}/.bashrc;
+  #echo "$STRING_PY_ALIAS" >> ${HOME_USER}/.bashrc;
 EOF
-  bash ${HOME_USER}.bashrc && sudo bash ${HOME_USER}.bashrc;
+  bash ${HOME_USER}/.bashrc && sudo bash ${HOME_USER}/.bashrc;
 
   #sudo wget https://bitbucket.org/pypa/setuptools/raw/bootstrap/ez_setup.py;
   sudo wget https://bootstrap.pypa.io/ez_setup.py;
@@ -299,20 +299,20 @@ use_compression=yes\\\n\
   fi;
   
   # set resolution
-  if [[ ! "$( grep -nE "^geometry" ${HOME_USER}.vnc/config)" ]];then
-    echo "geometry=1366x920,720x1280,640x480,800x600,1024x768,1280x800,1280x960,1280x1024,1360x768,1400x1050,1600x1200,1680x1050,1920x1200,1920x1080" >> ${HOME_USER}.vnc/config;
+  if [[ ! "$( grep -nE "^geometry" ${HOME_USER}/.vnc/config)" ]];then
+    echo "geometry=1366x920,720x1280,640x480,800x600,1024x768,1280x800,1280x960,1280x1024,1360x768,1400x1050,1600x1200,1680x1050,1920x1200,1920x1080" >> ${HOME_USER}/.vnc/config;
   fi;
 
   # Disable kde and enable gnome
-  if [[ ! "$(grep -nE \"^gnome-session\" ${HOME_USER}.vnc/xstartup)" ]];then
-    sudo sed -i -e "s#exec /etc/X11/xinit/xinitrc#\#exec /etc/X11/xinit/xinitrc#g" ${HOME_USER}.vnc/xstartup;
+  if [[ ! "$(grep -nE \"^gnome-session\" ${HOME_USER}/.vnc/xstartup)" ]];then
+    sudo sed -i -e "s#exec /etc/X11/xinit/xinitrc#\#exec /etc/X11/xinit/xinitrc#g" ${HOME_USER}/.vnc/xstartup;
 
     echo "
 [ -x /etc/vnc/xstartup ] && exec /etc/vnc/xstartup
 [ -r \$HOME/.Xresources ] && xrdb \$HOME/.Xresources
 xsetroot -solid grey
 #vncconfig -iconic &
-${XINIT_STRIG}" >> ${HOME_USER}.vnc/xstartup;
+${XINIT_STRIG}" >> ${HOME_USER}/.vnc/xstartup;
 
   fi;
 
@@ -503,9 +503,9 @@ EOF
 
 # vim
 function vimConfig {
-  sudo mkdir -p ${HOME_USER}.vim/autoload;
-  sudo mkdir -p ${HOME_USER}.vim/bundle;
-  sudo curl -LSso ${HOME_USER}.vim/autoload/pathogen.vim https://tpo.pe/pathogen.vim;
+  sudo mkdir -p ${HOME_USER}/.vim/autoload;
+  sudo mkdir -p ${HOME_USER}/.vim/bundle;
+  sudo curl -LSso ${HOME_USER}/.vim/autoload/pathogen.vim https://tpo.pe/pathogen.vim;
   cd $HOME_USER.vim/bundle/;
 
   for i in https://github.com/mattn/emmet-vim \
@@ -523,16 +523,16 @@ function vimConfig {
 
   cd ${HOME_USER};
 
-  if [ ! -e ${HOME_USER}.vimrc ];then \
-    sudo touch ${HOME_USER}.vimrc; \
-    sudo chmod 775 ${HOME_USER}.vimrc; \
+  if [ ! -e ${HOME_USER}/.vimrc ];then \
+    sudo touch ${HOME_USER}/.vimrc; \
+    sudo chmod 775 ${HOME_USER}/.vimrc; \
   fi;
 
-  if ! sudo grep ${HOME_USER}.vimrc -e "execute pathogen#infect()";then \
-    sudo printf "set enc=utf-8\nset fileencoding=utf-8set hls\nset number\nset relativenumber\nset tabstop=2\nset shiftwidth=2\nset expandtab\nset cindent\nset wrap! \n" >> ${HOME_USER}.vimrc; \
-    sudo printf "xnoremap p pgvy\nnnoremap <C-H> :Hexmode<CR>\ninoremap <C-H> <Esc>:Hexmode<CR>\nvnoremap <C-H> :<C-U>Hexmet rela  de<CR> \n" >> ${HOME_USER}.vimrc; \
-    sudo printf "let mapleader = \",\"\nnmap <leader>ne :NERDTreeToggle<cr> \n" >> ${HOME_USER}.vimrc; \
-    sudo printf "execute pathogen#infect() \ncall pathogen#helptags() \nsyntax on \nfiletype plugin indent on \n" >> ${HOME_USER}.vimrc; \
+  if ! sudo grep ${HOME_USER}/.vimrc -e "execute pathogen#infect()";then \
+    sudo printf "set enc=utf-8\nset fileencoding=utf-8set hls\nset number\nset relativenumber\nset tabstop=2\nset shiftwidth=2\nset expandtab\nset cindent\nset wrap! \n" >> ${HOME_USER}/.vimrc; \
+    sudo printf "xnoremap p pgvy\nnnoremap <C-H> :Hexmode<CR>\ninoremap <C-H> <Esc>:Hexmode<CR>\nvnoremap <C-H> :<C-U>Hexmet rela  de<CR> \n" >> ${HOME_USER}/.vimrc; \
+    sudo printf "let mapleader = \",\"\nnmap <leader>ne :NERDTreeToggle<cr> \n" >> ${HOME_USER}/.vimrc; \
+    sudo printf "execute pathogen#infect() \ncall pathogen#helptags() \nsyntax on \nfiletype plugin indent on \n" >> ${HOME_USER}/.vimrc; \
   fi;
 
   cd $HOME_USER;
@@ -547,8 +547,8 @@ function nodeConfig {
     sudo su $DEV_USER <<EOF
     echo ${HOME_USER};
     curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.11/install.sh | bash;
-    source ${HOME_USER}.nvm/nvm.sh;
-    source ${HOME_USER}.bashrc;
+    source ${HOME_USER}/.nvm/nvm.sh;
+    source ${HOME_USER}/.bashrc;
     nvm install 8;
     nvm use 8;
     nvm alias default $(nvm current);
@@ -641,7 +641,7 @@ function devPrograms {
   addGradle "gradle-4.8";
 
   local STRING_GRADLE_LIB="export PATH=\$PATH:~/bin/gradle/gradle-4.8/bin;";
-  sudo echo "$STRING_GRADLE_LIB" >> ${HOME_USER}.bashrc;
+  sudo echo "$STRING_GRADLE_LIB" >> ${HOME_USER}/.bashrc;
 
   # tomcat
   function addTomcat {
@@ -687,7 +687,7 @@ EOF
 
   # add to path
   local STRING_APPENGINE_OVERWRITE="sed -i '1s/.*/#\!\/usr\/bin\/env python2.7/' \"\$(which dev_appserver.py)\";";
-  sudo echo "$STRING_APPENGINE_OVERWRITE" >> ${HOME_USER}.bashrc;
+  sudo echo "${STRING_APPENGINE_OVERWRITE}" >> ${HOME_USER}/.bashrc;
 
   # update gcloud
   sudo -i -u $DEV_USER gcloud components update <<EOF
@@ -695,7 +695,7 @@ y
 EOF
 
   local STRING_CERBOT="alias cerbot=\"docker run --rm -it -p 443:443 -v \$HOME/cerbot:/etc/letsencrypt -v \$HOME/cerbot/log:/var/log/letsencrypt quay.io/letsencrypt/letsencrypt:latest\";";
-  sudo echo "$STRING_CERBOT" >> ${HOME_USER}.bashrc;
+  sudo echo "${STRING_CERBOT}" >> ${HOME_USER}/.bashrc;
 
   setPython "old";
 
