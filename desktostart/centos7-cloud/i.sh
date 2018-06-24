@@ -311,7 +311,7 @@ use_compression=yes\\\n\
 [ -x /etc/vnc/xstartup ] && exec /etc/vnc/xstartup
 [ -r \$HOME/.Xresources ] && xrdb \$HOME/.Xresources
 xsetroot -solid grey
-#vncconfig -iconic &
+vncconfig -iconic &
 ${XINIT_STRIG}" >> ${HOME_USER}/.vnc/xstartup;
 
   fi;
@@ -581,12 +581,18 @@ EOF
 }
 
 function devPrograms {
+  #fish shell
+  cd /etc/yum.repos.d/;
+  sudo wget https://download.opensuse.org/repositories/shells:fish:release:2/CentOS_7/shells:fish:release:2.repo;
+  sudo yum install -y fish;
 
   cd;
 
   # client java
   wget https://dbeaver.io/files/dbeaver-ce-latest-stable.x86_64.rpm;
   sudo rpm -ivh dbeaver-ce-latest-stable.x86_64.rpm;
+
+  sudo sed -i -e "2s/.*/fish;/g" /etc/bashrc;
 
   # https://code.visualstudio.com/docs/setup/linux
   sudo rpm --import https://packages.microsoft.com/keys/microsoft.asc;
