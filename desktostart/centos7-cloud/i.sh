@@ -592,8 +592,6 @@ function devPrograms {
   wget https://dbeaver.io/files/dbeaver-ce-latest-stable.x86_64.rpm;
   sudo rpm -ivh dbeaver-ce-latest-stable.x86_64.rpm;
 
-  sudo sed -i -e "2s/.*/fish;/g" /etc/bashrc;
-
   # https://code.visualstudio.com/docs/setup/linux
   sudo rpm --import https://packages.microsoft.com/keys/microsoft.asc;
   sudo sh -c 'echo -e "[code]\nname=Visual Studio Code\nbaseurl=https://packages.microsoft.com/yumrepos/vscode\nenabled=1\ngpgcheck=1\ngpgkey=https://packages.microsoft.com/keys/microsoft.asc" > /etc/yum.repos.d/vscode.repo'
