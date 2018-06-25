@@ -9,3 +9,5 @@ source i.sh;
 installAll;
 ```
 _
+
+Pendiente revisar Gcloud
