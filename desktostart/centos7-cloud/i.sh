@@ -651,7 +651,15 @@ function devPrograms {
 
   local STRING_GRADLE_LIB="export PATH=\$PATH:~/bin/gradle/gradle-4.8/bin;";
   sudo echo "$STRING_GRADLE_LIB" >> ${HOME_USER}/.bashrc;
-
+  
+  # maven
+  sudo mkdir -p $HOME_USER/bin/maven/;
+  wget http://mirrors.gigenet.com/apache/maven/maven-3/3.5.4/binaries/apache-maven-3.5.4-bin.tar.gzhttp://mirrors.gigenet.com/apache/maven/maven-3/3.5.4/binaries/apache-maven-3.5.4-bin.tar.gz;
+  tar -xzf apache-maven-3.5.4-bin.tar.gz;
+  mv ./apache-maven-3.5.4/ $HOME_USER/bin/maven/;
+  restoreHomePermissions;
+  sudo echo "~/bin/maven/apache-maven-3.5.4/bin" >> ${HOME_USER}/.bashrc;
+  
   # tomcat
   function addTomcat {
     local tomcat_version="$1";
