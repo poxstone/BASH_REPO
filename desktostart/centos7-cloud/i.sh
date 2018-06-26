@@ -715,6 +715,8 @@ EOF
   sudo -i -u $DEV_USER gcloud components update <<EOF
 y
 EOF
+  # add download appengine app
+  sudo echo "alias appcfg.py=\"python /home/developer/bin/google-cloud-sdk/platform/google_appengine/appcfg.py\";" >> ${HOME_USER}/.bashrc;
 
   setPython "old";
 
