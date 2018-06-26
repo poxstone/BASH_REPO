@@ -13,4 +13,5 @@ _
 ### pendientes
 1. Pendiente revisar Gcloud
 1. Revisar unrar y p7zip
+1. Revisar maven
 
