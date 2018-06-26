@@ -10,4 +10,7 @@ installAll;
 ```
 _
 
-Pendiente revisar Gcloud
+### pendientes
+1. Pendiente revisar Gcloud
+1. Instalar una alternativa a Visual Studio Code (Sublime Text)
+
