@@ -658,7 +658,7 @@ function devPrograms {
   tar -xzf apache-maven-3.5.4-bin.tar.gz;
   mv ./apache-maven-3.5.4/ $HOME_USER/bin/maven/;
   restoreHomePermissions;
-  sudo echo "~/bin/maven/apache-maven-3.5.4/bin" >> ${HOME_USER}/.bashrc;
+  sudo echo "export PATH=\$PATH:~/bin/maven/apache-maven-3.5.4/bin" >> ${HOME_USER}/.bashrc;
   
   # tomcat
   function addTomcat {
