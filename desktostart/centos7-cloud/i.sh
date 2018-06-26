@@ -605,6 +605,11 @@ function devPrograms {
 
   # firefox
   sudo yum install -y firefox;
+  
+  # sublime
+  sudo rpm -v --import https://download.sublimetext.com/sublimehq-rpm-pub.gpg;
+  sudo yum-config-manager --add-repo https://download.sublimetext.com/rpm/stable/x86_64/sublime-text.repo;
+  sudo yum install -y sublime-text;
 
   #pycharm
   local pycharm_version="pycharm-community-2018.1.4";
