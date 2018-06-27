@@ -654,7 +654,7 @@ function devPrograms {
   
   # maven
   sudo mkdir -p $HOME_USER/bin/maven/;
-  wget http://mirrors.gigenet.com/apache/maven/maven-3/3.5.4/binaries/apache-maven-3.5.4-bin.tar.gzhttp://mirrors.gigenet.com/apache/maven/maven-3/3.5.4/binaries/apache-maven-3.5.4-bin.tar.gz;
+  wget http://mirrors.gigenet.com/apache/maven/maven-3/3.5.4/binaries/apache-maven-3.5.4-bin.tar;
   tar -xzf apache-maven-3.5.4-bin.tar.gz;
   mv ./apache-maven-3.5.4/ $HOME_USER/bin/maven/;
   restoreHomePermissions;
