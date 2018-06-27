@@ -645,7 +645,7 @@ function devPrograms {
     sudo mkdir -p $HOME_USER/bin/gradle/;
     wget "https://services.gradle.org/distributions/${gradle_version}-bin.zip";
     unzip ${gradle_version}-bin.zip;
-    mv ${gradle_version} $HOME_USER/bin/gradle/;
+    mv -f ${gradle_version} $HOME_USER/bin/gradle/;
     restoreHomePermissions;
   }
 
@@ -659,7 +659,7 @@ function devPrograms {
   sudo mkdir -p $HOME_USER/bin/maven/;
   wget http://mirrors.gigenet.com/apache/maven/maven-3/3.5.4/binaries/apache-maven-3.5.4-bin.tar;
   tar -xzf apache-maven-3.5.4-bin.tar.gz;
-  mv ./apache-maven-3.5.4/ $HOME_USER/bin/maven/;
+  mv -f ./apache-maven-3.5.4/ $HOME_USER/bin/maven/;
   restoreHomePermissions;
   sudo echo "export PATH=\$PATH:~/bin/maven/apache-maven-3.5.4/bin" >> ${HOME_USER}/.bashrc;
   
@@ -731,7 +731,7 @@ function installWine {
   cd /usr/src;
   sudo wget http://dl.winehq.org/wine/source/3.0/wine-3.0.tar.xz;
   sudo tar -Jxvf wine-3.0.tar.xz;
-  mv wine-3.0 wine64;
+  mv -f wine-3.0 wine64;
   sudo chmod -R 755 wine64;
   cp -rfa wine64 wine32;
   #64
