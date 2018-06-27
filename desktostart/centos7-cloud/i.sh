@@ -122,6 +122,9 @@ function devTools {
   sudo yum install samba-winbind-clients -y;
   sudo yum install -y glibc-devel.{i686,x86_64} libgcc.{i686,x86_64} libX11-devel.{i686,x86_64} freetype-devel.{i686,x86_64} gnutls-devel.{i686,x86_64} libxml2-devel.{i686,x86_64} libjpeg-turbo-devel.{i686,x86_64} libpng-devel.{i686,x86_64} libXrender-devel.{i686,x86_64} alsa-lib-devel.{i686,x86_64};
   sudo yum install -y libappindicator-gtk3;
+}
+
+function pythonUpdate {
 
   # python update (https://gist.github.com/guy4261/0e9f4081f1c6b078b436)
   # python update (https://tecadmin.net/install-python-2-7-on-centos-rhel/)
@@ -795,6 +798,7 @@ function installAll {
     cleanDnf;
     #mountDisk;
     devTools;
+    pythonUpdate;
     pipTools; # error
     databases;
     rubyTools;
@@ -808,6 +812,7 @@ function installAll {
     installMariaDB;
     devPrograms;
     installGraphicVnc;
+    devTools; # pass for second time needed
     cleanDnf;
     installWine;
     cleanDnf;
