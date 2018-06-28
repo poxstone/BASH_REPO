@@ -803,7 +803,7 @@ function duplicateUser {
   cd;
   createUser "$new_user" "$pass_new_user";
   #copy folder path
-  sudo cp -arfv "/home/$user_to_copy/" "/home/$new_user/";
+  sudo cp -rfv "/home/$user_to_copy/" "/home/$new_user/";
   
   local FILES=".bashrc .bash_profile";
   
