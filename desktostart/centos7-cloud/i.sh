@@ -67,20 +67,26 @@ $version
 EOF
 }
 
+# createUser user pass
 function createUser {
-  sudo useradd $DEV_USER;
-  sudo usermod -aG wheel $DEV_USER;
+  if [[ "$1" ]];then NEW_USER="$1";else NEW_USER="$DEV_USER";fi;
+  if [[ "$2" ]];then NEW_PASS="$2";else NEW_PASS="$DEV_PASS";fi;
+  
+  local HOME_USER="/home/$NEW_USER/";
+  
+  sudo useradd $NEW_USER;
+  sudo usermod -aG wheel $NEW_USER;
   sudo mkdir -p $HOME_USER/Downloads/ $HOME_USER/Documents/ $HOME_USER/bin/ $HOME_USER/Projects/ $HOME_USER/.ssh;
   sudo touch $HOME_USER/.bashrc $HOME_USER/.bash_profile;
   restoreHomePermissions;
-  sudo passwd $DEV_USER <<EOF
-$DEV_PASS
-$DEV_PASS
+  sudo passwd $NEW_USER <<EOF
+$NEW_PASS
+$NEW_PASS
 EOF
   
   echo "Please press enter fo continue...";
   # create ssh leave white spaces for enter
-  sudo -i -u $DEV_USER ssh-keygen <<EOF
+  sudo -i -u $NEW_USER ssh-keygen <<EOF
 
 
 
@@ -786,6 +792,19 @@ function cleanInstallFiles {
   sudo rm -rf *;
 }
 
+# duplicateUser user_to_copy new_user pass_new_user
+function duplicateUser {
+  local user_to_copy="$1";
+  local new_user="$2";
+  local pass_new_user="$3";
+  cd;
+  createUser "$new_user" "$pass_new_user";
+  
+  sudo cp -arf "$user_to_copy" "$new_user";
+  sudo chown -R "$new_user":"$new_user";
+  
+}
+
 function installAll {
   
   if [[ ! "$(which tmux)" ]];then
@@ -819,6 +838,7 @@ function installAll {
     manualSteps;
     setPython "new";
     cleanInstallFiles;
+    #duplicateUser from_user to_new_user new_pass;
   fi;
 }
 
