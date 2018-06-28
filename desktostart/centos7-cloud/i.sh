@@ -51,6 +51,8 @@ function cleanDnf {
 }
 
 function restoreHomePermissions {
+  if [[ "$1" ]];then local DEV_USER="$1";else local DEV_USER="$DEV_USER";fi;
+  local HOME_USER="/home/$DEV_USER/";
   sudo chown -R $DEV_USER:$DEV_USER $HOME_USER;
 }
 
@@ -69,8 +71,8 @@ EOF
 
 # createUser user pass
 function createUser {
-  if [[ "$1" ]];then NEW_USER="$1";else NEW_USER="$DEV_USER";fi;
-  if [[ "$2" ]];then NEW_PASS="$2";else NEW_PASS="$DEV_PASS";fi;
+  if [[ "$1" ]];then local NEW_USER="$1";else local NEW_USER="$DEV_USER";fi;
+  if [[ "$2" ]];then local NEW_PASS="$2";else local NEW_PASS="$DEV_PASS";fi;
   
   local HOME_USER="/home/$NEW_USER/";
   
@@ -78,8 +80,9 @@ function createUser {
   sudo usermod -aG wheel $NEW_USER;
   sudo mkdir -p $HOME_USER/Downloads/ $HOME_USER/Documents/ $HOME_USER/bin/ $HOME_USER/Projects/ $HOME_USER/.ssh;
   sudo touch $HOME_USER/.bashrc $HOME_USER/.bash_profile;
-  restoreHomePermissions;
-  sudo passwd $NEW_USER <<EOF
+  restoreHomePermissions $NEW_USER;
+  
+  sudo passwd "$NEW_USER" <<EOF
 $NEW_PASS
 $NEW_PASS
 EOF
@@ -111,7 +114,7 @@ function mountDisk {
 
 # Install tools
 function mainTools {
-  sudo yum install vim tmux htop lynx nmap tcpdump iotop -y;
+  sudo yum install vim tmux htop iotop lynx nmap tcpdump iotop -y;
 }
 
 # Dev tools
@@ -799,10 +802,21 @@ function duplicateUser {
   local pass_new_user="$3";
   cd;
   createUser "$new_user" "$pass_new_user";
+  #copy folder path
+  sudo cp -arfv "/home/$user_to_copy/" "/home/$new_user/";
   
-  sudo cp -arf "$user_to_copy" "$new_user";
-  sudo chown -R "$new_user":"$new_user";
+  local FILES=".bashrc .bash_profile";
   
+  for file in $FILES;do
+    sudo cp -rf "/home/${user_to_copy}/${file}" "/home/${new_user}/${file}" <<EOF
+y
+EOF
+    
+    grep -nHE "developer" "/home/${new_user}/${file}" | awk -F ":" -v _from_user="${user_to_copy}" -v _to_user="${new_user}" '{print("sed -i -e \""$2"s/"_from_user"/"_to_user"/\" "$1)}';
+    
+    restoreHomePermissions "${new_user}";
+    
+  done;
 }
 
 function installAll {
