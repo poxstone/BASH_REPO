@@ -809,7 +809,7 @@ function duplicateUser {
   local FILES=".bashrc .bash_profile .config/ bin/ .local/ .npm/ .nvm/ .ssh/ .vim/ .vimrc .vnc .vncrc";
   
   for file in $FILES;do
-    sudo cp -rf "/home/${user_to_copy}/${file}" "/home/${new_user}/${file}" <<EOF
+    sudo cp -rvf "/home/${user_to_copy}/${file}" "/home/${new_user}/${file}" <<EOF
 y
 EOF
     
