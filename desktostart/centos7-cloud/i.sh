@@ -812,7 +812,7 @@ function duplicateUser {
 y
 EOF
     
-    grep -nHE "developer" "/home/${new_user}/${file}" | awk -F ":" -v _from_user="${user_to_copy}" -v _to_user="${new_user}" '{print("sed -i -e \""$2"s/"_from_user"/"_to_user"/\" "$1)}';
+    grep -m1 -nHE "developer" "/home/${new_user}/${file}" | awk -F ":" -v _from_user="${user_to_copy}" -v _to_user="${new_user}" '{print("sed -i -e \"s/"_from_user"/"_to_user"/g\" "$1)}';
     
     restoreHomePermissions "${new_user}";
     
