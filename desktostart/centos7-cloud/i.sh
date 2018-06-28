@@ -812,8 +812,8 @@ function duplicateUser {
 y
 EOF
     
-    grep -m1 -nHE "developer" "/home/${new_user}/${file}" | awk -F ":" -v _from_user="${user_to_copy}" -v _to_user="${new_user}" '{system("sed -i -e \"s/\/"_from_user"\//\/"_to_user"\//g\" "$1)}';
-    
+    grep -m1 -rnHE "${user_to_copy}" "/home/${new_user}/${file}" | awk -F ":" -v _from_user="${user_to_copy}" -v _to_user="${new_user}" '{system("sed -i -e \"s/\\/"_from_user"/\\/"_to_user"/g\" "$1)}';
+
     sudo gpasswd -a $new_user docker;
     restoreHomePermissions "${new_user}";
     
