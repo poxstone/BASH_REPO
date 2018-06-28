@@ -805,8 +805,8 @@ function duplicateUser {
   #copy folder path
   sudo cp -rfv "/home/$user_to_copy/*" "/home/$new_user/*";
   sudo cp -rfv "/home/$user_to_copy/.*" "/home/$new_user/.*";
-  
-  local FILES=".bashrc .bash_profile .config/ bin/ .local/ .npm/ .nvm/ .ssh/ .vim/ .vimrc .vnc .vncrc";
+  # note: copy folder with *
+  local FILES=".bashrc .bash_profile .config/ bin/* .local/ .npm/ .nvm/ .ssh/ .vim/ .vimrc .vnc .vncrc";
   
   for file in $FILES;do
     sudo cp -rvf "/home/${user_to_copy}/${file}" "/home/${new_user}/${file}" <<EOF
