@@ -813,7 +813,9 @@ function duplicateUser {
 y
 EOF
     
-    grep --include "*.rc" --include "*.desktop" --include "*.sh" --include "*.ini" -m1 -rnHE "${user_to_copy}" "/home/${new_user}/${file}" | awk -F ":" -v _from_user="${user_to_copy}" -v _to_user="${new_user}" '{system("sed -i -e \"s/\\/"_from_user"/\\/"_to_user"/g\" "$1)}';
+    grep --include "*.rc" --include ".*" \
+         --include "*.desktop" --include "*.sh" --include "*.ini" \
+         -m1 -rnHE "${user_to_copy}" "/home/${new_user}/${file}" | awk -F ":" -v _from_user="${user_to_copy}" -v _to_user="${new_user}" '{system("sed -i -e \"s/\\/"_from_user"/\\/"_to_user"/g\" "$1)}';
   done;
   
   sudo gpasswd -a $new_user docker;
