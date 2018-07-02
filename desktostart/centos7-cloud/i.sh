@@ -711,7 +711,7 @@ EOF
     sudo -i -u $DEV_USER ${HOME_USER}/bin/google-cloud-sdk/install.sh;
   fi;
 
-  sudo -i -u $DEV_USER gcloud components install beta alpha \
+  sudo -i -u $DEV_USER gcloud components install -q beta alpha \
   app-engine-python app-engine-python-extras kubectl \
   app-engine-java app-engine-php app-engine-go pubsub-emulator \
   cloud-datastore-emulator gcd-emulator \
@@ -724,7 +724,7 @@ EOF
   sudo echo "${STRING_APPENGINE_OVERWRITE}" >> ${HOME_USER}/.bashrc;
 
   # update gcloud
-  sudo -i -u $DEV_USER gcloud components update <<EOF
+  sudo -i -u $DEV_USER gcloud components update -q <<EOF
 y
 EOF
   # add download appengine app
