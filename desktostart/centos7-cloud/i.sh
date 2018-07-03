@@ -499,12 +499,9 @@ EOF
     sudo alternatives --remove jar    /usr/java/${java_version}/bin/jar;
   }
 
-
-
   for java_to_install in ${JAVA_INSTALL};do
     install_alternatives_java "${java_to_install}";
   done;
-
 
   select_alternative_java 3;
 

@@ -1,22 +1,49 @@
 #!/bin/bash
-
 INIT_DIR=$(pwd);
-cd ~/Downloads/;
+#cd ~/Downloads/;
+
+function initInfo {
+  while [[ $DEV_USER == "" ]];do 
+    echo "Please write the name for user:";
+    read DEV_USER;
+  done;
+
+  while [[ $DEV_PASS == "" ]];do 
+    echo "Please type the password for user:";
+    read DEV_PASS;
+  done;
+
+  while [[ $DEV_PASS2 == "" ]];do
+    echo "Please type the password for root mysql DB:";
+    read DEV_PASS2;
+  done;
+
+  HOME_USER="/home/$DEV_USER/";
+}
 
 function updateSystem {
   sudo dnf update -y;
   sudo dnf upgrade -y;
+  sudo dnf clean all;
+}
+
+function cleanDnf {
+  sudo dnf clean dbcache;
+  sudo dnf clean expire-cache;
+  sudo dnf clean metadata;
+  sudo dnf clean packages;
+  sudo dnf clean all;
+
+  # fix dependences
+  sudo dnf update --best --allowerasing;
+  sudo dnf remove --duplicates;
 }
 
 # Install tools
-function toolsOS {
-  sudo dnf install vim tmux htop lynx nmap -y; 
-  #sudo rpm -qa | grep vim
-  #sudo rpm -e vim-minimal-8.0.662-1.fc26.x86_64 --nodeps
-  #sudo dnf list;
+function mainTools {
   sudo dnf check-update -y && sudo dnf upgrade -y; 
-
-  # https://docs.snapcraft.io/core/install-fedora
+  sudo dnf install vim tmux htop iotop lynx nmap tcpdump iotop -y;
+  # snap
   sudo dnf install snapd -y;
   sudo ln -s /var/lib/snapd/snap /snap;
 }
@@ -37,35 +64,65 @@ function devTools {
   sudo dnf install -y dh-autoreconf vim-enhanced curl-devel expat-devel gettext-devel openssl-devel apr-devel perl-devel zlib-devel libvirt;
   sudo dnf install -y asciidoc xmlto docbook2X binutils fedora-packager chrpath autoconf automake;
   sudo dnf install -y gcc gcc-c++ qt-devel libffi-devel dnf-plugins-core python python-devel nasm.x86_64 SDL* ant dkms kernel-devel dkms kernel-headers libstdc++.i686 subversion;
-}
+  sudo dnf install -y dh-autoreconf vim-enhanced curl-devel expat-devel gettext-devel openssl-devel apr-devel perl-devel zlib-devel libvirt gtkmm30 libgdkmm-3.0.so.1 proj proj;
+  sudo dnf install -y wget deluge rpm-build lsb sqlite-devel git-all kdiff3 openssh openssh-server ncurses-devel bzip2-devel;
+  sudo dnf install -y yum-utils device-mapper-persistent-data lvm2 p7zip; #unrar
+  sudo dnf install -y libX11-devel freetype-devel libxcb-devel libxslt-devel libgcrypt-devel libxml2-devel gnutls-devel libpng-devel libjpeg-turbo-devel libtiff-devel gstreamer-devel dbus-devel fontconfig-devel libappindicator;
+  sudo dnf install samba-winbind-clients -y;
+  sudo dnf install -y glibc-devel.{i686,x86_64} libgcc.{i686,x86_64} libX11-devel.{i686,x86_64} freetype-devel.{i686,x86_64} gnutls-devel.{i686,x86_64} libxml2-devel.{i686,x86_64} libjpeg-turbo-devel.{i686,x86_64} libpng-devel.{i686,x86_64} libXrender-devel.{i686,x86_64} alsa-lib-devel.{i686,x86_64};
+  sudo dnf install -y libappindicator-gtk3;
 
-# Epel-release getopt
-function osTools {
-  sudo dnf install wget -y; 
-  sudo dnf install deluge -y; 
-  sudo dnf install rpm-build lsb -y; 
-  sudo dnf install zlib-devel sqlite-devel -y; # instlall for ruby;
-  sudo dnf install git-all kdiff3 -y; 
+  # ssh
   sudo dnf install openssh openssh-server -y; 
   sudo systemctl enable sshd.service;
   sudo systemctl start sshd.service;
 
-  #tools iso to usb
+  #booting iso
   sudo dnf -y install unetbootin;
 }
 
 # Python
 function pipTools {
-  #sudo pip install --upgrade pip; # error on version 10.0.1
+  sudo pip install --upgrade pip; # error on version 10.0.1
   #sudo pip install pip==9.0.3 # use this if abode fails
+
+  sudo pip uninstall jrnl;#jrnl[encrypted]
+  sudo pip uninstall awscli;
+  sudo pip uninstall graphlab-create;
+
   sudo pip install jsonschema;
   sudo pip install requests;
-  sudo pip install jrnl[encrypted];
   sudo pip install ansible;
   sudo pip install cryptography;
   sudo pip install virtualenv;
   sudo pip install selenium;
   sudo dnf install python-pandas -y;
+  sudo pip install --upgrade requests-ftp;
+  sudo pip install --upgrade wrapt;
+  sudo pip install --upgrade setuptools;
+  sudo pip install --upgrade ez_setup;
+  sudo pip install --upgrade pyOpenSSL;
+  sudo pip install --upgrade jinja2;
+  sudo pip install --upgrade pyudev;
+  sudo pip install --upgrade dnspython;
+  sudo pip install --upgrade pyzmq;
+  sudo pip install --upgrade pygments;
+  sudo pip install --upgrade tornado;
+  sudo pip install --upgrade jsonschema;
+  sudo pip install --upgrade ipython; 
+  sudo pip install --upgrade "ipython[notebook]";
+  sudo pip install --upgrade requests;
+  sudo pip install --upgrade cryptography;
+  sudo pip install --upgrade graphlab-create;
+  sudo pip install --upgrade seaborn;
+  sudo pip install --upgrade oauth2client;
+  sudo pip install --upgrade rsa;
+  sudo pip install --upgrade rpm-py-installer;
+  sudo pip install --upgrade koji;
+
+  sudo dnf install -y python-devel python-nose python-setuptools gcc gcc-gfortran gcc-c++ blas-devel lapack-devel atlas-devel;
+  sudo dnf install -y python-paramiko;
+
   # browser drivers for sellenium
   if ! geckodriver --version || ! chromedriver --version ;then
       echo "Pendiente instalar los drivers de lo navegadores";
@@ -74,14 +131,24 @@ function pipTools {
 
 # Databases services
 function databases {
-  sudo dnf install postgresql-server postgresql-contrib postgresql-devel -y; 
+  sudo dnf install -y postgresql-server postgresql-contrib postgresql-devel;
   sudo systemctl enable postgresql;
   #init database with empty data required to initializaed
   if sudo ls /var/lib/pgsql/data ;then
-    sudo postgresql-setup --initdb --unit postgresql;
+    sudo postgresql-setup initdb postgresql;
   fi;
   sudo systemctl start postgresql;
-  sudo dnf install pgadmin3 -y; 
+  sudo passwd postgres <<EOF
+$DEV_PASS2
+$DEV_PASS2
+EOF
+  # config
+  sudo sed -i -e "s/\(\( peer\)\|\( ident\)\)/ md5/g" /var/lib/pgsql/data/pg_hba.conf;
+  sudo sed -i -e "s/^#listen_addresses/listen_addresses/g" /var/lib/pgsql/data/postgresql.conf;
+  sudo sed -i -e "s/^#port/port/g" /var/lib/pgsql/data/postgresql.conf;
+  sudo systemctl restart postgresql.service
+
+  sudo dnf install -y pgadmin3;
 }
 
 # Ruby
@@ -97,11 +164,12 @@ EOF
 
 # Install dsn, media apps and tools
 function mediaTool {
-  sudo dnf install gnome-color-manager -y; 
-  sudo dnf install gstreamer{1,}-{plugin-crystalhd,ffmpeg,plugins-{good,ugly,bad{,-free,-nonfree,-freeworld,-extras}{,-extras}}} libmpg123 lame-libs --setopt=strict=0 -y; 
+  sudo rpm --import http://li.nux.ro/download/nux/RPM-GPG-KEY-nux.ro;
+  sudo dnf install -y gnome-color-manager;
+  sudo dnf install -y gstreamer{1,}-{plugin-crystalhd,ffmpeg,plugins-{good,ugly,bad{,-free,-nonfree,-freeworld,-extras}{,-extras}}} libmpg123 lame-libs --setopt=strict=0; 
   # npapi-vlc
-  sudo dnf install gimp inkscape krita blender fontforge ImageMagick ImageMagick-devel ImageMagick-perl optipng vlc python-vlc -y; 
-  sudo dnf install mencoder ffmpeg -y; 
+  sudo dnf install -y gimp inkscape krita blender fontforge ImageMagick ImageMagick-devel ImageMagick-perl optipng vlc python-vlc;
+  sudo dnf install -y mencoder ffmpeg ffmpeg-devel;
   # snap install inkscape;
 }
 
@@ -116,7 +184,7 @@ function remote {
 # Remmina-plugins-common
 # Apache php
 function apachePHP {
-  sudo dnf install httpd -y; 
+  sudo dnf install -y httpd;
   sudo systemctl start httpd;
   sudo dnf install php php-common php-pdo_mysql php-pdo php-gd php-mbstring -y; 
   sudo systemctl restart httpd;
@@ -154,6 +222,7 @@ function dockerTools {
   sudo systemctl start docker;
   # docker compose
   sudo pip install docker-compose;
+  echo 'modify: /etc/docker/daemon.json with {"graph: "/home/user/bin/docker-images/"}';
 }
 
 # Android dev
@@ -163,32 +232,65 @@ function javaAndroid {
   sudo dnf install zlib.i686 ncurses-libs.i686 bzip2-libs.i686 -y;
   sudo dnf install fastboot -y;
   sudo dnf install usbutils -y;
-  #java oracle
-  if ! java -version;then
-      if [ -e ~/Downloads/programs/jdk-8u171-linux-x64.rpm ];then
-          sudo rpm -ivh ~/Downloads/programs/jdk-8u171-linux-x64.rpm;
-          sudo rpm -ivh ~/Downloads/programs/jdk-7u80-linux-x64.rpm;
-          # java with alternatives
-          sudo alternatives --install /usr/bin/java java /usr/java/latest/jre/bin/java 200000;
-          sudo alternatives --install /usr/bin/javaws javaws /usr/java/latest/jre/bin/javaws 200000;
-          sudo alternatives --install /usr/lib64/mozilla/plugins/libjavaplugin.so libjavaplugin.so.x86_64 /usr/java/latest/jre/lib/amd64/libnpjp2.so 200000;
-          sudo alternatives --install /usr/bin/javac javac /usr/java/latest/bin/javac 200000;
-          sudo alternatives --install /usr/bin/jar jar /usr/java/latest/bin/jar 200000;
-          # config alternatives
-          sudo alternatives --config java;
-          sudo alternatives --config javac;
-          sudo alternatives --config javaws;
-          # alternatives
-          sudo alternatives --install /usr/bin/java java /usr/java/jdk1.7.0_80/jre/bin/java 200000;
-          sudo alternatives --install /usr/bin/javac javac /usr/java/jdk1.7.0_80/bin/javac 200000;
-          sudo alternatives --install /usr/bin/jar jar /usr/java/jdk1.7.0_80/bin/jar 200000;
-          sudo alternatives --install /usr/bin/javaws javaws /usr/java/jdk1.7.0_80/jre/bin/javaws 200000;
-          # java version
-          java -version;
-      else
-          echo "java rpm no est en la carpeta de descargas";
-      fi;
-  fi;
+
+  #java
+  local JAVA_RPMS="jdk-7u80-linux-x64.rpm jdk-8u171-linux-x64.rpm";
+  local JAVA_ALTERNATIVES="jdk1.7.0_80 jdk1.8.0_171-amd64";
+  sudo dnf install -y java-1.8.0-openjdk;
+
+  #java oracle 8
+  function addJavaOracle {
+    local java_rpm="${1}";
+    sudo rpm -ivh ${HOME_USER}/Downloads/programs/${java_rpm};
+  }
+
+  function restore_alternatives_java {
+    # Alternatives
+    sudo rm -rf /usr/bin/java;
+    sudo rm -rf /usr/bin/javaws;
+    sudo rm -rf /usr/bin/javac;
+    sudo rm -rf /usr/bin/jar;
+  }
+
+  function install_alternatives_java {
+    local java_version="$1";
+
+    sudo alternatives --install /usr/bin/java   java   /usr/java/${java_version}/jre/bin/java   2000;
+    sudo alternatives --install /usr/bin/javaws javaws /usr/java/${java_version}/jre/bin/javaws 2000;
+    sudo alternatives --install /usr/bin/javac  javac  /usr/java/${java_version}/bin/javac      2000;
+    sudo alternatives --install /usr/bin/jar    jar    /usr/java/${java_version}/bin/jar        2000;
+  }
+
+  function select_alternative_java {
+    local num="$1";
+    sudo alternatives --config <<EOF
+$num
+EOF
+  }
+
+  function remove_alternatives_java {
+    local java_version="$1";
+
+    sudo alternatives --remove java   /usr/java/${java_version}/jre/bin/java;
+    sudo alternatives --remove javaws /usr/java/${java_version}/jre/bin/javaws;
+    sudo alternatives --remove javac  /usr/java/${java_version}/bin/javac;
+    sudo alternatives --remove jar    /usr/java/${java_version}/bin/jar;
+  }
+
+  # install oracle java
+  for java_to_install in ${JAVA_RPMS};do
+    addJavaOracle "${java_to_install}";
+  done;
+
+  # add alternatives
+  for java_to_add in ${JAVA_ALTERNATIVES};do
+    #install_alternatives_java "${java_to_add}";
+    echo "To java add; $java_to_add";
+  done;
+
+  # select alternatives
+  #select_alternative_java 3;
+
   # gradle java
   if java -version && gradle -v;then
       echo "gradle and java alternatives alreadyionstalled";
@@ -247,68 +349,13 @@ function nodeConfig {
 }
 
 
-function mysqlServ {
-  #mysql https://www.if-not-true-then-false.com/2010/install-mysql-on-fedora-centos-red-hat-rhel/
-  if ! mysql -v;then
-    sudo dnf -y install https://dev.mysql.com/get/mysql57-community-release-fc26-10.noarch.rpm;
-    sudo dnf -y --enablerepo=mysql80-community install mysql-community-server;
-    sudo systemctl start mysqld.service;
-    sudo systemctl enable mysqld.service;
-    #password
-    sudo rep 'A temporary password is generated for root@localhost' /var/log/mysqld.log |tail -1;
-    sudo /usr/bin/mysql_secure_installation;
-  fi;
+function installMariaDB {
 
-  #manual
-  echo "
-  ---## MANUAL INSTALATTIONS ###--
-    - change language in "sudo vim /etc/locale.conf"
-      LANG="en_US.UTF-8"
-      LC_CTYPE="en_US.UTF-8"
-    - chrome: install chrome (download)
-    - virtualbox: download), install, and install package extension
-    - java: download install and run  this (i.sh) again)
-        - .bashrc > export JAVA_HOME='/usr/java/jdk1.8.0_131'
-    - mysql: (donwlad and install):
-        - sudo dnf install mysql-community-server
-        - sudo systemctl start mysqld.service
-        - sudo systemctl enable mysqld.service
-          # set password root
-          vim /var/log/mysqld.log # and find password
-        - sudo /usr/bin/mysql_secure_installation
-          AND
-          - SHOW VARIABLES LIKE 'validate_password%';
-          - SET GLOBAL validate_password_policy=LOW;
-          - SET GLOBAL validate_password.policy=LOW;
-          - ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password AS '123456';
-    - workbench: download and install rpm mysql-workbench-community-6.3.9-1.fc26.x86_64.rpm
-    - tomcat: (donwload and run in folder)
-    - nvm: (download): https://github.com/creationix/nvm
-        - curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.2/install.sh | bash
-        export NVM_DIR='$HOME/.nvm'
-        [ -s '$NVM_DIR/nvm.sh' ] && \. '$NVM_DIR/nvm.sh'  # This loads nvm
-        [ -s '$NVM_DIR/bash_completion' ] && \. '$NVM_DIR/bash_completion'  # This loads nvm bash_completion
-    - etcher: from zio for install usb live
-    - postgres: (autoinstall and complete configuration):
-        - sudo su - postgres
-        - \password postgres
-            admin
-        - config files to md5:
-            - sudo vim /var/lib/pgsql/data/pg_hba.conf # change all to md5
-                local   all             all                                     md5
-                host    all             all             127.0.0.1/32            md5
-                host    all             all             ::1/128                 md5
-            - sudo vim /var/lib/pgsql/data/postgresql.conf # uncomment
-                listen_addresses = '*'
-                port = 5432 
-            - sudo systemctl restart postgresql.service
-    - Lightworks video editor download ftp://195.220.108.108/linux/rpmfusion/nonfree/fedora/releases/23/Everything/x86_64/os/Packages/l/libCg-3.1.0013-4.fc22.x86_64.rpm
-      later download https://www.lwks.com/videotutorials
-        - dnf install libCg-3.1.0013-4.fc22.x86_64.rpm
-        - dnf install lwks-14.0.0-amd64.rpm
-    - install apps progrms folder
-        dir_apps=~/Downloads/programs/;for app in $(find $dir_apps -name "*.rpm");do sudo dnf install -y ${dir_app}${app};done;
-  ";
+  sudo yum install -y mariadb;
+  sudo mysql_secure_installation;
+  sudo systemctl start mysql;
+  sudo systemctl enable mariadb.service;
+
 }
 
 #install programs dir
@@ -323,7 +370,7 @@ function installTouch {
   libinput-gestures-setup autostart; #user
 };
 
-function installSpotify{
+function installSpotify {
   #spootify
   sudo dnf -y config-manager --add-repo=http://negativo17.org/repos/fedora-spotify.repo;
   sudo dnf -y install spotify;
@@ -340,27 +387,14 @@ function devPrograms {
   sudo dnf install code -y;
 }
 
-function cleanDnf {
-  sudo dnf clean dbcache;
-  sudo dnf clean expire-cache;
-  sudo dnf clean metadata;
-  sudo dnf clean packages;
-  #sudo dnf clean plugins;
-  sudo dnf clean all;
-
-  # fix dependences
-  sudo dnf update --best --allowerasing;
-  sudo dnf remove --duplicates;
-}
-
 function installAll {
   updateSystem;
+  updateSystem;
   cleanDnf;
-  tools;
-  removePython;
+  mainTools;
+  #removePython;#noknow
   devTools;
-  osTools;
-  pipTools; # error
+  pipTools; # errors
   databases;
   rubyTools;
   mediaTool;
@@ -370,7 +404,7 @@ function installAll {
   javaAndroid; # error by java
   vimConfig;
   nodeConfig;
-  mysqlServ;
+  #installMariaDB; #errors
   installTouch;
   installSpotify;
   devPrograms;

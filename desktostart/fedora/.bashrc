@@ -144,8 +144,8 @@ export PATH=$PATH:'~/bin/apache-maven-3.5.2/bin/';
 export MAVEN_HOME='~/bin/apache-maven-3.5.2';
 
 #gradle
-export PATH=$PATH:'~/bin/gradle/gradle-3.5/bin';
-export GRADLE_HOME='~/bin/gradle/gradle-3.5/';
+export PATH=$PATH:'~/bin/gradle/gradle-4.4.1/bin';
+export GRADLE_HOME='~/bin/gradle/gradle-4.4.1/';
 
 # geeko and chrome drivers
 export PATH=$PATH:'~/bin/browser_drivers/';
@@ -212,4 +212,9 @@ function jenkins-run {
 #export LD_LIBRARY_PATH="/home/poxstone/Projects/GCP-SCRIPTS/GRUPO-A-SAP/libs";
 #export DYLD_LIBRARY_PATH="/home/poxstone/Projects/GCP-SCRIPTS/GRUPO-A-SAP/libs";
 #export CLASSPATH="/home/poxstone/Projects/GCP-SCRIPTS/GRUPO-A-SAP/libs/sapjco3.jar";
+
+# cerbot
+
+alias cerbot="docker run --rm -it -p 443:443 -v $HOME/cerbot:/etc/letsencrypt -v $HOME/cerbot/log:/var/log/letsencrypt quay.io/letsencrypt/letsencrypt:latest";
+#cerbot certonly --standalone -d example.com
 
