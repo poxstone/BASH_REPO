@@ -632,7 +632,7 @@ function devPrograms {
   local eclipse_version="eclipse-jee-photon-R-linux-gtk-x86_64";
   wget "http://download.obeo.fr/photon/${eclipse_version}.tar.gz";
   tar -xvzf ${eclipse_version}.tar.gz;
-  mv -f eclipse-installer ${HOME_USER}/bin/eclipse;
+  mv -f eclipse ${HOME_USER}/bin/eclipse;
   restoreHomePermissions;
 
   #sts spring
