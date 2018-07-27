@@ -629,8 +629,8 @@ function devPrograms {
   restoreHomePermissions;
 
   #eclipse 
-  local eclipse_version="eclipse-inst-linux64";
-  wget "http://eclipse.c3sl.ufpr.br/oomph/epp/photon/R/${eclipse_version}.tar.gz";
+  local eclipse_version="eclipse-jee-photon-R-linux-gtk-x86_64";
+  wget "http://download.obeo.fr/photon/${eclipse_version}.tar.gz";
   tar -xvzf ${eclipse_version}.tar.gz;
   mv -f eclipse-installer ${HOME_USER}/bin/eclipse;
   restoreHomePermissions;
