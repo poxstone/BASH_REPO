@@ -621,26 +621,26 @@ function devPrograms {
   sudo yum install -y sublime-text;
 
   #pycharm
-  local pycharm_version="pycharm-community-2018.1.4";
+  local pycharm_version="pycharm-community-2018.2";
   wget "https://download.jetbrains.com/python/${pycharm_version}.tar.gz";
   tar -xvzf ${pycharm_version}.tar.gz;
   mv -f ${pycharm_version} ${HOME_USER}/bin/;
   restoreHomePermissions;
 
-  #eclipse
-  local eclipse_version="eclipse-jee-oxygen-3a-linux-gtk-x86_64";
-  wget "http://eclipse.c3sl.ufpr.br/technology/epp/downloads/release/oxygen/3a/${eclipse_version}.tar.gz";
+  #eclipse 
+  local eclipse_version="eclipse-inst-linux64";
+  wget "http://eclipse.c3sl.ufpr.br/oomph/epp/photon/R/${eclipse_version}.tar.gz";
   tar -xvzf ${eclipse_version}.tar.gz;
-  mv -f eclipse ${HOME_USER}/bin/;
+  mv -f eclipse-installer ${HOME_USER}/bin/eclipse;
   restoreHomePermissions;
 
   #sts spring
-  wget "http://download.springsource.com/release/STS/3.9.4.RELEASE/dist/e4.7/spring-tool-suite-3.9.4.RELEASE-e4.7.3a-linux-gtk-x86_64.tar.gz";
-  tar -xvzf spring-tool-suite-3.9.4.RELEASE-e4.7.3a-linux-gtk-x86_64.tar.gz;
+  wget "http://download.springsource.com/release/STS/3.9.5.RELEASE/dist/e4.8/spring-tool-suite-3.9.5.RELEASE-e4.8.0-linux-gtk-x86_64.tar.gz";
+  tar -xvzf spring-tool-suite-3.9.5.RELEASE-e4.8.0-linux-gtk-x86_64.tar.gz;
   mv -f sts-bundle ${HOME_USER}/bin/;
 
   #apache dorectory studio
-  wget "http://supergsego.com/apache/directory/studio/2.0.0.v20170904-M13/ApacheDirectoryStudio-2.0.0.v20170904-M13-linux.gtk.x86_64.tar.gz";
+  wget "http://apache.uniminuto.edu/directory/studio/2.0.0.v20170904-M13/ApacheDirectoryStudio-2.0.0.v20170904-M13-linux.gtk.x86_64.tar.gz";
   tar -xvzf ApacheDirectoryStudio-2.0.0.v20170904-M13-linux.gtk.x86_64.tar.gz;
   mv -f ApacheDirectoryStudio ${HOME_USER}/bin/;
 
@@ -656,7 +656,7 @@ function devPrograms {
   }
 
   addGradle "gradle-3.5.1";
-  addGradle "gradle-4.8";
+  addGradle "gradle-4.9";
 
   local STRING_GRADLE_LIB="export PATH=\$PATH:~/bin/gradle/gradle-4.8/bin;";
   sudo echo "$STRING_GRADLE_LIB" >> ${HOME_USER}/.bashrc;
@@ -680,7 +680,7 @@ function devPrograms {
     restoreHomePermissions;
   }
 
-  addTomcat "8" "8.5.31";
+  addTomcat "8" "8.5.32";
   addTomcat "8" "8.0.52";
 
   # git
@@ -693,7 +693,7 @@ function devPrograms {
 
 
   # cloud sdk
-  local gcloud_version="google-cloud-sdk-203.0.0-linux-x86_64";
+  local gcloud_version="google-cloud-sdk-209.0.0-linux-x86_64";
   wget "https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/${gcloud_version}.tar.gz";
   tar -xvzf ${gcloud_version}.tar.gz;
   mv -f google-cloud-sdk ${HOME_USER}/bin/;
