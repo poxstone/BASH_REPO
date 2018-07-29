@@ -659,7 +659,7 @@ function devPrograms {
   addGradle "gradle-3.5.1";
   addGradle "gradle-4.9";
 
-  local STRING_GRADLE_LIB="export PATH=\$PATH:~/bin/gradle/gradle-4.8/bin;";
+  local STRING_GRADLE_LIB="export PATH=\$PATH:~/bin/gradle/gradle-4.9/bin;";
   sudo echo "$STRING_GRADLE_LIB" >> ${HOME_USER}/.bashrc;
   
   # maven
