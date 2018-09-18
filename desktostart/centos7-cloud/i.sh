@@ -170,6 +170,14 @@ EOF
   sudo alternatives --install /bin/python python /usr/local/bin/python2.7 50;
   sudo alternatives --install /bin/python python /usr/bin/python2 40;
   sudo alternatives --install /bin/python python /usr/local/bin/python2.7 50;
+  
+  # install pithon tools
+  wget https://bootstrap.pypa.io/get-pip.py;
+  sudo python2 get-pip.py;
+  sudo python2.7 get-pip.py;
+  sudo python3 get-pip.py;
+  sudo python3.4 get-pip.py;
+  rm -rf get-pip.py;
 
   # Change default python version
   setPython "old";
