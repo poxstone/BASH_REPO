@@ -598,6 +598,37 @@ EOF
 
 }
 
+function kvm {
+  # https://www.cyberciti.biz/faq/how-to-install-kvm-on-centos-7-rhel-7-headless-server/
+  sudo yum install -y qemu-kvm libvirt libvirt-python libguestfs-tools virt-install;
+  sudo systemctl enable libvirtd;
+  sudo systemctl start libvirtd;
+  sudo lsmod | grep -i kvm;
+  sudo brctl show;
+  sudo virsh net-list;
+  sudo virsh net-dumpxml default;
+  sudo su <<EOF
+echo "BRIDGE=br0" > /etc/sysconfig/network-scripts/enp3s0;
+echo 'DEVICE="br0"
+# I am getting ip from DHCP server #
+BOOTPROTO="dhcp"
+IPV6INIT="yes"
+IPV6_AUTOCONF="yes"
+ONBOOT="yes"
+TYPE="Bridge"
+DELAY="0"
+' > /etc/sysconfig/network-scripts/ifcfg-br0;
+EOF
+
+sudo systemctl restart NetworkManager;
+sudo brctl show;
+
+# permissions
+#sudo chown ${DEV_USER} /dev/kvm;
+sudo chmod o+x /dev/kvm;
+
+} 
+
 function devPrograms {
   #fish shell
   cd /etc/yum.repos.d/;
