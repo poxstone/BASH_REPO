@@ -598,7 +598,7 @@ EOF
 
 }
 
-function kvm {
+function installKvm {
   # https://www.cyberciti.biz/faq/how-to-install-kvm-on-centos-7-rhel-7-headless-server/
   sudo yum install -y qemu-kvm libvirt libvirt-python libguestfs-tools virt-install;
   sudo systemctl enable libvirtd;
@@ -883,6 +883,7 @@ function installAll {
     devPrograms;
     installGraphicVnc;
     devTools; # pass for second time needed
+    installKvm;
     cleanDnf;
     installWine;
     cleanDnf;
