@@ -115,7 +115,7 @@ function mountDisk {
 # Install tools
 function mainTools {
   updateSystem;
-  sudo yum install vim nano tmux htop iotop lynx nmap tcpdump iotop -y;
+  sudo yum install vim nano tmux htop iotop lynx nmap tcpdump iotop bind-utils -y;
 }
 
 # Dev tools
