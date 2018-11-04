@@ -127,6 +127,11 @@ function pipTools {
   if ! geckodriver --version || ! chromedriver --version ;then
       echo "Pendiente instalar los drivers de lo navegadores";
   fi;
+  
+  # python 3.7 and pip
+  sudo dnf install python37 -y;
+  wget https://bootstrap.pypa.io/get-pip.py;
+  sudo python3.7 get-pip.py;
 }
 
 # Databases services
