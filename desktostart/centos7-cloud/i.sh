@@ -122,6 +122,7 @@ function mainTools {
 function devTools {
   # Dev tools
   sudo yum install -y redhat-rpm-config;
+  sudo yum install -y centos-release-scl;
   sudo yum groupinstall -y --disablerepo=\* --enablerepo=base,updates,cr "Development Tools";
   sudo yum install -y dh-autoreconf vim-enhanced curl-devel expat-devel gettext-devel openssl-devel apr-devel perl-devel zlib-devel libvirt gtkmm30 libgdkmm-3.0.so.1 proj proj;
   sudo yum install -y asciidoc xmlto docbook2X binutils fedora-packager chrpath autoconf automake;
@@ -181,6 +182,13 @@ EOF
 
   # Change default python version
   setPython "old";
+  
+  # install python 3.6
+  sudo yum install -y rh-python36;
+  sudo ln -s /opt/rh/rh-python36/root/usr/bin/python3.6 /bin/python3.6;
+  sudo rm -rf /usr/bin/python3;
+  sudo ln -s /bin/python3.6 /bin/python3;
+  sudo python3.6 get-pip.py;
 
   cd;
 
