@@ -22,7 +22,7 @@ gcloud compute instances create centos-7kvm --zone us-east1-b \
     --image=nested-vm-image --boot-disk-size=50GB --boot-disk-type=pd-ssd;
 ```
 
-## install in centos
+## Create instance centos ans install manual
 ```bash
 
 # As root
@@ -44,8 +44,11 @@ source i.sh;
 tmux attach;
 
 ```
+> Note: Wait 2 hours for complete installation, configure main menú with app links
 _
 
 ### TO DO
-
+gcloud compute images create nested-centos-7-kvm \
+  --source-disk centos-7kvm --source-disk-zone us-east1-b \
+  --licenses "https://www.googleapis.com/compute/v1/projects/vm-options/global/licenses/enable-vmx";
 
