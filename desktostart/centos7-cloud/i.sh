@@ -688,8 +688,8 @@ function devPrograms {
   mv -f sts-bundle ${HOME_USER}/bin/;
 
   #apache dorectory studio
-  wget "http://apache.uniminuto.edu/directory/studio/2.0.0.v20170904-M13/ApacheDirectoryStudio-2.0.0.v20170904-M13-linux.gtk.x86_64.tar.gz";
-  tar -xvzf ApacheDirectoryStudio-2.0.0.v20170904-M13-linux.gtk.x86_64.tar.gz;
+  wget "https://www-us.apache.org/dist/directory/studio/2.0.0.v20180908-M14/ApacheDirectoryStudio-2.0.0.v20180908-M14-linux.gtk.x86_64.tar.gz"
+  tar -xvzf ApacheDirectoryStudio-2.0.0.v20180908-M14-linux.gtk.x86_64.tar.gz;
   mv -f ApacheDirectoryStudio ${HOME_USER}/bin/;
 
 
@@ -704,18 +704,19 @@ function devPrograms {
   }
 
   addGradle "gradle-3.5.1";
-  addGradle "gradle-4.9";
+  addGradle "gradle-4.10.2";
 
-  local STRING_GRADLE_LIB="export PATH=\$PATH:~/bin/gradle/gradle-4.9/bin;";
+  local STRING_GRADLE_LIB="export PATH=\$PATH:~/bin/gradle/gradle-4.10.2/bin;";
   sudo echo "$STRING_GRADLE_LIB" >> ${HOME_USER}/.bashrc;
   
   # maven
+  local maven_version='3.6.0';
   sudo mkdir -p $HOME_USER/bin/maven/;
-  wget http://apache.cs.utah.edu/maven/maven-3/3.5.4/binaries/apache-maven-3.5.4-bin.tar.gz;
-  tar -xzf apache-maven-3.5.4-bin.tar.gz;
-  mv -f ./apache-maven-3.5.4/ $HOME_USER/bin/maven/;
+  wget http://apache.cs.utah.edu/maven/maven-3/${maven_version}/binaries/apache-maven-${maven_version}-bin.tar.gz;
+  tar -xzf apache-maven-${maven_version}-bin.tar.gz;
+  mv -f ./apache-maven-${maven_version}/ $HOME_USER/bin/maven/;
   restoreHomePermissions;
-  sudo echo "export PATH=\$PATH:~/bin/maven/apache-maven-3.5.4/bin" >> ${HOME_USER}/.bashrc;
+  sudo echo "export PATH=\$PATH:~/bin/maven/apache-maven-${maven_version}/bin" >> ${HOME_USER}/.bashrc;
   
   # tomcat
   function addTomcat {
@@ -728,7 +729,7 @@ function devPrograms {
     restoreHomePermissions;
   }
 
-  addTomcat "8" "8.5.32";
+  addTomcat "8" "8.5.35";
   addTomcat "8" "8.0.52";
 
   # git
