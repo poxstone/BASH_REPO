@@ -656,9 +656,15 @@ function devPrograms {
   sudo yum install -y code;
 
   #chrome
-  local chrome_version="google-chrome-stable_current_x86_64.rpm";
-  wget https://dl.google.com/linux/direct/google-chrome-stable_current_x86_64.rpm;
-  sudo rpm -Uvh ${chrome_version};
+  cat << EOF > /etc/yum.repos.d/google-chrome.repo
+[google-chrome]
+name=google-chrome
+baseurl=http://dl.google.com/linux/chrome/rpm/stable/x86_64
+enabled=1
+gpgcheck=1
+gpgkey=https://dl.google.com/linux/linux_signing_key.pub
+EOF
+  sudo yum install -y google-chrome-stable;
 
   # firefox
   sudo yum install -y firefox;
