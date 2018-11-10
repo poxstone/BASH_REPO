@@ -723,23 +723,23 @@ function devPrograms {
     local tomcat_version="$1";
     local tomcat_subversion="$2";
     sudo mkdir -p $HOME_USER/bin/tomcat/;
-    wget "http://apache.uniminuto.edu/tomcat/tomcat-${tomcat_version}/v${tomcat_subversion}/bin/apache-tomcat-${tomcat_subversion}.tar.gz";
+    wget "https://www-us.apache.org/dist/tomcat/tomcat-${tomcat_version}/v${tomcat_subversion}/bin/apache-tomcat-${tomcat_subversion}.tar.gz";
     tar -xvzf "apache-tomcat-${tomcat_subversion}.tar.gz";
     mv -f "apache-tomcat-${tomcat_subversion}" ${HOME_USER}/bin/tomcat/;
     restoreHomePermissions;
   }
 
   addTomcat "8" "8.5.35";
-  addTomcat "8" "8.0.52";
+  addTomcat "8" "8.0.53";
 
   # git
-  sudo -i -u git config --global user.name "${DEV_USER}";
-  sudo -i -u git config --global user.email "${DEV_USER}@instance.vnc"  addTomcat "7" "7.0.88";
+  sudo -i -u ${DEV_USER} git config --global user.name "${DEV_USER}";
+  sudo -i -u ${DEV_USER} git config --global user.email "${DEV_USER}@instance.vnc";
+  addTomcat "7" "7.0.91";
 
   # docker cerbot
   local STRING_CERBOT="alias cerbot=\"docker run --rm -it -p 443:443 -v \$HOME/cerbot:/etc/letsencrypt -v \$HOME/cerbot/log:/var/log/letsencrypt quay.io/letsencrypt/letsencrypt:latest\";";
   sudo echo "${STRING_CERBOT}" >> ${HOME_USER}/.bashrc;
-
 
   # cloud sdk
   local gcloud_version="google-cloud-sdk-224.0.0-linux-x86_64";
@@ -754,14 +754,20 @@ function devPrograms {
 y
 EOF
   if [[ ! "$(cat $HOME_USER/.bashrc)" == *"google-cloud-sdk"* ]];then
-    sudo -i -u $DEV_USER ${HOME_USER}/bin/google-cloud-sdk/install.sh;
+    sudo -i -u $DEV_USER echo "if [ -f '~/bin/google-cloud-sdk/completion.bash.inc' ]; then source '~/bin/google-cloud-sdk/completion.bash.inc'; fi;" >> ${HOME_USER}/.bashrc;
+    sudo -i -u $DEV_USER echo "export PATH=PATH:'~/bin/google-cloud-sdk/platform/google_appengine';" >> ${HOME_USER}/.bashrc;
+    sudo -i -u $DEV_USER echo "export PATH=PATH:'~/bin/google-cloud-sdk/bin';" >> ${HOME_USER}/.bashrc;
+    sudo sed -i -e "s/PATH=PATH/PATH=\$PATH/g"  ${HOME_USER}/.bashrc;
+    
+    sudo -i -u $DEV_USER ${HOME_USER}/bin/google-cloud-sdk/install.sh <<EOF
+y
+EOF
   fi;
-
+  
   sudo -i -u $DEV_USER gcloud components install -q beta alpha \
-  app-engine-python app-engine-python-extras kubectl \
+  app-engine-python app-engine-python-extras kubectl bq \
   app-engine-java app-engine-php app-engine-go pubsub-emulator \
-  cloud-datastore-emulator gcd-emulator \
-  docker-credential-gcr kubectl <<EOF
+  cloud-datastore-emulator gcd-emulator docker-credential-gcr <<EOF
 y
 EOF
 
