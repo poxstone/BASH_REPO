@@ -146,7 +146,7 @@ function pythonUpdate {
   cd Python-2.7.15;
   sudo ./configure --prefix=/usr/local --enable-shared --enable-unicode=ucs4;
   sudo ./configure --enable-optimizations;
-  sudo make && sudo make altinstall;
+  #sudo make && sudo make altinstall;
   sudo make altinstall;
   local STRING_PYTHON_LIB="export LD_LIBRARY_PATH=/usr/local/lib:/usr/local/bin/python2.7:$LD_LIBRARY_PATH";
   local STRING_PY_ALIAS="alias python=/usr/local/bin/python2.7";
@@ -733,7 +733,7 @@ function devPrograms {
 
 
   # cloud sdk
-  local gcloud_version="google-cloud-sdk-209.0.0-linux-x86_64";
+  local gcloud_version="google-cloud-sdk-224.0.0-linux-x86_64";
   wget "https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/${gcloud_version}.tar.gz";
   tar -xvzf ${gcloud_version}.tar.gz;
   mv -f google-cloud-sdk ${HOME_USER}/bin/;
