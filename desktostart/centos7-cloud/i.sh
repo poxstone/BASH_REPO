@@ -228,7 +228,7 @@ function pipTools {
   sudo pip install --upgrade graphlab-create; # observe
   sudo pip install --upgrade seaborn;
   sudo pip install --upgrade oauth2client;
-
+  sudo pip install --upgrade "pylint<2.0.0";
   
   sudo pip install --upgrade rpm-py-installer; # not found
   sudo pip install --upgrade koji; # se daña
