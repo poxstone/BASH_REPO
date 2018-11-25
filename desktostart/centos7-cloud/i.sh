@@ -130,7 +130,8 @@ function devTools {
   sudo yum install -y wget deluge rpm-build lsb sqlite-devel git-all kdiff3 openssh openssh-server ncurses-devel bzip2-devel;
   sudo yum install -y yum-utils device-mapper-persistent-data lvm2 p7zip unrar;
   sudo yum install -y libX11-devel freetype-devel libxcb-devel libxslt-devel libgcrypt-devel libxml2-devel gnutls-devel libpng-devel libjpeg-turbo-devel libtiff-devel gstreamer-devel dbus-devel fontconfig-devel libappindicator;
-  sudo yum install -y gtkglext-libs gtkglext-devel;
+  # anydesk and teamviewer
+  sudo yum install -y gtkglext-libs gtkglext-devel qt5-qtbase-gui qt5-qtbase-devel qt5-qtbase-common qt5-qtwebkit qt5-qtquickcontrols qt5-qtx11extras;
   sudo yum install -y samba-winbind-clients;
   sudo yum install -y glibc-devel.{i686,x86_64} libgcc.{i686,x86_64} libX11-devel.{i686,x86_64} freetype-devel.{i686,x86_64} gnutls-devel.{i686,x86_64} libxml2-devel.{i686,x86_64} libjpeg-turbo-devel.{i686,x86_64} libpng-devel.{i686,x86_64} libXrender-devel.{i686,x86_64} alsa-lib-devel.{i686,x86_64};
   sudo yum install -y libappindicator-gtk3;
