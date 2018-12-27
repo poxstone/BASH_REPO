@@ -432,6 +432,10 @@ function apachePHP {
 # DOCKER
 function dockerTools {
 
+  # enable fordware for build images
+  echo "net.ipv4.ip_forward=1" >> /etc/sysctl.conf;
+  sudo systemctl restart network;
+
   sudo yum remove -y docker docker-client docker-client-latest docker-common docker-latest docker-latest-logrotate docker-logrotate docker-selinux docker-engine-selinux docker-engine;
   sudo yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo;
   sudo yum-config-manager --enable docker-ce-edge;
