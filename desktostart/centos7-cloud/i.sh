@@ -80,6 +80,8 @@ function createUser {
   sudo usermod -aG wheel $NEW_USER;
   sudo mkdir -p $HOME_USER/Downloads/ $HOME_USER/Documents/ $HOME_USER/bin/ $HOME_USER/Projects/ $HOME_USER/.ssh;
   sudo touch $HOME_USER/.bashrc $HOME_USER/.bash_profile;
+  # Add color to user prompt
+  echo "S1='\[\033[01;35m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\${PWD##*/}\[\033[00m\]\\$ ';" >> $HOME_USER/.bashrc;
   restoreHomePermissions $NEW_USER;
   
   sudo passwd "$NEW_USER" <<EOF
