@@ -643,6 +643,11 @@ sudo brctl show;
 #sudo chown ${DEV_USER} /dev/kvm;
 sudo chmod o+x /dev/kvm;
 
+#  irtual box https://libre-software.net/install-virtualbox-on-centos-scientific-linux-rhel/
+sudo yum install dkms;
+sudo wget -P /etc/yum.repos.d http://download.virtualbox.org/virtualbox/rpm/rhel/virtualbox.repo;
+sudo yum install -y VirtualBox-6.0;
+sudo usermod -a -G vboxusers ${DEV_USER};
 } 
 
 function devPrograms {
