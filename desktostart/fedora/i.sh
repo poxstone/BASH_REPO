@@ -239,8 +239,8 @@ function javaAndroid {
   sudo dnf install usbutils -y;
 
   #java
-  local JAVA_RPMS="jdk-7u80-linux-x64.rpm jdk-8u171-linux-x64.rpm";
-  local JAVA_ALTERNATIVES="jdk1.7.0_80 jdk1.8.0_171-amd64";
+  local JAVA_RPMS="jdk-7u80-linux-x64.rpm jdk-8u191-linux-x64.rpm";
+  local JAVA_ALTERNATIVES="jdk1.7.0_80 jdk1.8.0_91-amd64";
   sudo dnf install -y java-1.8.0-openjdk;
 
   #java oracle 8
@@ -400,11 +400,11 @@ function installAll {
   #removePython;#noknow
   devTools;
   pipTools; # errors
-  databases;
-  rubyTools;
+  #databases;
+  #rubyTools;
   mediaTool;
   remote; ## error
-  apachePHP;
+  #apachePHP;
   dockerTools; #docker compose pip
   javaAndroid; # error by java
   vimConfig;
