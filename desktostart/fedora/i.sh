@@ -92,6 +92,7 @@ function pipTools {
 
   sudo pip install jsonschema;
   sudo pip install flask;
+  sudo pip install pylint;
   sudo pip install requests;
   sudo pip install ansible;
   sudo pip install cryptography;
