@@ -182,7 +182,6 @@ EOF
   sudo python2.7 get-pip.py;
   sudo python3 get-pip.py;
   sudo python3.4 get-pip.py;
-  rm -rf get-pip.py;
 
   # Change default python version
   setPython "old";
@@ -193,6 +192,7 @@ EOF
   sudo rm -rf /usr/bin/python3;
   sudo ln -s /bin/python3.6 /bin/python3;
   sudo python3.6 get-pip.py;
+  sudo python3.6 -m pip install virtualenv --upgrade;
 
   cd;
 
