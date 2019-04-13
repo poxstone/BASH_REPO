@@ -803,10 +803,19 @@ EOF
 y
 EOF
   # add download appengine app
-  sudo echo "alias appcfg.py=\"python /home/developer/bin/google-cloud-sdk/platform/google_appengine/appcfg.py\";" >> ${HOME_USER}/.bashrc;
+  sudo echo "alias appcfg.py=\"python ${HOME_USER}/bin/google-cloud-sdk/platform/google_appengine/appcfg.py\";" >> ${HOME_USER}/.bashrc;
 
   setPython "old";
-
+  
+  # add vscode/code-server
+  # TODO:update version
+  cd ${HOME_USER}/bin/;
+  VSCODE_VERSION="1.696-vsc1.33.0";
+  wget https://github.com/codercom/code-server/releases/download/${VSCODE_VERSION}/code-server${VSCODE_VERSION}-linux-x64.tar.gz;
+  tar -xzvf code-server${VSCODE_VERSION}-linux-x64.tar.gz;
+  rm -rf code-server${VSCODE_VERSION}-linux-x64.tar.gz;
+  mv code-server${VSCODE_VERSION}-linux-x64 code-server;
+  sudo echo "alias code-server=\"~/bin/code-server/code-server --allow-http -e ~/.vscode/extensions -d ~/.config/Code\";" >> ${HOME_USER}/.bashrc;
 }
 
 function installWine {
