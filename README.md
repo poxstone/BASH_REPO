@@ -3,23 +3,22 @@
 ## Create vm-machine
 ```bash
 # Create centos 7 disk
-gcloud compute disks create centos-7-kvm --image-project centos-cloud --image-family centos-7;
+gcloud compute disks create base-centos7-kvm --zone us-east1-b --image-project centos-cloud --image-family centos-7;
 
 # Create image from previous disk and add kvm licence
 gcloud compute images create nested-vm-image \
-  --source-disk centos-7-kvm --source-disk-zone us-east1-b \
+  --source-disk base-centos7-kvm --source-disk-zone us-east1-b \
   --licenses "https://www.googleapis.com/compute/v1/projects/vm-options/global/licenses/enable-vmx";
 
 # Delete previous disk
-gcloud compute disks delete centos-7-kvm -q;
+gcloud compute disks delete base-centos7-kvm --zone us-east1-b -q;
 
 # Create instance with kvm licenced imaage
 gcloud compute instances create centos-7kvm --zone us-east1-b \
     --machine-type=n1-standard-2 --can-ip-forward --maintenance-policy=TERMINATE \
-    --service-account=428900971504-compute@developer.gserviceaccount.com \
-    --metadata=startup-script=curl\ -O\ curl\ -O\ https://raw.githubusercontent.com/poxstone/BASH_REPO/master/desktostart/centos7-cloud/i.sh\; \
+    --metadata=startup-script=curl\ -O\ curl\ -O\ https://raw.githubusercontent.com/poxstone/BASH_REPO/master/desktostart/centos7-cloud/i.sh-\; \
     --scopes=https://www.googleapis.com/auth/cloud-platform --tags=all,vnc,http-server,https-server \
-    --image=nested-vm-image --boot-disk-size=50GB --boot-disk-type=pd-ssd;
+    --image=nested-vm-image --boot-disk-size=80GB --boot-disk-type=pd-standard;
 ```
 
 ## Create instance centos ans install manual
