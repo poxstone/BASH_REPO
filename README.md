@@ -16,7 +16,7 @@ gcloud compute disks delete base-centos7-kvm --zone us-east1-b -q;
 # Create instance with kvm licenced imaage
 gcloud compute instances create centos-7kvm --zone us-east1-b \
     --machine-type=n1-standard-2 --can-ip-forward --maintenance-policy=TERMINATE \
-    --metadata=startup-script=curl\ -O\ curl\ -O\ https://raw.githubusercontent.com/poxstone/BASH_REPO/master/desktostart/centos7-cloud/i.sh-\; \
+    --metadata=startup-script=curl\ -O\ curl\ -O\ https://raw.githubusercontent.com/poxstone/BASH_REPO/master/desktostart/centos7-cloud/i.sh\; \
     --scopes=https://www.googleapis.com/auth/cloud-platform --tags=all,vnc,http-server,https-server \
     --image=nested-vm-image --boot-disk-size=80GB --boot-disk-type=pd-standard;
 ```
