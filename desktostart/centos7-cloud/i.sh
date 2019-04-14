@@ -137,39 +137,27 @@ function pipLibs {
   local PYTHON_EXEC="${1}";
 
   #remove for errors
-  sudo ${PYTHON_EXEC} -m pip uninstall -y rpkg;
-
+  sudo ${PYTHON_EXEC} -m pip install --upgrade rpkg;
   sudo ${PYTHON_EXEC} -m pip install --upgrade pip;
   sudo ${PYTHON_EXEC} -m pip install --upgrade setuptools; # py27 error
   sudo ${PYTHON_EXEC} -m pip install --upgrade ez_setup;
   sudo ${PYTHON_EXEC} -m easy_install -U setuptools;
-  sudo ${PYTHON_EXEC} -m pip install --upgrade pyOpenSSL; # py2 error 'pyOpenSSL'. It is a distutils installed
-  sudo ${PYTHON_EXEC} -m pip install --upgrade jinja2;
+  sudo ${PYTHON_EXEC} -m pip install --upgrade rpm-py-installer;
   sudo ${PYTHON_EXEC} -m pip install --upgrade pyudev;
-  sudo ${PYTHON_EXEC} -m pip install --upgrade dnspython;
-  sudo ${PYTHON_EXEC} -m pip install --upgrade pyzmq;
-  sudo ${PYTHON_EXEC} -m pip install --upgrade pygments;
-  sudo ${PYTHON_EXEC} -m pip install --upgrade tornado;
-  sudo ${PYTHON_EXEC} -m pip install --upgrade jsonschema; # py2 require rpkg
-  sudo ${PYTHON_EXEC} -m pip install --upgrade ipython;
-  sudo ${PYTHON_EXEC} -m pip install --upgrade python-dateutil;
-  sudo ${PYTHON_EXEC} -m pip install --upgrade "ipython[notebook]"; ## obs4rve
-  sudo ${PYTHON_EXEC} -m pip install --upgrade requests; # py2 require rpkg
-  sudo ${PYTHON_EXEC} -m pip install --upgrade ansible;
-  sudo ${PYTHON_EXEC} -m pip install --upgrade cryptography;
-  sudo ${PYTHON_EXEC} -m pip install --upgrade virtualenv;
-  sudo ${PYTHON_EXEC} -m pip install --upgrade selenium; # observe
-  sudo ${PYTHON_EXEC} -m pip install --upgrade graphlab-create; # py2 require rpkg; py3 not found
-  sudo ${PYTHON_EXEC} -m pip install --upgrade seaborn; # py2 Cannot uninstall 'pyparsing'
-  sudo ${PYTHON_EXEC} -m pip install --upgrade oauth2client; # py2 pyasn1<0.5.0; py27 rsa==3.1.2,
-  sudo ${PYTHON_EXEC} -m pip install --upgrade "pylint<2.0.0";
   
-  sudo ${PYTHON_EXEC} -m pip install --upgrade rpm-py-installer; # py2 fail rpm-py-installer;
-  sudo ${PYTHON_EXEC} -m pip install --upgrade koji;
-
-  # no installed please
-  #sudo pip install --upgrade jrnl; # error python-dateutil
-  #sudo pip install --upgrade jrnl[encrypted]; # error  jupiter
+  sudo ${PYTHON_EXEC} -m pip install --upgrade pyOpenSSL; # py2 error 'pyOpenSSL'. It is a distutils installed
+  sudo ${PYTHON_EXEC} -m pip install --upgrade cryptography;
+  sudo ${PYTHON_EXEC} -m pip install --upgrade dnspython;
+  sudo ${PYTHON_EXEC} -m pip install --upgrade requests;
+  sudo ${PYTHON_EXEC} -m pip install --upgrade ansible;
+  sudo ${PYTHON_EXEC} -m pip install --upgrade virtualenv;
+  sudo ${PYTHON_EXEC} -m pip install --upgrade pylint;
+  
+  sudo ${PYTHON_EXEC} -m pip install --upgrade python-dateutil;
+  sudo ${PYTHON_EXEC} -m pip install --upgrade jsonschema;
+  sudo ${PYTHON_EXEC} -m pip install --upgrade jinja2;
+  sudo ${PYTHON_EXEC} -m pip install --upgrade tornado;
+  sudo ${PYTHON_EXEC} -m pip install --upgrade selenium;
 }
 
 function installPythonManual {
@@ -230,12 +218,9 @@ function pythonUpdate {
   
   # alternative python os libraries
   sudo yum install -y libpng-devel freetype freetype-devel;
-  sudo yum install -y python-pandas;
-  sudo yum install -y python-devel python-nose python-setuptools gcc gcc-gfortran gcc-c++ blas-devel lapack-devel atlas-devel;
-  sudo yum install -y python2-crypto python-paramiko;
+  sudo yum install -y python-devel python-nose python-setuptools gcc gcc-gfortran gcc-c++ blas-devel lapack-devel atlas-devel python2-crypto;
 
   # install again in old version
-  pip install --upgrade jupyter-client;
   pip install --upgrade rpkg;
   
   # Install python 3.6
