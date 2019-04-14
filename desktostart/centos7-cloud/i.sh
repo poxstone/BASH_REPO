@@ -172,6 +172,41 @@ function pipLibs {
   #sudo pip install --upgrade jrnl[encrypted]; # error  jupiter
 }
 
+function installPythonManual {
+  cd /opt/;
+  local PYTHON_VERSION="${1}";
+  local PYTHON_DIR="${2}";
+  sudo wget --no-check-certificate https://www.python.org/ftp/python/${PYTHON_VERSION}/Python-${PYTHON_VERSION}.tar.xz;
+  sudo tar xf Python-${PYTHON_VERSION}.tar.xz;
+  sudo chmod -R 755 Python*;
+  cd Python-${PYTHON_VERSION};
+  sudo ./configure --prefix=/usr/local --enable-shared --enable-unicode=ucs4;
+  sudo ./configure --enable-optimizations;
+  sudo make altinstall;
+  local STRING_PYTHON_LIB="export LD_LIBRARY_PATH=/usr/local/lib:${PYTHON_DIR}:$LD_LIBRARY_PATH";
+  local STRING_PY_ALIAS="alias python=${PYTHON_DIR}";
+  sudo echo "$STRING_PYTHON_LIB" >> ${HOME_USER}/.bashrc;
+  sudo echo "$STRING_PY_ALIAS" >> ${HOME_USER}/.bashrc;
+  sudo su $DEV_USER <<EOF
+  #echo "$STRING_PYTHON_LIB" >> ${HOME_USER}/.bashrc;
+  #echo "$STRING_PY_ALIAS" >> ${HOME_USER}/.bashrc;
+EOF
+  bash ${HOME_USER}/.bashrc && sudo bash ${HOME_USER}/.bashrc;
+
+  #sudo wget https://bitbucket.org/pypa/setuptools/raw/bootstrap/ez_setup.py;
+  sudo wget https://bootstrap.pypa.io/ez_setup.py;
+  sudo ${PYTHON_DIR} ez_setup.py;
+
+  sudo ln -s ${PYTHON_DIR} /bin/python${PYTHON_VERSION};
+
+  wget https://bootstrap.pypa.io/get-pip.py;
+  sudo ${PYTHON_DIR} get-pip.py;
+
+  pipLibs ${PYTHON_DIR};
+
+  cd;
+}
+
 function pythonUpdate {
   # TODO: update version
   local PYTHON_VERSION271="2.7.16";
@@ -179,78 +214,21 @@ function pythonUpdate {
   
   # Original dir bin
   local PYTHON2_DIR='/bin/python2.7'; # RH7 original python2
+  local PYTHON36_DIR='/bin/python3.6';
   local PYTHON271_DIR='/usr/local/bin/python2.7'; # new updated version
   local PYTHON372_DIR='/usr/local/bin/python3.7'; # new updated version
-  local PYTHON36_DIR='/bin/python3.6';
   
+  # download secure pip install pip
+  wget https://bootstrap.pypa.io/get-pip.py;
+  
+  # install and update python local
   sudo yum install -y python-pip;
-  cd /opt/;
-  
-  function installPythonManual {
-    local PYTHON_VERSION="${1}";
-    local PYTHON_DIR="${2}";
-    sudo wget --no-check-certificate https://www.python.org/ftp/python/${PYTHON_VERSION}/Python-${PYTHON_VERSION}.tar.xz;
-    sudo tar xf Python-${PYTHON_VERSION}.tar.xz;
-    sudo chmod -R 755 Python*;
-    cd Python-${PYTHON_VERSION};
-    sudo ./configure --prefix=/usr/local --enable-shared --enable-unicode=ucs4;
-    sudo ./configure --enable-optimizations;
-    sudo make altinstall;
-    local STRING_PYTHON_LIB="export LD_LIBRARY_PATH=/usr/local/lib:${PYTHON_DIR}:$LD_LIBRARY_PATH";
-    local STRING_PY_ALIAS="alias python=${PYTHON_DIR}";
-    sudo echo "$STRING_PYTHON_LIB" >> ${HOME_USER}/.bashrc;
-    sudo echo "$STRING_PY_ALIAS" >> ${HOME_USER}/.bashrc;
-    sudo su $DEV_USER <<EOF
-    #echo "$STRING_PYTHON_LIB" >> ${HOME_USER}/.bashrc;
-    #echo "$STRING_PY_ALIAS" >> ${HOME_USER}/.bashrc;
-EOF
-    bash ${HOME_USER}/.bashrc && sudo bash ${HOME_USER}/.bashrc;
-
-    #sudo wget https://bitbucket.org/pypa/setuptools/raw/bootstrap/ez_setup.py;
-    sudo wget https://bootstrap.pypa.io/ez_setup.py;
-    sudo ${PYTHON_DIR} ez_setup.py;
-  }
-  
-  # install linux user
-  installPythonManual "${PYTHON_VERSION271}" "${PYTHON271_DIR}";
-  
   /usr/local/bin/easy_install-2.7 pip;
   sudo yum install -y python-devel zeromq zeromq-devel;
-  
-  # 40 is less priority than 60ss
-  sudo alternatives --install /bin/python python /usr/bin/python2 50;
-  sudo alternatives --install /bin/python python ${PYTHON271_DIR} 40;
-  
-  # Change default python version
-  setPython "old";
-  
-  # install python 3.6
-  sudo yum install -y rh-python36*;
-  sudo ln -s /opt/rh/rh-python36/root/usr/bin/python3.6 ${PYTHON36_DIR};
-  sudo rm -rf /usr/bin/python3;
-  sudo ln -s ${PYTHON36_DIR} /bin/python3;
-  
-  # python 3.7 (no parece funcionar)
-  installPythonManual "${PYTHON_VERSION372}" "${PYTHON372_DIR}";
-  sudo alternatives --install /bin/python python3 "${PYTHON36_DIR}" 40;
-  sudo alternatives --install /bin/python python3 "${PYTHON372_DIR}" 40;
-  
-  # install pithon tools
-  cd;
-  wget https://bootstrap.pypa.io/get-pip.py;
   sudo ${PYTHON2_DIR} get-pip.py;
-  sudo ${PYTHON271_DIR} get-pip.py;
-  sudo ${PYTHON36_DIR} get-pip.py;
-  sudo ${PYTHON372_DIR} get-pip.py;
-  
-  # install libraries for all versions
   pipLibs ${PYTHON2_DIR};
-  pipLibs ${PYTHON271_DIR};
-  pipLibs ${PYTHON36_DIR};
-  pipLibs ${PYTHON372_DIR};
   
-  # alternative python 2os libraries
-  setPython "old";
+  # alternative python os libraries
   sudo yum install -y libpng-devel freetype freetype-devel;
   sudo yum install -y python-pandas;
   sudo yum install -y python-devel python-nose python-setuptools gcc gcc-gfortran gcc-c++ blas-devel lapack-devel atlas-devel;
@@ -259,6 +237,18 @@ EOF
   # install again in old version
   pip install --upgrade jupyter-client;
   pip install --upgrade rpkg;
+  
+  # Install python 3.6
+  sudo yum install -y rh-python36*;
+  sudo ln -s /opt/rh/rh-python36/root/usr/bin/python3.6 ${PYTHON36_DIR};
+  sudo rm -rf /usr/bin/python3;
+  sudo ln -s ${PYTHON36_DIR} /bin/python3;
+  sudo ${PYTHON36_DIR} get-pip.py;
+  pipLibs ${PYTHON36_DIR};
+
+  # install python new versions
+  installPythonManual "${PYTHON_VERSION271}" "${PYTHON271_DIR}";
+  installPythonManual "${PYTHON_VERSION372}" "${PYTHON372_DIR}";
 
   # browser drivers for sellenium
   if ! geckodriver --version || ! chromedriver --version ;then
@@ -772,11 +762,9 @@ EOF
   mv -f google-cloud-sdk ${HOME_USER}/bin/;
   restoreHomePermissions;
   
-  setPython "old";
   sudo yum install -y kubectl google-cloud-sdk*;
-  
-  setPython "new";
 
+  # validate python2.7.16
   echo "PLEASE: press Y and enter to continue...";
   sudo -i -u $DEV_USER ${HOME_USER}/bin/google-cloud-sdk/install.sh -q;
   if [[ ! "$(cat $HOME_USER/.bashrc)" == *"google-cloud-sdk"* ]];then
@@ -804,8 +792,6 @@ EOF
 
   # add download appengine app
   sudo echo "alias appcfg.py=\"python \$HOME/bin/google-cloud-sdk/platform/google_appengine/appcfg.py\";" >> ${HOME_USER}/.bashrc;
-
-  setPython "old";
   
   # add vscode/code-server
   # TODO:update version
@@ -825,7 +811,6 @@ EOF
 }
 
 function installWine {
-  setPython "old";
   cleanDnf;
   cd /usr/src;
   sudo wget http://dl.winehq.org/wine/source/3.0/wine-3.0.tar.xz;
@@ -939,7 +924,6 @@ function installAll {
     installWine;
     cleanDnf;
     manualSteps;
-    setPython "new";
     cleanInstallFiles;
     #duplicateUser from_user to_new_user new_pass;
   fi;
