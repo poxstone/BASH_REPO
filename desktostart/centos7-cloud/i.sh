@@ -27,7 +27,6 @@ function initInfo {
   HOME_USER="/home/$DEV_USER/";
 }
 
-
 function updateSystem {
   sudo yum update -y;
   sudo yum upgrade -y;
@@ -138,41 +137,39 @@ function pipLibs {
   local PYTHON_EXEC="${1}";
 
   #remove for errors
-  sudo ${PYTHON_EXEC} -m pip uninstall -y jrnl;
   sudo ${PYTHON_EXEC} -m pip uninstall -y rpkg;
 
-  sudo ${PYTHON_EXEC} -m pip install --upgrade pip; # also validate
-  sudo ${PYTHON_EXEC} -m pip install --upgrade setuptools;
+  sudo ${PYTHON_EXEC} -m pip install --upgrade pip;
+  sudo ${PYTHON_EXEC} -m pip install --upgrade setuptools; # py27 error
   sudo ${PYTHON_EXEC} -m pip install --upgrade ez_setup;
   sudo ${PYTHON_EXEC} -m easy_install -U setuptools;
-  sudo ${PYTHON_EXEC} -m pip install --upgrade pyOpenSSL;
+  sudo ${PYTHON_EXEC} -m pip install --upgrade pyOpenSSL; # py2 error 'pyOpenSSL'. It is a distutils installed
   sudo ${PYTHON_EXEC} -m pip install --upgrade jinja2;
   sudo ${PYTHON_EXEC} -m pip install --upgrade pyudev;
   sudo ${PYTHON_EXEC} -m pip install --upgrade dnspython;
   sudo ${PYTHON_EXEC} -m pip install --upgrade pyzmq;
   sudo ${PYTHON_EXEC} -m pip install --upgrade pygments;
   sudo ${PYTHON_EXEC} -m pip install --upgrade tornado;
-  sudo ${PYTHON_EXEC} -m pip install --upgrade jsonschema;
+  sudo ${PYTHON_EXEC} -m pip install --upgrade jsonschema; # py2 require rpkg
   sudo ${PYTHON_EXEC} -m pip install --upgrade ipython;
   sudo ${PYTHON_EXEC} -m pip install --upgrade python-dateutil;
   sudo ${PYTHON_EXEC} -m pip install --upgrade "ipython[notebook]"; ## obs4rve
-  sudo ${PYTHON_EXEC} -m pip install --upgrade requests; # observe
+  sudo ${PYTHON_EXEC} -m pip install --upgrade requests; # py2 require rpkg
   sudo ${PYTHON_EXEC} -m pip install --upgrade ansible;
   sudo ${PYTHON_EXEC} -m pip install --upgrade cryptography;
   sudo ${PYTHON_EXEC} -m pip install --upgrade virtualenv;
   sudo ${PYTHON_EXEC} -m pip install --upgrade selenium; # observe
-  sudo ${PYTHON_EXEC} -m pip install --upgrade graphlab-create; # observe
-  sudo ${PYTHON_EXEC} -m pip install --upgrade seaborn;
-  sudo ${PYTHON_EXEC} -m pip install --upgrade oauth2client;
+  sudo ${PYTHON_EXEC} -m pip install --upgrade graphlab-create; # py2 require rpkg; py3 not found
+  sudo ${PYTHON_EXEC} -m pip install --upgrade seaborn; # py2 Cannot uninstall 'pyparsing'
+  sudo ${PYTHON_EXEC} -m pip install --upgrade oauth2client; # py2 pyasn1<0.5.0; py27 rsa==3.1.2,
   sudo ${PYTHON_EXEC} -m pip install --upgrade "pylint<2.0.0";
   
-  sudo ${PYTHON_EXEC} -m pip install --upgrade rpm-py-installer; # not found
-  sudo ${PYTHON_EXEC} -m pip install --upgrade koji; # se daña
+  sudo ${PYTHON_EXEC} -m pip install --upgrade rpm-py-installer; # py2 fail rpm-py-installer;
+  sudo ${PYTHON_EXEC} -m pip install --upgrade koji;
 
   # no installed please
   #sudo pip install --upgrade jrnl; # error python-dateutil
   #sudo pip install --upgrade jrnl[encrypted]; # error  jupiter
-  
 }
 
 function pythonUpdate {
@@ -237,6 +234,7 @@ EOF
   pipLibs ${PYTHON27_DIR};
   pipLibs ${PYTHON36_DIR};
   
+  # alternative python 2os libraries
   sudo yum install -y libpng-devel freetype freetype-devel;
   sudo yum install -y python-pandas;
   sudo yum install -y python-devel python-nose python-setuptools gcc gcc-gfortran gcc-c++ blas-devel lapack-devel atlas-devel;
@@ -250,7 +248,6 @@ EOF
   if ! geckodriver --version || ! chromedriver --version ;then
       echo "Pendiente instalar los drivers de lo navegadores";
   fi;
-  
 }
 
 function installGraphicVnc {
@@ -407,7 +404,6 @@ function remote {
   sudo yum install -y remmina remmina-plugins-rdp remmina-plugins-vnc;
 }
 
-
 # Remmina-plugins-common
 # Apache php
 function apachePHP {
@@ -422,10 +418,8 @@ function apachePHP {
   sudo systemctl stop httpd;
 }
 
-
 # DOCKER
 function dockerTools {
-
   # enable fordware for build images
   echo "net.ipv4.ip_forward=1" >> /etc/sysctl.conf;
   sudo systemctl restart network;
@@ -454,7 +448,6 @@ function dockerTools {
   sudo curl -L "https://github.com/docker/compose/releases/download/1.23.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose;
   sudo chmod +x /usr/local/bin/docker-compose;
   sudo ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose;
-
 }
 
 # Android dev
@@ -530,7 +523,6 @@ EOF
 
   # java version
   java -version;
-
 }
 
 # vim
@@ -589,7 +581,6 @@ EOF
   fi;
 }
 
-
 function installMariaDB {
 
   sudo yum install -y mariadb-server;
@@ -609,7 +600,6 @@ EOF
 
   sudo systemctl start mariadb.service;
   sudo systemctl enable mariadb.service;
-
 }
 
 function installKvm {
@@ -909,7 +899,6 @@ function installAll {
     cleanDnf;
     #mountDisk;
     pythonUpdate;
-    pipTools; # error
     databases;
     rubyTools;
     mediaTool;
