@@ -209,7 +209,6 @@ EOF
     #sudo wget https://bitbucket.org/pypa/setuptools/raw/bootstrap/ez_setup.py;
     sudo wget https://bootstrap.pypa.io/ez_setup.py;
     sudo ${PYTHON_DIR} ez_setup.py;
-    sudo alternatives --install /bin/python python ${PYTHON_DIR} 50;
   }
   
   # install linux user
@@ -219,7 +218,8 @@ EOF
   sudo yum install -y python-devel zeromq zeromq-devel;
   
   # 40 is less priority than 60ss
-  sudo alternatives --install /bin/python python /usr/bin/python2 40;
+  sudo alternatives --install /bin/python python /usr/bin/python2 50;
+  sudo alternatives --install /bin/python python ${PYTHON271_DIR} 40;
   
   # Change default python version
   setPython "old";
@@ -250,6 +250,7 @@ EOF
   pipLibs ${PYTHON372_DIR};
   
   # alternative python 2os libraries
+  setPython "old";
   sudo yum install -y libpng-devel freetype freetype-devel;
   sudo yum install -y python-pandas;
   sudo yum install -y python-devel python-nose python-setuptools gcc gcc-gfortran gcc-c++ blas-devel lapack-devel atlas-devel;
