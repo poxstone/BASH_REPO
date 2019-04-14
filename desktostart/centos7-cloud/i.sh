@@ -501,7 +501,7 @@ function javaAndroid {
 
   function select_alternative_java {
     local num="$1";
-    sudo alternatives --config <<EOF
+    sudo alternatives --config java <<EOF
 $num
 EOF
   }
@@ -519,7 +519,7 @@ EOF
     install_alternatives_java "${java_to_install}";
   done;
 
-  select_alternative_java 3;
+  select_alternative_java 1;
 
   # java version
   java -version;
@@ -560,7 +560,7 @@ function vimConfig {
   fi;
 
   cd $HOME_USER;
-  sudo chown -R ${DEV_USER}:${DEV_USER} $HOME_USER;
+  restoreHomePermissions $NEW_USER;
 }
 
 # nodejs
@@ -570,7 +570,8 @@ function nodeConfig {
   if [ ! -e ${HOME_USER}/.nvm ];then
     sudo su $DEV_USER <<EOF
     echo ${HOME_USER};
-    curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.11/install.sh | bash;
+    #TODO: update nvm version
+    curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.34.0/install.sh | bash;
     source ${HOME_USER}/.nvm/nvm.sh;
     source ${HOME_USER}/.bashrc;
     nvm install 8;
@@ -588,10 +589,10 @@ function installMariaDB {
   sudo systemctl enable mariadb;
   sudo mysql_secure_installation <<EOF
 
-$DEV_PASS2
+$DEV_PASS
 y
-$DEV_PASS2
-$DEV_PASS2
+$DEV_PASS
+$DEV_PASS
 y
 n
 n
@@ -636,7 +637,7 @@ sudo yum install dkms;
 sudo wget -P /etc/yum.repos.d http://download.virtualbox.org/virtualbox/rpm/rhel/virtualbox.repo;
 sudo yum install -y VirtualBox-6.0;
 sudo usermod -a -G vboxusers ${DEV_USER};
-} 
+}
 
 function devPrograms {
   #fish shell
@@ -652,7 +653,7 @@ function devPrograms {
 
   # https://code.visualstudio.com/docs/setup/linux
   sudo rpm --import https://packages.microsoft.com/keys/microsoft.asc;
-  sudo sh -c 'echo -e "[code]\nname=Visual Studio Code\nbaseurl=https://packages.microsoft.com/yumrepos/vscode\nenabled=1\ngpgcheck=1\ngpgkey=https://packages.microsoft.com/keys/microsoft.asc" > /etc/yum.repos.d/vscode.repo'
+  sudo sh -c 'echo -e "[code]\nname=Visual Studio Code\nbaseurl=https://packages.microsoft.com/yumrepos/vscode\nenabled=1\ngpgcheck=1\ngpgkey=https://packages.microsoft.com/keys/microsoft.asc" > /etc/yum.repos.d/vscode.repo';
   sudo yum check-update -y;
   sudo yum install -y code;
 
@@ -675,11 +676,11 @@ EOF
   sudo yum-config-manager --add-repo https://download.sublimetext.com/rpm/stable/x86_64/sublime-text.repo;
   sudo yum install -y sublime-text;
 
-  #pycharm
-  local pycharm_version="pycharm-community-2018.2";
+  # TODO: update version pycharm
+  local pycharm_version="pycharm-community-2019.1.1";
   wget "https://download.jetbrains.com/python/${pycharm_version}.tar.gz";
   tar -xvzf ${pycharm_version}.tar.gz;
-  mv -f ${pycharm_version} ${HOME_USER}/bin/;
+  mv -f ${pycharm_version} ${HOME_USER}/bin/pycharm-community;
   restoreHomePermissions;
 
   #eclipse 
@@ -689,16 +690,17 @@ EOF
   mv -f eclipse ${HOME_USER}/bin/eclipse;
   restoreHomePermissions;
 
-  #sts spring
-  wget "http://download.springsource.com/release/STS/3.9.5.RELEASE/dist/e4.8/spring-tool-suite-3.9.5.RELEASE-e4.8.0-linux-gtk-x86_64.tar.gz";
-  tar -xvzf spring-tool-suite-3.9.5.RELEASE-e4.8.0-linux-gtk-x86_64.tar.gz;
-  mv -f sts-bundle ${HOME_USER}/bin/;
+  #sts TODO: update spring
+  wget 'https://download.springsource.com/release/STS4/4.2.0.RELEASE/dist/e4.11/spring-tool-suite-4-4.2.0.RELEASE-e4.11.0-linux.gtk.x86_64.tar.gz';
+  tar -xvzf spring-tool-suite-4-4.2.0.RELEASE-e4.11.0-linux.gtk.x86_64.tar.gz;
+  mv -f sts-4.2.0.RELEASE ${HOME_USER}/bin/spring-tool-suite;
+  restoreHomePermissions;
 
   #apache dorectory studio
-  wget "https://www-us.apache.org/dist/directory/studio/2.0.0.v20180908-M14/ApacheDirectoryStudio-2.0.0.v20180908-M14-linux.gtk.x86_64.tar.gz"
+  wget "https://www-us.apache.org/dist/directory/studio/2.0.0.v20180908-M14/ApacheDirectoryStudio-2.0.0.v20180908-M14-linux.gtk.x86_64.tar.gz";
   tar -xvzf ApacheDirectoryStudio-2.0.0.v20180908-M14-linux.gtk.x86_64.tar.gz;
   mv -f ApacheDirectoryStudio ${HOME_USER}/bin/;
-
+  restoreHomePermissions;
 
   #gradle java
   function addGradle {
@@ -711,13 +713,13 @@ EOF
   }
 
   addGradle "gradle-3.5.1";
-  addGradle "gradle-4.10.2";
+  addGradle "gradle-5.3.1";
 
-  local STRING_GRADLE_LIB="export PATH=\$PATH:~/bin/gradle/gradle-4.10.2/bin;";
+  local STRING_GRADLE_LIB="export PATH=\$PATH:~/bin/gradle/gradle-5.3.1/bin;";
   sudo echo "$STRING_GRADLE_LIB" >> ${HOME_USER}/.bashrc;
   
   # maven
-  local maven_version='3.6.0';
+  local maven_version='3.6.1';
   sudo mkdir -p $HOME_USER/bin/maven/;
   wget http://apache.cs.utah.edu/maven/maven-3/${maven_version}/binaries/apache-maven-${maven_version}-bin.tar.gz;
   tar -xzf apache-maven-${maven_version}-bin.tar.gz;
@@ -736,70 +738,68 @@ EOF
     restoreHomePermissions;
   }
 
-  addTomcat "8" "8.5.35";
-  addTomcat "8" "8.0.53";
+  addTomcat "8" "8.5.40";
 
   # git
   sudo -i -u ${DEV_USER} git config --global user.name "${DEV_USER}";
   sudo -i -u ${DEV_USER} git config --global user.email "${DEV_USER}@instance.vnc";
-  addTomcat "7" "7.0.91";
 
   # docker cerbot
   local STRING_CERBOT="alias cerbot=\"docker run --rm -it -p 443:443 -v \$HOME/cerbot:/etc/letsencrypt -v \$HOME/cerbot/log:/var/log/letsencrypt quay.io/letsencrypt/letsencrypt:latest\";";
   sudo echo "${STRING_CERBOT}" >> ${HOME_USER}/.bashrc;
 
-  # cloud sdk
-  local gcloud_version="google-cloud-sdk-224.0.0-linux-x86_64";
+  # TODO: update cloud sdk
+  
+  local gcloud_version="google-cloud-sdk-240.0.0-linux-x86_64";
   wget "https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/${gcloud_version}.tar.gz";
   tar -xvzf ${gcloud_version}.tar.gz;
   mv -f google-cloud-sdk ${HOME_USER}/bin/;
   restoreHomePermissions;
+  
+  setPython "old";
+  sudo yum install -y kubectl google-cloud-sdk*;
+  
   setPython "new";
 
   echo "PLEASE: press Y and enter to continue...";
-  sudo -i -u $DEV_USER ${HOME_USER}/bin/google-cloud-sdk/install.sh <<EOF
-y
-EOF
+  sudo -i -u $DEV_USER ${HOME_USER}/bin/google-cloud-sdk/install.sh -q;
   if [[ ! "$(cat $HOME_USER/.bashrc)" == *"google-cloud-sdk"* ]];then
     sudo -i -u $DEV_USER echo "if [ -f '~/bin/google-cloud-sdk/completion.bash.inc' ]; then source '~/bin/google-cloud-sdk/completion.bash.inc'; fi;" >> ${HOME_USER}/.bashrc;
     sudo -i -u $DEV_USER echo "export PATH=PATH:'~/bin/google-cloud-sdk/platform/google_appengine';" >> ${HOME_USER}/.bashrc;
     sudo -i -u $DEV_USER echo "export PATH=PATH:'~/bin/google-cloud-sdk/bin';" >> ${HOME_USER}/.bashrc;
     sudo sed -i -e "s/PATH=PATH/PATH=\$PATH/g"  ${HOME_USER}/.bashrc;
     
-    sudo -i -u $DEV_USER ${HOME_USER}/bin/google-cloud-sdk/install.sh <<EOF
-y
-EOF
+    sudo -i -u $DEV_USER echo "alias gcloud='~/bin/google-cloud-sdk/bin/gcloud';" >> ${HOME_USER}/.bashrc;
+    
+    sudo -i -u $DEV_USER ${HOME_USER}/bin/google-cloud-sdk/install.sh -q;
   fi;
+  restoreHomePermissions;
   
-  sudo -i -u $DEV_USER gcloud components install -q beta alpha \
+  sudo -i -u $DEV_USER ${HOME_USER}/bin/google-cloud-sdk/bin/gcloud components update -q;
+  sudo -i -u $DEV_USER ${HOME_USER}/bin/google-cloud-sdk/bin/gcloud components install beta alpha \
   app-engine-python app-engine-python-extras kubectl bq \
   app-engine-java app-engine-php app-engine-go pubsub-emulator \
-  cloud-datastore-emulator gcd-emulator docker-credential-gcr <<EOF
-y
-EOF
+  cloud-datastore-emulator gcd-emulator docker-credential-gcr -q;
 
   # add to path
-  local STRING_APPENGINE_OVERWRITE="sed -i '1s/.*/#\!\/usr\/bin\/env python2.7/' \"\$(which dev_appserver.py)\";";
+  local STRING_APPENGINE_OVERWRITE="sed -i '1s/.*/#\!\/usr\/bin\/env python2.7/' \"\$HOME/bin/google-cloud-sdk/bin/dev_appserver.py\";";
   sudo echo "${STRING_APPENGINE_OVERWRITE}" >> ${HOME_USER}/.bashrc;
+  restoreHomePermissions;
 
-  # update gcloud
-  sudo -i -u $DEV_USER gcloud components update -q <<EOF
-y
-EOF
   # add download appengine app
-  sudo echo "alias appcfg.py=\"python ${HOME_USER}/bin/google-cloud-sdk/platform/google_appengine/appcfg.py\";" >> ${HOME_USER}/.bashrc;
+  sudo echo "alias appcfg.py=\"python \$HOME/bin/google-cloud-sdk/platform/google_appengine/appcfg.py\";" >> ${HOME_USER}/.bashrc;
 
   setPython "old";
   
   # add vscode/code-server
   # TODO:update version
   cd ${HOME_USER}/bin/;
-  VSCODE_VERSION="1.696-vsc1.33.0";
+  local VSCODE_VERSION="1.696-vsc1.33.0";
   wget https://github.com/codercom/code-server/releases/download/${VSCODE_VERSION}/code-server${VSCODE_VERSION}-linux-x64.tar.gz;
   tar -xzvf code-server${VSCODE_VERSION}-linux-x64.tar.gz;
   rm -rf code-server${VSCODE_VERSION}-linux-x64.tar.gz;
   mv code-server${VSCODE_VERSION}-linux-x64 code-server;
-  sudo echo "alias code-server=\"~/bin/code-server/code-server --allow-http -e ~/.vscode/extensions -d ~/.config/Code\";" >> ${HOME_USER}/.bashrc;
+  sudo echo "alias code-server=\"\$HOME/bin/code-server/code-server --allow-http -e ~/.vscode/extensions -d ~/.config/Code\";" >> ${HOME_USER}/.bashrc;
 }
 
 function installWine {
