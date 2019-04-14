@@ -137,26 +137,26 @@ function pipLibs {
   local PYTHON_EXEC="${1}";
 
   #remove for errors
-  sudo ${PYTHON_EXEC} -m pip install --upgrade rpkg;
+  sudo ${PYTHON_EXEC} -m pip install --upgrade rpkg; # 2.7error
   sudo ${PYTHON_EXEC} -m pip install --upgrade pip;
-  sudo ${PYTHON_EXEC} -m pip install --upgrade setuptools; # py27 error
+  sudo ${PYTHON_EXEC} -m pip install --upgrade setuptools;
   sudo ${PYTHON_EXEC} -m pip install --upgrade ez_setup;
   sudo ${PYTHON_EXEC} -m easy_install -U setuptools;
-  sudo ${PYTHON_EXEC} -m pip install --upgrade rpm-py-installer;
+  sudo ${PYTHON_EXEC} -m pip install --upgrade rpm-py-installer; # 2.7error
   sudo ${PYTHON_EXEC} -m pip install --upgrade pyudev;
   
-  sudo ${PYTHON_EXEC} -m pip install --upgrade pyOpenSSL; # py2 error 'pyOpenSSL'. It is a distutils installed
+  sudo ${PYTHON_EXEC} -m pip install --upgrade pyOpenSSL;
   sudo ${PYTHON_EXEC} -m pip install --upgrade cryptography;
   sudo ${PYTHON_EXEC} -m pip install --upgrade dnspython;
-  sudo ${PYTHON_EXEC} -m pip install --upgrade requests;
+  sudo ${PYTHON_EXEC} -m pip install --upgrade requests; #2.7conflict
   sudo ${PYTHON_EXEC} -m pip install --upgrade ansible;
   sudo ${PYTHON_EXEC} -m pip install --upgrade virtualenv;
   sudo ${PYTHON_EXEC} -m pip install --upgrade pylint;
   
   sudo ${PYTHON_EXEC} -m pip install --upgrade python-dateutil;
   sudo ${PYTHON_EXEC} -m pip install --upgrade jsonschema;
-  sudo ${PYTHON_EXEC} -m pip install --upgrade jinja2;
   sudo ${PYTHON_EXEC} -m pip install --upgrade tornado;
+  sudo ${PYTHON_EXEC} -m pip install --upgrade flask;
   sudo ${PYTHON_EXEC} -m pip install --upgrade selenium;
 }
 
@@ -211,17 +211,14 @@ function pythonUpdate {
   
   # install and update python local
   sudo yum install -y python-pip;
-  /usr/local/bin/easy_install-2.7 pip;
+  #/usr/local/bin/easy_install-2.7 pip;
   sudo yum install -y python-devel zeromq zeromq-devel;
   sudo ${PYTHON2_DIR} get-pip.py;
-  pipLibs ${PYTHON2_DIR};
-  
   # alternative python os libraries
   sudo yum install -y libpng-devel freetype freetype-devel;
   sudo yum install -y python-devel python-nose python-setuptools gcc gcc-gfortran gcc-c++ blas-devel lapack-devel atlas-devel python2-crypto;
-
-  # install again in old version
   pip install --upgrade rpkg;
+  pipLibs ${PYTHON2_DIR};
   
   # Install python 3.6
   sudo yum install -y rh-python36*;
