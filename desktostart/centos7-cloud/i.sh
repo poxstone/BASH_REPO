@@ -133,6 +133,48 @@ function devTools {
   sudo yum install -y libappindicator-gtk3;
 }
 
+# Python
+function pipLibs {
+  local PYTHON_EXEC="${1}";
+
+  #remove for errors
+  sudo ${PYTHON_EXEC} -m pip uninstall -y jrnl;
+  sudo ${PYTHON_EXEC} -m pip uninstall -y rpkg;
+
+  sudo ${PYTHON_EXEC} -m pip install --upgrade pip; # also validate
+  sudo ${PYTHON_EXEC} -m pip install --upgrade setuptools;
+  sudo ${PYTHON_EXEC} -m pip install --upgrade ez_setup;
+  sudo ${PYTHON_EXEC} -m easy_install -U setuptools;
+  sudo ${PYTHON_EXEC} -m pip install --upgrade pyOpenSSL;
+  sudo ${PYTHON_EXEC} -m pip install --upgrade jinja2;
+  sudo ${PYTHON_EXEC} -m pip install --upgrade pyudev;
+  sudo ${PYTHON_EXEC} -m pip install --upgrade dnspython;
+  sudo ${PYTHON_EXEC} -m pip install --upgrade pyzmq;
+  sudo ${PYTHON_EXEC} -m pip install --upgrade pygments;
+  sudo ${PYTHON_EXEC} -m pip install --upgrade tornado;
+  sudo ${PYTHON_EXEC} -m pip install --upgrade jsonschema;
+  sudo ${PYTHON_EXEC} -m pip install --upgrade ipython;
+  sudo ${PYTHON_EXEC} -m pip install --upgrade python-dateutil;
+  sudo ${PYTHON_EXEC} -m pip install --upgrade "ipython[notebook]"; ## obs4rve
+  sudo ${PYTHON_EXEC} -m pip install --upgrade requests; # observe
+  sudo ${PYTHON_EXEC} -m pip install --upgrade ansible;
+  sudo ${PYTHON_EXEC} -m pip install --upgrade cryptography;
+  sudo ${PYTHON_EXEC} -m pip install --upgrade virtualenv;
+  sudo ${PYTHON_EXEC} -m pip install --upgrade selenium; # observe
+  sudo ${PYTHON_EXEC} -m pip install --upgrade graphlab-create; # observe
+  sudo ${PYTHON_EXEC} -m pip install --upgrade seaborn;
+  sudo ${PYTHON_EXEC} -m pip install --upgrade oauth2client;
+  sudo ${PYTHON_EXEC} -m pip install --upgrade "pylint<2.0.0";
+  
+  sudo ${PYTHON_EXEC} -m pip install --upgrade rpm-py-installer; # not found
+  sudo ${PYTHON_EXEC} -m pip install --upgrade koji; # se daña
+
+  # no installed please
+  #sudo pip install --upgrade jrnl; # error python-dateutil
+  #sudo pip install --upgrade jrnl[encrypted]; # error  jupiter
+  
+}
+
 function pythonUpdate {
   # TODO: update version
   local PYTHON_VERSION="2.7.16";
@@ -190,55 +232,11 @@ EOF
   sudo ${PYTHON27_DIR} get-pip.py;
   sudo ${PYTHON36_DIR} get-pip.py;
   
-  sudo ${PYTHON2_DIR} -m pip install virtualenv --upgrade;
-  sudo ${PYTHON27_DIR} -m pip install virtualenv --upgrade;
-  sudo ${PYTHON36_DIR} -m pip install virtualenv --upgrade;
-}
-
-# Python
-function pipTools {
-  # Change python versión for install pip
-  setPython "new";
-
-  #remove for errors
-  sudo pip uninstall -y jrnl;
-  sudo pip uninstall -y rpkg;
-
-  sudo pip install --upgrade pip; # also validate
-  sudo pip install --upgrade setuptools;
-  sudo pip install --upgrade ez_setup;
-  sudo easy_install -U setuptools;
-  sudo pip install --upgrade pyOpenSSL;
-  sudo pip install --upgrade jinja2;
-  sudo pip install --upgrade pyudev;
-  sudo pip install --upgrade dnspython;
-  sudo pip install --upgrade pyzmq;
-  sudo pip install --upgrade pygments;
-  sudo pip install --upgrade tornado;
-  sudo pip install --upgrade jsonschema;
-  sudo pip install --upgrade ipython;
-  sudo pip install --upgrade python-dateutil;
-  sudo pip install --upgrade "ipython[notebook]"; ## obs4rve
-  sudo pip install --upgrade requests; # observe
-  sudo pip install --upgrade ansible;
-  sudo pip install --upgrade cryptography;
-  sudo pip install --upgrade virtualenv;
-  sudo pip install --upgrade selenium; # observe
-  sudo pip install --upgrade graphlab-create; # observe
-  sudo pip install --upgrade seaborn;
-  sudo pip install --upgrade oauth2client;
-  sudo pip install --upgrade "pylint<2.0.0";
+  # install libraries for all versions
+  pipLibs ${PYTHON2_DIR};
+  pipLibs ${PYTHON27_DIR};
+  pipLibs ${PYTHON36_DIR};
   
-  sudo pip install --upgrade rpm-py-installer; # not found
-  sudo pip install --upgrade koji; # se daña
-
-  # no installed please
-  #sudo pip install --upgrade jrnl; # error python-dateutil
-  #sudo pip install --upgrade jrnl[encrypted]; # error  jupiter
-
-  # Change python versión for continue yum installations
-  setPython "old";
-
   sudo yum install -y libpng-devel freetype freetype-devel;
   sudo yum install -y python-pandas;
   sudo yum install -y python-devel python-nose python-setuptools gcc gcc-gfortran gcc-c++ blas-devel lapack-devel atlas-devel;
@@ -252,6 +250,7 @@ function pipTools {
   if ! geckodriver --version || ! chromedriver --version ;then
       echo "Pendiente instalar los drivers de lo navegadores";
   fi;
+  
 }
 
 function installGraphicVnc {
@@ -909,7 +908,6 @@ function installAll {
     createUser;
     cleanDnf;
     #mountDisk;
-    devTools;
     pythonUpdate;
     pipTools; # error
     databases;
