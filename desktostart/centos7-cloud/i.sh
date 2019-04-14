@@ -90,6 +90,8 @@ EOF
 
   # enable ssh
   sudo sed -i -e "s/PasswordAuthentication no/PasswordAuthentication yes/g"  /etc/ssh/sshd_config;
+  sudo systemctl enable sshd.service;
+  sudo systemctl start sshd.service;
   sudo systemctl restart sshd;
 }
 
@@ -132,21 +134,26 @@ function devTools {
 }
 
 function pythonUpdate {
-
-  # python update (https://gist.github.com/guy4261/0e9f4081f1c6b078b436)
-  # python update (https://tecadmin.net/install-python-2-7-on-centos-rhel/)
+  # TODO: update version
+  local PYTHON_VERSION="2.7.16";
+  
+  # Original dir bin
+  local PYTHON2_DIR='/bin/python2.7'; # RH7 original python2
+  local PYTHON27_DIR='/usr/local/bin/python2.7'; # new updated version
+  local PYTHON36_DIR='/bin/python3.6';
+  
   sudo yum install -y python-pip;
   cd /opt/;
-  sudo wget --no-check-certificate https://www.python.org/ftp/python/2.7.15/Python-2.7.15.tar.xz;
-  sudo tar xf Python-2.7.15.tar.xz;
+  
+  sudo wget --no-check-certificate https://www.python.org/ftp/python/${PYTHON_VERSION}/Python-${PYTHON_VERSION}.tar.xz;
+  sudo tar xf Python-${PYTHON_VERSION}.tar.xz;
   sudo chmod -R 755 Python*;
-  cd Python-2.7.15;
+  cd Python-${PYTHON_VERSION};
   sudo ./configure --prefix=/usr/local --enable-shared --enable-unicode=ucs4;
   sudo ./configure --enable-optimizations;
-  #sudo make && sudo make altinstall;
   sudo make altinstall;
-  local STRING_PYTHON_LIB="export LD_LIBRARY_PATH=/usr/local/lib:/usr/local/bin/python2.7:$LD_LIBRARY_PATH";
-  local STRING_PY_ALIAS="alias python=/usr/local/bin/python2.7";
+  local STRING_PYTHON_LIB="export LD_LIBRARY_PATH=/usr/local/lib:${PYTHON27_DIR}:$LD_LIBRARY_PATH";
+  local STRING_PY_ALIAS="alias python=${PYTHON27_DIR}";
   sudo echo "$STRING_PYTHON_LIB" >> ${HOME_USER}/.bashrc;
   sudo echo "$STRING_PY_ALIAS" >> ${HOME_USER}/.bashrc;
   sudo su $DEV_USER <<EOF
@@ -157,39 +164,35 @@ EOF
 
   #sudo wget https://bitbucket.org/pypa/setuptools/raw/bootstrap/ez_setup.py;
   sudo wget https://bootstrap.pypa.io/ez_setup.py;
-  sudo /usr/local/bin/python2.7 ez_setup.py;
+  sudo ${PYTHON27_DIR} ez_setup.py;
   /usr/local/bin/easy_install-2.7 pip;
 
-  sudo yum-config-manager --add-repo http://download.opensuse.org/repositories/home:/fengshuo:/zeromq/CentOS_CentOS-6/home:fengshuo:zeromq.repo;
   sudo yum install -y python-devel zeromq zeromq-devel;
   # 40 is less priority than 60ss
   sudo alternatives --install /bin/python python /usr/bin/python2 40;
-  sudo alternatives --install /bin/python python /usr/local/bin/python2.7 50;
+  sudo alternatives --install /bin/python python ${PYTHON27_DIR} 50;
   sudo alternatives --install /bin/python python /usr/bin/python2 40;
-  sudo alternatives --install /bin/python python /usr/local/bin/python2.7 50;
+  sudo alternatives --install /bin/python python ${PYTHON27_DIR} 50;
   
-  # install pithon tools
-  wget https://bootstrap.pypa.io/get-pip.py;
-  sudo python2 get-pip.py;
-  sudo python2.7 get-pip.py;
-  sudo python3 get-pip.py;
-  sudo python3.4 get-pip.py;
-
   # Change default python version
   setPython "old";
   
   # install python 3.6
-  sudo yum install -y rh-python36;
-  sudo ln -s /opt/rh/rh-python36/root/usr/bin/python3.6 /bin/python3.6;
+  sudo yum install -y rh-python36*;
+  sudo ln -s /opt/rh/rh-python36/root/usr/bin/python3.6 ${PYTHON36_DIR};
   sudo rm -rf /usr/bin/python3;
-  sudo ln -s /bin/python3.6 /bin/python3;
-  sudo python3.6 get-pip.py;
-  sudo python3.6 -m pip install virtualenv --upgrade;
-
+  sudo ln -s ${PYTHON36_DIR} /bin/python3;
+  
+  # install pithon tools
   cd;
-
-  sudo systemctl enable sshd.service;
-  sudo systemctl start sshd.service;
+  wget https://bootstrap.pypa.io/get-pip.py;
+  sudo ${PYTHON2_DIR} get-pip.py;
+  sudo ${PYTHON27_DIR} get-pip.py;
+  sudo ${PYTHON36_DIR} get-pip.py;
+  
+  sudo ${PYTHON2_DIR} -m pip install virtualenv --upgrade;
+  sudo ${PYTHON27_DIR} -m pip install virtualenv --upgrade;
+  sudo ${PYTHON36_DIR} -m pip install virtualenv --upgrade;
 }
 
 # Python
