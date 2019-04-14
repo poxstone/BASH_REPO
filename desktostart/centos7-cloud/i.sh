@@ -209,6 +209,7 @@ function pythonUpdate {
   
   # install and update python local
   sudo yum install -y python-pip;
+  sudo yum -y groupinstall 'development tools';
   #/usr/local/bin/easy_install-2.7 pip;
   sudo yum install -y python-devel zeromq zeromq-devel;
   sudo ${PYTHON2_DIR} get-pip.py;
