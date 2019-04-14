@@ -137,12 +137,12 @@ function pipLibs {
   local PYTHON_EXEC="${1}";
 
   #remove for errors
-  sudo ${PYTHON_EXEC} -m pip install --upgrade rpkg; # 2.7error, 3.6error
+  #sudo ${PYTHON_EXEC} -m pip install --upgrade rpkg; # 2.7error, 3.6error
   sudo ${PYTHON_EXEC} -m pip install --upgrade pip;
   sudo ${PYTHON_EXEC} -m pip install --upgrade setuptools;
   sudo ${PYTHON_EXEC} -m pip install --upgrade ez_setup;
   sudo ${PYTHON_EXEC} -m easy_install -U setuptools;
-  sudo ${PYTHON_EXEC} -m pip install --upgrade rpm-py-installer; # 2.7error 3.6error
+  #sudo ${PYTHON_EXEC} -m pip install --upgrade rpm-py-installer; # 2.7error 3.6error
   sudo ${PYTHON_EXEC} -m pip install --upgrade pyudev;
   
   sudo ${PYTHON_EXEC} -m pip install --upgrade cryptography;
@@ -212,7 +212,7 @@ function pythonUpdate {
   sudo yum -y groupinstall 'development tools';
   #/usr/local/bin/easy_install-2.7 pip;
   sudo yum install -y python-devel zeromq zeromq-devel;
-  sudo ${PYTHON2_DIR} get-pip.py;
+  #sudo ${PYTHON2_DIR} get-pip.py; # error
   # alternative python os libraries
   sudo yum install -y libpng-devel freetype freetype-devel;
   sudo yum install -y python-devel python-nose python-setuptools gcc gcc-gfortran gcc-c++ blas-devel lapack-devel atlas-devel python2-crypto;
