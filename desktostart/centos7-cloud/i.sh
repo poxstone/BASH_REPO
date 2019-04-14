@@ -800,6 +800,8 @@ EOF
   rm -rf code-server${VSCODE_VERSION}-linux-x64.tar.gz;
   mv code-server${VSCODE_VERSION}-linux-x64 code-server;
   sudo echo "alias code-server=\"\$HOME/bin/code-server/code-server --allow-http -e ~/.vscode/extensions -d ~/.config/Code\";" >> ${HOME_USER}/.bashrc;
+  cd;
+  rm -rf *.zip *.tar *.tar.gz *.tgz *.rpm;
 }
 
 function installWine {
