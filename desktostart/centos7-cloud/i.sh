@@ -137,16 +137,16 @@ function pipLibs {
   local PYTHON_EXEC="${1}";
 
   #remove for errors
-  sudo ${PYTHON_EXEC} -m pip install --upgrade rpkg; # 2.7error
+  sudo ${PYTHON_EXEC} -m pip install --upgrade rpkg; # 2.7error, 3.6error
   sudo ${PYTHON_EXEC} -m pip install --upgrade pip;
   sudo ${PYTHON_EXEC} -m pip install --upgrade setuptools;
   sudo ${PYTHON_EXEC} -m pip install --upgrade ez_setup;
   sudo ${PYTHON_EXEC} -m easy_install -U setuptools;
-  sudo ${PYTHON_EXEC} -m pip install --upgrade rpm-py-installer; # 2.7error
+  sudo ${PYTHON_EXEC} -m pip install --upgrade rpm-py-installer; # 2.7error 3.6error
   sudo ${PYTHON_EXEC} -m pip install --upgrade pyudev;
   
-  sudo ${PYTHON_EXEC} -m pip install --upgrade pyOpenSSL;
   sudo ${PYTHON_EXEC} -m pip install --upgrade cryptography;
+  sudo ${PYTHON_EXEC} -m pip install --upgrade pyOpenSSL;
   sudo ${PYTHON_EXEC} -m pip install --upgrade dnspython;
   sudo ${PYTHON_EXEC} -m pip install --upgrade requests; #2.7conflict
   sudo ${PYTHON_EXEC} -m pip install --upgrade ansible;
@@ -191,8 +191,6 @@ EOF
   sudo ${PYTHON_DIR} get-pip.py;
 
   pipLibs ${PYTHON_DIR};
-
-  cd;
 }
 
 function pythonUpdate {
@@ -221,8 +219,12 @@ function pythonUpdate {
   pipLibs ${PYTHON2_DIR};
   
   # Install python 3.6
-  sudo yum install -y rh-python36*;
-  sudo ln -s /opt/rh/rh-python36/root/usr/bin/python3.6 ${PYTHON36_DIR};
+  sudo yum install -y https://centos7.iuscommunity.org/ius-release.rpm;
+  sudo yum update -y;
+  sudo yum install -y python36u python36u-libs python36u-devel python36u-pip;
+  
+  #sudo yum install -y rh-python36;
+  #sudo ln -s /opt/rh/rh-python36/root/usr/bin/python3.6 ${PYTHON36_DIR};
   sudo rm -rf /usr/bin/python3;
   sudo ln -s ${PYTHON36_DIR} /bin/python3;
   sudo ${PYTHON36_DIR} get-pip.py;
