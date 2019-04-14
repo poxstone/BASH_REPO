@@ -203,7 +203,7 @@ function pythonUpdate {
     sudo su $DEV_USER <<EOF
     #echo "$STRING_PYTHON_LIB" >> ${HOME_USER}/.bashrc;
     #echo "$STRING_PY_ALIAS" >> ${HOME_USER}/.bashrc;
-  EOF
+EOF
     bash ${HOME_USER}/.bashrc && sudo bash ${HOME_USER}/.bashrc;
 
     #sudo wget https://bitbucket.org/pypa/setuptools/raw/bootstrap/ez_setup.py;
@@ -380,8 +380,8 @@ function databases {
   fi;
   sudo systemctl start postgresql;
   sudo passwd postgres <<EOF
-$DEV_PASS2
-$DEV_PASS2
+$DEV_PASS
+$DEV_PASS
 EOF
   # config
   sudo sed -i -e "s/\(\( peer\)\|\( ident\)\)/ md5/g" /var/lib/pgsql/data/pg_hba.conf;
