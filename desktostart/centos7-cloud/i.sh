@@ -815,6 +815,10 @@ EOF
   rm -rf code-server${VSCODE_VERSION}-linux-x64.tar.gz;
   mv code-server${VSCODE_VERSION}-linux-x64 code-server;
   sudo echo "alias code-server=\"\$HOME/bin/code-server/code-server --allow-http -e ~/.vscode/extensions -d ~/.config/Code\";" >> ${HOME_USER}/.bashrc;
+  
+  sudo echo "alias vscode-server='docker run -it --rm --net host --name code-server -p 8443:8443 -v \$HOME/.config/Code:/home/coder/.config/Code -v \$HOME/.vscode/extensions:/home/coder/.vscode/extensions codercom/code-server:latest --allow-http -P $DEV_PASS -e /home/coder/.vscode/extensions -d /home/coder/.config/Code';" >> ${HOME_USER}/.bashrc;
+  
+  # clean
   cd;
   rm -rf *.zip *.tar *.tar.gz *.tgz *.rpm;
 }
