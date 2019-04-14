@@ -5,7 +5,7 @@ PROJECT=`curl "http://metadata.google.internal/computeMetadata/v1/project/projec
 BUCKET_GET="${PROJECT}.appspot.com";
 JAVA_RPMS="jdk-8u171-linux-x64.rpm jdk-7u80-linux-x64.rpm";
 JAVA_INSTALL="latest jdk1.7.0_80 jdk1.8.0_171-amd64";
-GRAPH_INTERFACE=1;
+GRAPH_INTERFACE=2;
 
 function initInfo {
   while [[ $DEV_USER == "" ]];do 
@@ -16,11 +16,6 @@ function initInfo {
   while [[ $DEV_PASS == "" ]];do 
     echo "Please type the password for user:";
     read DEV_PASS;
-  done;
-
-  while [[ $DEV_PASS2 == "" ]];do
-    echo "Please type the password for root mysql DB:";
-    read DEV_PASS2;
   done;
 
   echo "Interface to install:";
@@ -91,12 +86,7 @@ EOF
   
   echo "Please press enter fo continue...";
   # create ssh leave white spaces for enter
-  sudo -i -u $NEW_USER ssh-keygen <<EOF
-
-
-
-
-EOF
+  sudo -i -u $NEW_USER ssh-keygen -f $HOME_USER/.ssh/id_rsa -t rsa -N "$NEW_PASS";
 
   # enable ssh
   sudo sed -i -e "s/PasswordAuthentication no/PasswordAuthentication yes/g"  /etc/ssh/sshd_config;
@@ -128,7 +118,9 @@ function devTools {
   sudo yum groupinstall -y --disablerepo=\* --enablerepo=base,updates,cr "Development Tools";
   sudo yum install -y dh-autoreconf vim-enhanced curl-devel expat-devel gettext-devel openssl-devel apr-devel perl-devel zlib-devel libvirt gtkmm30 libgdkmm-3.0.so.1 proj proj;
   sudo yum install -y asciidoc xmlto docbook2X binutils fedora-packager chrpath autoconf automake;
-  sudo yum install -y gcc gcc-c++ qt-devel libffi-devel python python-devel nasm.x86_64 SDL* ant dkms kernel-devel dkms kernel-headers libstdc++.i686 subversion;
+  sudo yum install -y gcc gcc-c++ qt-devel libffi-devel python python-devel nasm.x86_64 ant dkms kernel-devel dkms kernel-headers libstdc++.i686 subversion;
+  #NOTE: PERVIOUS install all SDL* but cause conflig with "SDL2_gfx-docs"
+  sudo yum install -y SDL-* SDL_* SDL2-* SDL2_ttf* SDL2_net* SDL2_mixer* SDL2_image* SDL2_gfx SDL2_gfx-devel;
   sudo yum install -y wget deluge rpm-build lsb sqlite-devel git-all kdiff3 openssh openssh-server ncurses-devel bzip2-devel;
   sudo yum install -y yum-utils device-mapper-persistent-data lvm2 p7zip unrar;
   sudo yum install -y libX11-devel freetype-devel libxcb-devel libxslt-devel libgcrypt-devel libxml2-devel gnutls-devel libpng-devel libjpeg-turbo-devel libtiff-devel gstreamer-devel dbus-devel fontconfig-devel libappindicator;
