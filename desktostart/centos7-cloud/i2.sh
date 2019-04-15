@@ -5,7 +5,7 @@ PROJECT=`curl "http://metadata.google.internal/computeMetadata/v1/project/projec
 BUCKET_GET="${PROJECT}.appspot.com";
 JAVA_RPMS="jdk-8u171-linux-x64.rpm jdk-7u80-linux-x64.rpm";
 JAVA_INSTALL="latest jdk1.7.0_80 jdk1.8.0_171-amd64";
-GRAPH_INTERFACE=1;
+GRAPH_INTERFACE=2;
 
 function initInfo {
   while [[ $DEV_USER == "" ]];do 
@@ -18,11 +18,6 @@ function initInfo {
     read DEV_PASS;
   done;
 
-  while [[ $DEV_PASS2 == "" ]];do
-    echo "Please type the password for root mysql DB:";
-    read DEV_PASS2;
-  done;
-
   echo "Interface to install:";
   echo "1 = KDE Plasma Workspaces";
   echo "2 = xfce";
@@ -31,7 +26,6 @@ function initInfo {
 
   HOME_USER="/home/$DEV_USER/";
 }
-
 
 function updateSystem {
   sudo yum update -y;
@@ -91,15 +85,12 @@ EOF
   
   echo "Please press enter fo continue...";
   # create ssh leave white spaces for enter
-  sudo -i -u $NEW_USER ssh-keygen <<EOF
-
-
-
-
-EOF
+  sudo -i -u $NEW_USER ssh-keygen -f $HOME_USER/.ssh/id_rsa -t rsa -N "$NEW_PASS";
 
   # enable ssh
   sudo sed -i -e "s/PasswordAuthentication no/PasswordAuthentication yes/g"  /etc/ssh/sshd_config;
+  sudo systemctl enable sshd.service;
+  sudo systemctl start sshd.service;
   sudo systemctl restart sshd;
 }
 
@@ -117,7 +108,7 @@ function mountDisk {
 # Install tools
 function mainTools {
   updateSystem;
-  sudo yum install vim nano tmux htop iotop lynx nmap whois tcpdump iotop bind-utils -y;
+  sudo yum install vim nano tmux htop iotop lynx nmap whois tcpdump iotop bind-utils wget -y;
 }
 
 # Dev tools
@@ -128,7 +119,9 @@ function devTools {
   sudo yum groupinstall -y --disablerepo=\* --enablerepo=base,updates,cr "Development Tools";
   sudo yum install -y dh-autoreconf vim-enhanced curl-devel expat-devel gettext-devel openssl-devel apr-devel perl-devel zlib-devel libvirt gtkmm30 libgdkmm-3.0.so.1 proj proj;
   sudo yum install -y asciidoc xmlto docbook2X binutils fedora-packager chrpath autoconf automake;
-  sudo yum install -y gcc gcc-c++ qt-devel libffi-devel python python-devel nasm.x86_64 SDL* ant dkms kernel-devel dkms kernel-headers libstdc++.i686 subversion;
+  sudo yum install -y gcc gcc-c++ qt-devel libffi-devel python python-devel nasm.x86_64 ant dkms kernel-devel dkms kernel-headers libstdc++.i686 subversion;
+  #NOTE: PERVIOUS install all SDL* but cause conflig with "SDL2_gfx-docs"
+  sudo yum install -y SDL-* SDL_* SDL2-* SDL2_ttf* SDL2_net* SDL2_mixer* SDL2_image* SDL2_gfx SDL2_gfx-devel;
   sudo yum install -y wget deluge rpm-build lsb sqlite-devel git-all kdiff3 openssh openssh-server ncurses-devel bzip2-devel;
   sudo yum install -y yum-utils device-mapper-persistent-data lvm2 p7zip unrar;
   sudo yum install -y libX11-devel freetype-devel libxcb-devel libxslt-devel libgcrypt-devel libxml2-devel gnutls-devel libpng-devel libjpeg-turbo-devel libtiff-devel gstreamer-devel dbus-devel fontconfig-devel libappindicator;
@@ -139,22 +132,47 @@ function devTools {
   sudo yum install -y libappindicator-gtk3;
 }
 
-function pythonUpdate {
+# Python
+function pipLibs {
+  local PYTHON_EXEC="${1}";
 
-  # python update (https://gist.github.com/guy4261/0e9f4081f1c6b078b436)
-  # python update (https://tecadmin.net/install-python-2-7-on-centos-rhel/)
-  sudo yum install -y python-pip;
+  #remove for errors
+  #sudo ${PYTHON_EXEC} -m pip install --upgrade rpkg; # 2.7error, 3.6error
+  sudo ${PYTHON_EXEC} -m pip install --upgrade pip;
+  sudo ${PYTHON_EXEC} -m pip install --upgrade setuptools;
+  sudo ${PYTHON_EXEC} -m pip install --upgrade ez_setup;
+  sudo ${PYTHON_EXEC} -m easy_install -U setuptools;
+  #sudo ${PYTHON_EXEC} -m pip install --upgrade rpm-py-installer; # 2.7error 3.6error
+  sudo ${PYTHON_EXEC} -m pip install --upgrade pyudev;
+  
+  sudo ${PYTHON_EXEC} -m pip install --upgrade cryptography;
+  sudo ${PYTHON_EXEC} -m pip install --upgrade pyOpenSSL;
+  sudo ${PYTHON_EXEC} -m pip install --upgrade dnspython;
+  sudo ${PYTHON_EXEC} -m pip install --upgrade requests; #2.7conflict
+  sudo ${PYTHON_EXEC} -m pip install --upgrade ansible;
+  sudo ${PYTHON_EXEC} -m pip install --upgrade virtualenv;
+  sudo ${PYTHON_EXEC} -m pip install --upgrade pylint;
+  
+  sudo ${PYTHON_EXEC} -m pip install --upgrade python-dateutil;
+  sudo ${PYTHON_EXEC} -m pip install --upgrade jsonschema;
+  sudo ${PYTHON_EXEC} -m pip install --upgrade tornado;
+  sudo ${PYTHON_EXEC} -m pip install --upgrade flask;
+  sudo ${PYTHON_EXEC} -m pip install --upgrade selenium;
+}
+
+function installPythonManual {
   cd /opt/;
-  sudo wget --no-check-certificate https://www.python.org/ftp/python/2.7.15/Python-2.7.15.tar.xz;
-  sudo tar xf Python-2.7.15.tar.xz;
+  local PYTHON_VERSION="${1}";
+  local PYTHON_DIR="${2}";
+  sudo wget --no-check-certificate https://www.python.org/ftp/python/${PYTHON_VERSION}/Python-${PYTHON_VERSION}.tar.xz;
+  sudo tar xf Python-${PYTHON_VERSION}.tar.xz;
   sudo chmod -R 755 Python*;
-  cd Python-2.7.15;
+  cd Python-${PYTHON_VERSION};
   sudo ./configure --prefix=/usr/local --enable-shared --enable-unicode=ucs4;
   sudo ./configure --enable-optimizations;
-  #sudo make && sudo make altinstall;
   sudo make altinstall;
-  local STRING_PYTHON_LIB="export LD_LIBRARY_PATH=/usr/local/lib:/usr/local/bin/python2.7:$LD_LIBRARY_PATH";
-  local STRING_PY_ALIAS="alias python=/usr/local/bin/python2.7";
+  local STRING_PYTHON_LIB="export LD_LIBRARY_PATH=/usr/local/lib:${PYTHON_DIR}:$LD_LIBRARY_PATH";
+  local STRING_PY_ALIAS="alias python=${PYTHON_DIR}";
   sudo echo "$STRING_PYTHON_LIB" >> ${HOME_USER}/.bashrc;
   sudo echo "$STRING_PY_ALIAS" >> ${HOME_USER}/.bashrc;
   sudo su $DEV_USER <<EOF
@@ -165,93 +183,57 @@ EOF
 
   #sudo wget https://bitbucket.org/pypa/setuptools/raw/bootstrap/ez_setup.py;
   sudo wget https://bootstrap.pypa.io/ez_setup.py;
-  sudo /usr/local/bin/python2.7 ez_setup.py;
-  /usr/local/bin/easy_install-2.7 pip;
+  sudo ${PYTHON_DIR} ez_setup.py;
 
-  sudo yum-config-manager --add-repo http://download.opensuse.org/repositories/home:/fengshuo:/zeromq/CentOS_CentOS-6/home:fengshuo:zeromq.repo;
-  sudo yum install -y python-devel zeromq zeromq-devel;
-  # 40 is less priority than 60ss
-  sudo alternatives --install /bin/python python /usr/bin/python2 40;
-  sudo alternatives --install /bin/python python /usr/local/bin/python2.7 50;
-  sudo alternatives --install /bin/python python /usr/bin/python2 40;
-  sudo alternatives --install /bin/python python /usr/local/bin/python2.7 50;
-  
-  # install pithon tools
+  sudo ln -s ${PYTHON_DIR} /bin/python${PYTHON_VERSION};
+
   wget https://bootstrap.pypa.io/get-pip.py;
-  sudo python2 get-pip.py;
-  sudo python2.7 get-pip.py;
-  sudo python3 get-pip.py;
-  sudo python3.4 get-pip.py;
+  sudo ${PYTHON_DIR} get-pip.py;
 
-  # Change default python version
-  setPython "old";
-  
-  # install python 3.6
-  sudo yum install -y rh-python36;
-  sudo ln -s /opt/rh/rh-python36/root/usr/bin/python3.6 /bin/python3.6;
-  sudo rm -rf /usr/bin/python3;
-  sudo ln -s /bin/python3.6 /bin/python3;
-  sudo python3.6 get-pip.py;
-  sudo python3.6 -m pip install virtualenv --upgrade;
-
-  cd;
-
-  sudo systemctl enable sshd.service;
-  sudo systemctl start sshd.service;
+  pipLibs ${PYTHON_DIR};
 }
 
-# Python
-function pipTools {
-  # Change python versión for install pip
-  setPython "new";
-
-  #remove for errors
-  sudo pip uninstall -y jrnl;
-  sudo pip uninstall -y rpkg;
-
-  sudo pip install --upgrade pip; # also validate
-  sudo pip install --upgrade setuptools;
-  sudo pip install --upgrade ez_setup;
-  sudo easy_install -U setuptools;
-  sudo pip install --upgrade pyOpenSSL;
-  sudo pip install --upgrade jinja2;
-  sudo pip install --upgrade pyudev;
-  sudo pip install --upgrade dnspython;
-  sudo pip install --upgrade pyzmq;
-  sudo pip install --upgrade pygments;
-  sudo pip install --upgrade tornado;
-  sudo pip install --upgrade jsonschema;
-  sudo pip install --upgrade ipython;
-  sudo pip install --upgrade python-dateutil;
-  sudo pip install --upgrade "ipython[notebook]"; ## obs4rve
-  sudo pip install --upgrade requests; # observe
-  sudo pip install --upgrade ansible;
-  sudo pip install --upgrade cryptography;
-  sudo pip install --upgrade virtualenv;
-  sudo pip install --upgrade selenium; # observe
-  sudo pip install --upgrade graphlab-create; # observe
-  sudo pip install --upgrade seaborn;
-  sudo pip install --upgrade oauth2client;
-  sudo pip install --upgrade "pylint<2.0.0";
+function pythonUpdate {
+  # TODO: update version
+  local PYTHON_VERSION271="2.7.16";
+  local PYTHON_VERSION372="3.7.2";
   
-  sudo pip install --upgrade rpm-py-installer; # not found
-  sudo pip install --upgrade koji; # se daña
-
-  # no installed please
-  #sudo pip install --upgrade jrnl; # error python-dateutil
-  #sudo pip install --upgrade jrnl[encrypted]; # error  jupiter
-
-  # Change python versión for continue yum installations
-  setPython "old";
-
+  # Original dir bin
+  local PYTHON2_DIR='/bin/python2.7'; # RH7 original python2
+  local PYTHON36_DIR='/bin/python3.6';
+  local PYTHON271_DIR='/usr/local/bin/python2.7'; # new updated version
+  local PYTHON372_DIR='/usr/local/bin/python3.7'; # new updated version
+  
+  # download secure pip install pip
+  wget https://bootstrap.pypa.io/get-pip.py;
+  
+  # install and update python local
+  sudo yum install -y python-pip;
+  sudo yum -y groupinstall 'development tools';
+  #/usr/local/bin/easy_install-2.7 pip;
+  sudo yum install -y python-devel zeromq zeromq-devel;
+  #sudo ${PYTHON2_DIR} get-pip.py; # error
+  # alternative python os libraries
   sudo yum install -y libpng-devel freetype freetype-devel;
-  sudo yum install -y python-pandas;
-  sudo yum install -y python-devel python-nose python-setuptools gcc gcc-gfortran gcc-c++ blas-devel lapack-devel atlas-devel;
-  sudo yum install -y python2-crypto python-paramiko;
-
-  # install again in old version
-  pip install --upgrade jupyter-client;
+  sudo yum install -y python-devel python-nose python-setuptools gcc gcc-gfortran gcc-c++ blas-devel lapack-devel atlas-devel python2-crypto;
   pip install --upgrade rpkg;
+  pipLibs ${PYTHON2_DIR};
+  
+  # Install python 3.6
+  sudo yum install -y https://centos7.iuscommunity.org/ius-release.rpm;
+  sudo yum update -y;
+  sudo yum install -y python36u python36u-libs python36u-devel python36u-pip;
+  
+  #sudo yum install -y rh-python36;
+  #sudo ln -s /opt/rh/rh-python36/root/usr/bin/python3.6 ${PYTHON36_DIR};
+  sudo rm -rf /usr/bin/python3;
+  sudo ln -s ${PYTHON36_DIR} /bin/python3;
+  sudo ${PYTHON36_DIR} get-pip.py;
+  pipLibs ${PYTHON36_DIR};
+
+  # install python new versions
+  #installPythonManual "${PYTHON_VERSION271}" "${PYTHON271_DIR}";
+  #installPythonManual "${PYTHON_VERSION372}" "${PYTHON372_DIR}";
 
   # browser drivers for sellenium
   if ! geckodriver --version || ! chromedriver --version ;then
@@ -374,8 +356,8 @@ function databases {
   fi;
   sudo systemctl start postgresql;
   sudo passwd postgres <<EOF
-$DEV_PASS2
-$DEV_PASS2
+$DEV_PASS
+$DEV_PASS
 EOF
   # config
   sudo sed -i -e "s/\(\( peer\)\|\( ident\)\)/ md5/g" /var/lib/pgsql/data/pg_hba.conf;
@@ -413,7 +395,6 @@ function remote {
   sudo yum install -y remmina remmina-plugins-rdp remmina-plugins-vnc;
 }
 
-
 # Remmina-plugins-common
 # Apache php
 function apachePHP {
@@ -428,10 +409,8 @@ function apachePHP {
   sudo systemctl stop httpd;
 }
 
-
 # DOCKER
 function dockerTools {
-
   # enable fordware for build images
   echo "net.ipv4.ip_forward=1" >> /etc/sysctl.conf;
   sudo systemctl restart network;
@@ -460,7 +439,6 @@ function dockerTools {
   sudo curl -L "https://github.com/docker/compose/releases/download/1.23.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose;
   sudo chmod +x /usr/local/bin/docker-compose;
   sudo ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose;
-
 }
 
 # Android dev
@@ -514,7 +492,7 @@ function javaAndroid {
 
   function select_alternative_java {
     local num="$1";
-    sudo alternatives --config <<EOF
+    sudo alternatives --config java <<EOF
 $num
 EOF
   }
@@ -532,11 +510,10 @@ EOF
     install_alternatives_java "${java_to_install}";
   done;
 
-  select_alternative_java 3;
+  select_alternative_java 1;
 
   # java version
   java -version;
-
 }
 
 # vim
@@ -574,7 +551,7 @@ function vimConfig {
   fi;
 
   cd $HOME_USER;
-  sudo chown -R ${DEV_USER}:${DEV_USER} $HOME_USER;
+  restoreHomePermissions $NEW_USER;
 }
 
 # nodejs
@@ -584,7 +561,8 @@ function nodeConfig {
   if [ ! -e ${HOME_USER}/.nvm ];then
     sudo su $DEV_USER <<EOF
     echo ${HOME_USER};
-    curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.11/install.sh | bash;
+    #TODO: update nvm version
+    curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.34.0/install.sh | bash;
     source ${HOME_USER}/.nvm/nvm.sh;
     source ${HOME_USER}/.bashrc;
     nvm install 8;
@@ -595,7 +573,6 @@ EOF
   fi;
 }
 
-
 function installMariaDB {
 
   sudo yum install -y mariadb-server;
@@ -603,10 +580,10 @@ function installMariaDB {
   sudo systemctl enable mariadb;
   sudo mysql_secure_installation <<EOF
 
-$DEV_PASS2
+$DEV_PASS
 y
-$DEV_PASS2
-$DEV_PASS2
+$DEV_PASS
+$DEV_PASS
 y
 n
 n
@@ -615,7 +592,6 @@ EOF
 
   sudo systemctl start mariadb.service;
   sudo systemctl enable mariadb.service;
-
 }
 
 function installKvm {
@@ -652,7 +628,7 @@ sudo yum install dkms;
 sudo wget -P /etc/yum.repos.d http://download.virtualbox.org/virtualbox/rpm/rhel/virtualbox.repo;
 sudo yum install -y VirtualBox-6.0;
 sudo usermod -a -G vboxusers ${DEV_USER};
-} 
+}
 
 function devPrograms {
   #fish shell
@@ -668,7 +644,7 @@ function devPrograms {
 
   # https://code.visualstudio.com/docs/setup/linux
   sudo rpm --import https://packages.microsoft.com/keys/microsoft.asc;
-  sudo sh -c 'echo -e "[code]\nname=Visual Studio Code\nbaseurl=https://packages.microsoft.com/yumrepos/vscode\nenabled=1\ngpgcheck=1\ngpgkey=https://packages.microsoft.com/keys/microsoft.asc" > /etc/yum.repos.d/vscode.repo'
+  sudo sh -c 'echo -e "[code]\nname=Visual Studio Code\nbaseurl=https://packages.microsoft.com/yumrepos/vscode\nenabled=1\ngpgcheck=1\ngpgkey=https://packages.microsoft.com/keys/microsoft.asc" > /etc/yum.repos.d/vscode.repo';
   sudo yum check-update -y;
   sudo yum install -y code;
 
@@ -691,11 +667,11 @@ EOF
   sudo yum-config-manager --add-repo https://download.sublimetext.com/rpm/stable/x86_64/sublime-text.repo;
   sudo yum install -y sublime-text;
 
-  #pycharm
-  local pycharm_version="pycharm-community-2018.2";
+  # TODO: update version pycharm
+  local pycharm_version="pycharm-community-2019.1.1";
   wget "https://download.jetbrains.com/python/${pycharm_version}.tar.gz";
   tar -xvzf ${pycharm_version}.tar.gz;
-  mv -f ${pycharm_version} ${HOME_USER}/bin/;
+  mv -f ${pycharm_version} ${HOME_USER}/bin/pycharm-community;
   restoreHomePermissions;
 
   #eclipse 
@@ -705,16 +681,17 @@ EOF
   mv -f eclipse ${HOME_USER}/bin/eclipse;
   restoreHomePermissions;
 
-  #sts spring
-  wget "http://download.springsource.com/release/STS/3.9.5.RELEASE/dist/e4.8/spring-tool-suite-3.9.5.RELEASE-e4.8.0-linux-gtk-x86_64.tar.gz";
-  tar -xvzf spring-tool-suite-3.9.5.RELEASE-e4.8.0-linux-gtk-x86_64.tar.gz;
-  mv -f sts-bundle ${HOME_USER}/bin/;
+  #sts TODO: update spring
+  wget 'https://download.springsource.com/release/STS4/4.2.0.RELEASE/dist/e4.11/spring-tool-suite-4-4.2.0.RELEASE-e4.11.0-linux.gtk.x86_64.tar.gz';
+  tar -xvzf spring-tool-suite-4-4.2.0.RELEASE-e4.11.0-linux.gtk.x86_64.tar.gz;
+  mv -f sts-4.2.0.RELEASE ${HOME_USER}/bin/spring-tool-suite;
+  restoreHomePermissions;
 
   #apache dorectory studio
-  wget "https://www-us.apache.org/dist/directory/studio/2.0.0.v20180908-M14/ApacheDirectoryStudio-2.0.0.v20180908-M14-linux.gtk.x86_64.tar.gz"
+  wget "https://www-us.apache.org/dist/directory/studio/2.0.0.v20180908-M14/ApacheDirectoryStudio-2.0.0.v20180908-M14-linux.gtk.x86_64.tar.gz";
   tar -xvzf ApacheDirectoryStudio-2.0.0.v20180908-M14-linux.gtk.x86_64.tar.gz;
   mv -f ApacheDirectoryStudio ${HOME_USER}/bin/;
-
+  restoreHomePermissions;
 
   #gradle java
   function addGradle {
@@ -727,13 +704,13 @@ EOF
   }
 
   addGradle "gradle-3.5.1";
-  addGradle "gradle-4.10.2";
+  addGradle "gradle-5.3.1";
 
-  local STRING_GRADLE_LIB="export PATH=\$PATH:~/bin/gradle/gradle-4.10.2/bin;";
+  local STRING_GRADLE_LIB="export PATH=\$PATH:~/bin/gradle/gradle-5.3.1/bin;";
   sudo echo "$STRING_GRADLE_LIB" >> ${HOME_USER}/.bashrc;
   
   # maven
-  local maven_version='3.6.0';
+  local maven_version='3.6.1';
   sudo mkdir -p $HOME_USER/bin/maven/;
   wget http://apache.cs.utah.edu/maven/maven-3/${maven_version}/binaries/apache-maven-${maven_version}-bin.tar.gz;
   tar -xzf apache-maven-${maven_version}-bin.tar.gz;
@@ -752,65 +729,73 @@ EOF
     restoreHomePermissions;
   }
 
-  addTomcat "8" "8.5.35";
-  addTomcat "8" "8.0.53";
+  addTomcat "8" "8.5.40";
 
   # git
   sudo -i -u ${DEV_USER} git config --global user.name "${DEV_USER}";
   sudo -i -u ${DEV_USER} git config --global user.email "${DEV_USER}@instance.vnc";
-  addTomcat "7" "7.0.91";
 
   # docker cerbot
   local STRING_CERBOT="alias cerbot=\"docker run --rm -it -p 443:443 -v \$HOME/cerbot:/etc/letsencrypt -v \$HOME/cerbot/log:/var/log/letsencrypt quay.io/letsencrypt/letsencrypt:latest\";";
   sudo echo "${STRING_CERBOT}" >> ${HOME_USER}/.bashrc;
 
-  # cloud sdk
-  local gcloud_version="google-cloud-sdk-224.0.0-linux-x86_64";
+  # TODO: update cloud sdk
+  
+  local gcloud_version="google-cloud-sdk-240.0.0-linux-x86_64";
   wget "https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/${gcloud_version}.tar.gz";
   tar -xvzf ${gcloud_version}.tar.gz;
   mv -f google-cloud-sdk ${HOME_USER}/bin/;
   restoreHomePermissions;
-  setPython "new";
+  
+  sudo yum install -y kubectl google-cloud-sdk*;
 
+  # validate python2.7.16
   echo "PLEASE: press Y and enter to continue...";
-  sudo -i -u $DEV_USER ${HOME_USER}/bin/google-cloud-sdk/install.sh <<EOF
-y
-EOF
+  sudo -i -u $DEV_USER ${HOME_USER}/bin/google-cloud-sdk/install.sh -q;
   if [[ ! "$(cat $HOME_USER/.bashrc)" == *"google-cloud-sdk"* ]];then
     sudo -i -u $DEV_USER echo "if [ -f '~/bin/google-cloud-sdk/completion.bash.inc' ]; then source '~/bin/google-cloud-sdk/completion.bash.inc'; fi;" >> ${HOME_USER}/.bashrc;
     sudo -i -u $DEV_USER echo "export PATH=PATH:'~/bin/google-cloud-sdk/platform/google_appengine';" >> ${HOME_USER}/.bashrc;
     sudo -i -u $DEV_USER echo "export PATH=PATH:'~/bin/google-cloud-sdk/bin';" >> ${HOME_USER}/.bashrc;
     sudo sed -i -e "s/PATH=PATH/PATH=\$PATH/g"  ${HOME_USER}/.bashrc;
     
-    sudo -i -u $DEV_USER ${HOME_USER}/bin/google-cloud-sdk/install.sh <<EOF
-y
-EOF
+    sudo -i -u $DEV_USER echo "alias gcloud='~/bin/google-cloud-sdk/bin/gcloud';" >> ${HOME_USER}/.bashrc;
+    
+    sudo -i -u $DEV_USER ${HOME_USER}/bin/google-cloud-sdk/install.sh -q;
   fi;
+  restoreHomePermissions;
   
-  sudo -i -u $DEV_USER gcloud components install -q beta alpha \
+  sudo -i -u $DEV_USER ${HOME_USER}/bin/google-cloud-sdk/bin/gcloud components update -q;
+  sudo -i -u $DEV_USER ${HOME_USER}/bin/google-cloud-sdk/bin/gcloud components install beta alpha \
   app-engine-python app-engine-python-extras kubectl bq \
   app-engine-java app-engine-php app-engine-go pubsub-emulator \
-  cloud-datastore-emulator gcd-emulator docker-credential-gcr <<EOF
-y
-EOF
+  cloud-datastore-emulator gcd-emulator docker-credential-gcr -q;
 
   # add to path
-  local STRING_APPENGINE_OVERWRITE="sed -i '1s/.*/#\!\/usr\/bin\/env python2.7/' \"\$(which dev_appserver.py)\";";
+  local STRING_APPENGINE_OVERWRITE="sed -i '1s/.*/#\!\/usr\/bin\/env python2.7/' \"\$HOME/bin/google-cloud-sdk/bin/dev_appserver.py\";";
   sudo echo "${STRING_APPENGINE_OVERWRITE}" >> ${HOME_USER}/.bashrc;
+  restoreHomePermissions;
 
-  # update gcloud
-  sudo -i -u $DEV_USER gcloud components update -q <<EOF
-y
-EOF
   # add download appengine app
-  sudo echo "alias appcfg.py=\"python /home/developer/bin/google-cloud-sdk/platform/google_appengine/appcfg.py\";" >> ${HOME_USER}/.bashrc;
-
-  setPython "old";
-
+  sudo echo "alias appcfg.py=\"python \$HOME/bin/google-cloud-sdk/platform/google_appengine/appcfg.py\";" >> ${HOME_USER}/.bashrc;
+  
+  # add vscode/code-server
+  # TODO:update version
+  cd ${HOME_USER}/bin/;
+  local VSCODE_VERSION="1.696-vsc1.33.0";
+  wget https://github.com/codercom/code-server/releases/download/${VSCODE_VERSION}/code-server${VSCODE_VERSION}-linux-x64.tar.gz;
+  tar -xzvf code-server${VSCODE_VERSION}-linux-x64.tar.gz;
+  rm -rf code-server${VSCODE_VERSION}-linux-x64.tar.gz;
+  mv code-server${VSCODE_VERSION}-linux-x64 code-server;
+  sudo echo "alias code-server=\"\$HOME/bin/code-server/code-server --allow-http -e ~/.vscode/extensions -d ~/.config/Code\";" >> ${HOME_USER}/.bashrc;
+  
+  sudo echo "alias vscode-server='docker run -it --rm --net host --name code-server -p 8443:8443 -v \$HOME/.config/Code:/home/coder/.config/Code -v \$HOME/.vscode/extensions:/home/coder/.vscode/extensions codercom/code-server:latest --allow-http -P $DEV_PASS -e /home/coder/.vscode/extensions -d /home/coder/.config/Code';" >> ${HOME_USER}/.bashrc;
+  
+  # clean
+  cd;
+  rm -rf *.zip *.tar *.tar.gz *.tgz *.rpm;
 }
 
 function installWine {
-  setPython "old";
   cleanDnf;
   cd /usr/src;
   sudo wget http://dl.winehq.org/wine/source/3.0/wine-3.0.tar.xz;
@@ -905,9 +890,7 @@ function installAll {
     createUser;
     cleanDnf;
     #mountDisk;
-    devTools;
     pythonUpdate;
-    pipTools; # error
     databases;
     rubyTools;
     mediaTool;
@@ -926,7 +909,6 @@ function installAll {
     installWine;
     cleanDnf;
     manualSteps;
-    setPython "new";
     cleanInstallFiles;
     #duplicateUser from_user to_new_user new_pass;
   fi;
