@@ -35,7 +35,7 @@ function updateSystem {
   yum install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm;
   sudo yum install epel-release -y;
   # remove default sdk
-  sudo yum remove -y google-cloud-sdk;
+  #sudo yum remove -y google-cloud-sdk;
 }
 
 function cleanDnf {
@@ -740,7 +740,6 @@ EOF
   sudo echo "${STRING_CERBOT}" >> ${HOME_USER}/.bashrc;
 
   # TODO: update cloud sdk
-  
   local gcloud_version="google-cloud-sdk-240.0.0-linux-x86_64";
   wget "https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/${gcloud_version}.tar.gz";
   tar -xvzf ${gcloud_version}.tar.gz;

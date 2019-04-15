@@ -5,7 +5,7 @@ PROJECT=`curl "http://metadata.google.internal/computeMetadata/v1/project/projec
 BUCKET_GET="${PROJECT}.appspot.com";
 JAVA_RPMS="jdk-8u171-linux-x64.rpm jdk-7u80-linux-x64.rpm";
 JAVA_INSTALL="latest jdk1.7.0_80 jdk1.8.0_171-amd64";
-GRAPH_INTERFACE=1;
+GRAPH_INTERFACE=2;
 
 function initInfo {
   while [[ $DEV_USER == "" ]];do 
@@ -41,7 +41,7 @@ function updateSystem {
   yum install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm;
   sudo yum install epel-release -y;
   # remove default sdk
-  sudo yum remove -y google-cloud-sdk;
+  #sudo yum remove -y google-cloud-sdk;
 }
 
 function cleanDnf {
@@ -91,15 +91,12 @@ EOF
   
   echo "Please press enter fo continue...";
   # create ssh leave white spaces for enter
-  sudo -i -u $NEW_USER ssh-keygen <<EOF
-
-
-
-
-EOF
+  sudo -i -u $NEW_USER ssh-keygen -f $HOME_USER/.ssh/id_rsa -t rsa -N "$NEW_PASS";
 
   # enable ssh
   sudo sed -i -e "s/PasswordAuthentication no/PasswordAuthentication yes/g"  /etc/ssh/sshd_config;
+  sudo systemctl enable sshd.service;
+  sudo systemctl start sshd.service;
   sudo systemctl restart sshd;
 }
 
@@ -117,7 +114,7 @@ function mountDisk {
 # Install tools
 function mainTools {
   updateSystem;
-  sudo yum install vim nano tmux htop iotop lynx nmap whois tcpdump iotop bind-utils -y;
+  sudo yum install vim nano tmux htop iotop lynx nmap whois tcpdump iotop bind-utils wget -y;
 }
 
 # Dev tools
@@ -128,7 +125,12 @@ function devTools {
   sudo yum groupinstall -y --disablerepo=\* --enablerepo=base,updates,cr "Development Tools";
   sudo yum install -y dh-autoreconf vim-enhanced curl-devel expat-devel gettext-devel openssl-devel apr-devel perl-devel zlib-devel libvirt gtkmm30 libgdkmm-3.0.so.1 proj proj;
   sudo yum install -y asciidoc xmlto docbook2X binutils fedora-packager chrpath autoconf automake;
-  sudo yum install -y gcc gcc-c++ qt-devel libffi-devel python python-devel nasm.x86_64 SDL* ant dkms kernel-devel dkms kernel-headers libstdc++.i686 subversion;
+
+  # NOTE: next line can produve error because before was not installed
+  sudo yum install -y gcc gcc-c++ qt-devel libffi-devel python python-devel nasm.x86_64 ant dkms kernel-devel dkms kernel-headers libstdc++.i686 subversion;
+  #NOTE: PERVIOUS install all SDL* but cause conflig with "SDL2_gfx-docs"
+  sudo yum install -y SDL-* SDL_* SDL2-* SDL2_ttf* SDL2_net* SDL2_mixer* SDL2_image* SDL2_gfx SDL2_gfx-devel;
+
   sudo yum install -y wget deluge rpm-build lsb sqlite-devel git-all kdiff3 openssh openssh-server ncurses-devel bzip2-devel;
   sudo yum install -y yum-utils device-mapper-persistent-data lvm2 p7zip unrar;
   sudo yum install -y libX11-devel freetype-devel libxcb-devel libxslt-devel libgcrypt-devel libxml2-devel gnutls-devel libpng-devel libjpeg-turbo-devel libtiff-devel gstreamer-devel dbus-devel fontconfig-devel libappindicator;
@@ -584,7 +586,7 @@ function nodeConfig {
   if [ ! -e ${HOME_USER}/.nvm ];then
     sudo su $DEV_USER <<EOF
     echo ${HOME_USER};
-    curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.11/install.sh | bash;
+    curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.34.0/install.sh | bash;
     source ${HOME_USER}/.nvm/nvm.sh;
     source ${HOME_USER}/.bashrc;
     nvm install 8;
@@ -692,7 +694,7 @@ EOF
   sudo yum install -y sublime-text;
 
   #pycharm
-  local pycharm_version="pycharm-community-2018.2";
+  local pycharm_version="pycharm-community-2019.1.1";
   wget "https://download.jetbrains.com/python/${pycharm_version}.tar.gz";
   tar -xvzf ${pycharm_version}.tar.gz;
   mv -f ${pycharm_version} ${HOME_USER}/bin/;
@@ -705,16 +707,16 @@ EOF
   mv -f eclipse ${HOME_USER}/bin/eclipse;
   restoreHomePermissions;
 
-  #sts spring
-  wget "http://download.springsource.com/release/STS/3.9.5.RELEASE/dist/e4.8/spring-tool-suite-3.9.5.RELEASE-e4.8.0-linux-gtk-x86_64.tar.gz";
-  tar -xvzf spring-tool-suite-3.9.5.RELEASE-e4.8.0-linux-gtk-x86_64.tar.gz;
-  mv -f sts-bundle ${HOME_USER}/bin/;
+  #sts TODO: update spring
+  wget 'https://download.springsource.com/release/STS4/4.2.0.RELEASE/dist/e4.11/spring-tool-suite-4-4.2.0.RELEASE-e4.11.0-linux.gtk.x86_64.tar.gz';
+  tar -xvzf spring-tool-suite-4-4.2.0.RELEASE-e4.11.0-linux.gtk.x86_64.tar.gz;
+  mv -f sts-4.2.0.RELEASE ${HOME_USER}/bin/spring-tool-suite;
+  restoreHomePermissions;
 
   #apache dorectory studio
   wget "https://www-us.apache.org/dist/directory/studio/2.0.0.v20180908-M14/ApacheDirectoryStudio-2.0.0.v20180908-M14-linux.gtk.x86_64.tar.gz"
   tar -xvzf ApacheDirectoryStudio-2.0.0.v20180908-M14-linux.gtk.x86_64.tar.gz;
   mv -f ApacheDirectoryStudio ${HOME_USER}/bin/;
-
 
   #gradle java
   function addGradle {
@@ -727,13 +729,13 @@ EOF
   }
 
   addGradle "gradle-3.5.1";
-  addGradle "gradle-4.10.2";
+  addGradle "gradle-5.3.1";
 
-  local STRING_GRADLE_LIB="export PATH=\$PATH:~/bin/gradle/gradle-4.10.2/bin;";
+  local STRING_GRADLE_LIB="export PATH=\$PATH:~/bin/gradle/gradle-5.3.1/bin;";
   sudo echo "$STRING_GRADLE_LIB" >> ${HOME_USER}/.bashrc;
   
   # maven
-  local maven_version='3.6.0';
+  local maven_version='3.6.1';
   sudo mkdir -p $HOME_USER/bin/maven/;
   wget http://apache.cs.utah.edu/maven/maven-3/${maven_version}/binaries/apache-maven-${maven_version}-bin.tar.gz;
   tar -xzf apache-maven-${maven_version}-bin.tar.gz;
@@ -752,61 +754,72 @@ EOF
     restoreHomePermissions;
   }
 
-  addTomcat "8" "8.5.35";
-  addTomcat "8" "8.0.53";
+  addTomcat "8" "8.5.40";
 
   # git
   sudo -i -u ${DEV_USER} git config --global user.name "${DEV_USER}";
   sudo -i -u ${DEV_USER} git config --global user.email "${DEV_USER}@instance.vnc";
-  addTomcat "7" "7.0.91";
 
   # docker cerbot
   local STRING_CERBOT="alias cerbot=\"docker run --rm -it -p 443:443 -v \$HOME/cerbot:/etc/letsencrypt -v \$HOME/cerbot/log:/var/log/letsencrypt quay.io/letsencrypt/letsencrypt:latest\";";
   sudo echo "${STRING_CERBOT}" >> ${HOME_USER}/.bashrc;
 
-  # cloud sdk
-  local gcloud_version="google-cloud-sdk-224.0.0-linux-x86_64";
+  # TODO: update cloud sdk
+  local gcloud_version="google-cloud-sdk-240.0.0-linux-x86_64";
   wget "https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/${gcloud_version}.tar.gz";
   tar -xvzf ${gcloud_version}.tar.gz;
   mv -f google-cloud-sdk ${HOME_USER}/bin/;
   restoreHomePermissions;
   setPython "new";
 
+  # os update
+  sudo yum install -y kubectl google-cloud-sdk*;
+
+  # validate python2.7.16
   echo "PLEASE: press Y and enter to continue...";
-  sudo -i -u $DEV_USER ${HOME_USER}/bin/google-cloud-sdk/install.sh <<EOF
-y
-EOF
+  sudo -i -u $DEV_USER ${HOME_USER}/bin/google-cloud-sdk/install.sh -q;
   if [[ ! "$(cat $HOME_USER/.bashrc)" == *"google-cloud-sdk"* ]];then
     sudo -i -u $DEV_USER echo "if [ -f '~/bin/google-cloud-sdk/completion.bash.inc' ]; then source '~/bin/google-cloud-sdk/completion.bash.inc'; fi;" >> ${HOME_USER}/.bashrc;
     sudo -i -u $DEV_USER echo "export PATH=PATH:'~/bin/google-cloud-sdk/platform/google_appengine';" >> ${HOME_USER}/.bashrc;
     sudo -i -u $DEV_USER echo "export PATH=PATH:'~/bin/google-cloud-sdk/bin';" >> ${HOME_USER}/.bashrc;
     sudo sed -i -e "s/PATH=PATH/PATH=\$PATH/g"  ${HOME_USER}/.bashrc;
     
-    sudo -i -u $DEV_USER ${HOME_USER}/bin/google-cloud-sdk/install.sh <<EOF
-y
-EOF
+    sudo -i -u $DEV_USER echo "alias gcloud='~/bin/google-cloud-sdk/bin/gcloud';" >> ${HOME_USER}/.bashrc;
+    
+    sudo -i -u $DEV_USER ${HOME_USER}/bin/google-cloud-sdk/install.sh -q;
   fi;
+  restoreHomePermissions;
   
-  sudo -i -u $DEV_USER gcloud components install -q beta alpha \
+  sudo -i -u $DEV_USER ${HOME_USER}/bin/google-cloud-sdk/bin/gcloud components update -q;
+  sudo -i -u $DEV_USER ${HOME_USER}/bin/google-cloud-sdk/bin/gcloud components install beta alpha \
   app-engine-python app-engine-python-extras kubectl bq \
   app-engine-java app-engine-php app-engine-go pubsub-emulator \
-  cloud-datastore-emulator gcd-emulator docker-credential-gcr <<EOF
-y
-EOF
+  cloud-datastore-emulator gcd-emulator docker-credential-gcr -q;
 
   # add to path
   local STRING_APPENGINE_OVERWRITE="sed -i '1s/.*/#\!\/usr\/bin\/env python2.7/' \"\$(which dev_appserver.py)\";";
   sudo echo "${STRING_APPENGINE_OVERWRITE}" >> ${HOME_USER}/.bashrc;
+  restoreHomePermissions;
 
-  # update gcloud
-  sudo -i -u $DEV_USER gcloud components update -q <<EOF
-y
-EOF
   # add download appengine app
   sudo echo "alias appcfg.py=\"python /home/developer/bin/google-cloud-sdk/platform/google_appengine/appcfg.py\";" >> ${HOME_USER}/.bashrc;
-
   setPython "old";
 
+  # add vscode/code-server
+  # TODO:update version
+  cd ${HOME_USER}/bin/;
+  local VSCODE_VERSION="1.696-vsc1.33.0";
+  wget https://github.com/codercom/code-server/releases/download/${VSCODE_VERSION}/code-server${VSCODE_VERSION}-linux-x64.tar.gz;
+  tar -xzvf code-server${VSCODE_VERSION}-linux-x64.tar.gz;
+  rm -rf code-server${VSCODE_VERSION}-linux-x64.tar.gz;
+  mv code-server${VSCODE_VERSION}-linux-x64 code-server;
+  sudo echo "alias code-server=\"\$HOME/bin/code-server/code-server --allow-http -e ~/.vscode/extensions -d ~/.config/Code\";" >> ${HOME_USER}/.bashrc;
+  
+  sudo echo "alias vscode-server='docker run -it --rm --net host --name code-server -p 8443:8443 -v \$HOME/.config/Code:/home/coder/.config/Code -v \$HOME/.vscode/extensions:/home/coder/.vscode/extensions codercom/code-server:latest --allow-http -P $DEV_PASS -e /home/coder/.vscode/extensions -d /home/coder/.config/Code';" >> ${HOME_USER}/.bashrc;
+  
+  # clean
+  cd;
+  rm -rf *.zip *.tar *.tar.gz *.tgz *.rpm;
 }
 
 function installWine {
