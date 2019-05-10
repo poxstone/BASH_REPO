@@ -153,57 +153,58 @@ function pythonUpdate {
   sudo ./configure --enable-optimizations;
   #sudo make && sudo make altinstall;
   sudo make altinstall;
-  local STRING_PYTHON_LIB="export LD_LIBRARY_PATH=/usr/local/lib:/usr/local/bin/python2.7:$LD_LIBRARY_PATH";
-  local STRING_PY_ALIAS="alias python=/usr/local/bin/python2.7";
-  sudo echo "$STRING_PYTHON_LIB" >> ${HOME_USER}/.bashrc;
-  sudo echo "$STRING_PY_ALIAS" >> ${HOME_USER}/.bashrc;
-  sudo su $DEV_USER <<EOF
-  #echo "$STRING_PYTHON_LIB" >> ${HOME_USER}/.bashrc;
-  #echo "$STRING_PY_ALIAS" >> ${HOME_USER}/.bashrc;
+  #local STRING_PYTHON_LIB="export LD_LIBRARY_PATH=/usr/local/lib:/usr/local/bin/python2.7:$LD_LIBRARY_PATH";
+  #local STRING_PY_ALIAS="alias python=/usr/local/bin/python2.7";
+  #sudo echo "$STRING_PYTHON_LIB" >> ${HOME_USER}/.bashrc;
+  #sudo echo "$STRING_PY_ALIAS" >> ${HOME_USER}/.bashrc;
+  #sudo su $DEV_USER <<EOF
+  ##echo "$STRING_PYTHON_LIB" >> ${HOME_USER}/.bashrc;
+  ##echo "$STRING_PY_ALIAS" >> ${HOME_USER}/.bashrc;
 EOF
   bash ${HOME_USER}/.bashrc && sudo bash ${HOME_USER}/.bashrc;
 
   #sudo wget https://bitbucket.org/pypa/setuptools/raw/bootstrap/ez_setup.py;
+  cd /opt/;
   sudo wget https://bootstrap.pypa.io/ez_setup.py;
-  sudo /usr/local/bin/python2.7 ez_setup.py;
-  /usr/local/bin/easy_install-2.7 pip;
+  sudo python2.7 ez_setup.py;
+  sudo python2.7 -m pip install --upgrade pip;
+  #/usr/local/bin/easy_install-2.7 pip;
 
-  sudo yum-config-manager --add-repo http://download.opensuse.org/repositories/home:/fengshuo:/zeromq/CentOS_CentOS-6/home:fengshuo:zeromq.repo;
-  sudo yum install -y python-devel zeromq zeromq-devel;
-  # 40 is less priority than 60ss
-  sudo alternatives --install /bin/python python /usr/bin/python2 40;
-  sudo alternatives --install /bin/python python /usr/local/bin/python2.7 50;
-  sudo alternatives --install /bin/python python /usr/bin/python2 40;
-  sudo alternatives --install /bin/python python /usr/local/bin/python2.7 50;
+  #sudo yum-config-manager --add-repo http://download.opensuse.org/repositories/home:/fengshuo:/zeromq/CentOS_CentOS-6/home:fengshuo:zeromq.repo;
+  #sudo yum install -y python-devel zeromq zeromq-devel;
+  ## 40 is less priority than 60ss
+  #sudo alternatives --install /bin/python python /usr/bin/python2 40;
+  #sudo alternatives --install /bin/python python /usr/local/bin/python2.7 50;
+  #sudo alternatives --install /bin/python python /usr/bin/python2 40;
+  #sudo alternatives --install /bin/python python /usr/local/bin/python2.7 50;
   
   # install pithon tools
-  wget https://bootstrap.pypa.io/get-pip.py;
-  sudo python2 get-pip.py;
-  sudo python2.7 get-pip.py;
-  sudo python3 get-pip.py;
-  sudo python3.4 get-pip.py;
+  #wget https://bootstrap.pypa.io/get-pip.py;
+  #sudo python2 get-pip.py;
+  #sudo python2.7 get-pip.py;
+  #sudo python3 get-pip.py;
+  #sudo python3.4 get-pip.py;
 
   # Change default python version
-  setPython "old";
+  #setPython "old";
   
   # install python 3.6
   sudo yum install -y rh-python36;
-  sudo ln -s /opt/rh/rh-python36/root/usr/bin/python3.6 /bin/python3.6;
-  sudo rm -rf /usr/bin/python3;
-  sudo ln -s /bin/python3.6 /bin/python3;
-  sudo python3.6 get-pip.py;
+  #sudo ln -s /opt/rh/rh-python36/root/usr/bin/python3.6 /bin/python3.6;
+  #sudo rm -rf /usr/bin/python3;
+  #sudo ln -s /bin/python3.6 /bin/python3;
+  #sudo python3.6 get-pip.py;
+  sudo python3.6 ez_setup.py;
+  sudo python3.6 -m pip install pip --upgrade;
   sudo python3.6 -m pip install virtualenv --upgrade;
 
   cd;
-
-  sudo systemctl enable sshd.service;
-  sudo systemctl start sshd.service;
 }
 
 # Python
 function pipTools {
   # Change python versión for install pip
-  setPython "new";
+  #setPython "new";
 
   #remove for errors
   sudo pip uninstall -y jrnl;
@@ -242,7 +243,7 @@ function pipTools {
   #sudo pip install --upgrade jrnl[encrypted]; # error  jupiter
 
   # Change python versión for continue yum installations
-  setPython "old";
+  #setPython "old";
 
   sudo yum install -y libpng-devel freetype freetype-devel;
   sudo yum install -y python-pandas;
@@ -770,7 +771,7 @@ EOF
   tar -xvzf ${gcloud_version}.tar.gz;
   mv -f google-cloud-sdk ${HOME_USER}/bin/;
   restoreHomePermissions;
-  setPython "new";
+  #setPython "new";
 
   # os update
   sudo yum install -y kubectl google-cloud-sdk*;
@@ -803,7 +804,7 @@ EOF
 
   # add download appengine app
   sudo echo "alias appcfg.py=\"python /home/developer/bin/google-cloud-sdk/platform/google_appengine/appcfg.py\";" >> ${HOME_USER}/.bashrc;
-  setPython "old";
+  #setPython "old";
 
   # add vscode/code-server
   # TODO:update version
@@ -823,7 +824,7 @@ EOF
 }
 
 function installWine {
-  setPython "old";
+  #setPython "old";
   cleanDnf;
   cd /usr/src;
   sudo wget http://dl.winehq.org/wine/source/3.0/wine-3.0.tar.xz;
@@ -939,7 +940,7 @@ function installAll {
     installWine;
     cleanDnf;
     manualSteps;
-    setPython "new";
+    #setPython "new";
     cleanInstallFiles;
     #duplicateUser from_user to_new_user new_pass;
   fi;
