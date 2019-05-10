@@ -290,6 +290,8 @@ function installGraphicVnc {
   sudo cp /lib/systemd/system/vncserver@.service /etc/systemd/system/vncserver@:1.service;
   # replace user in service file
   sudo sed -i -e "s/<USER>/$DEV_USER/g" /etc/systemd/system/vncserver@:1.service;
+  sudo systemctl enable firewalld;
+  sudo systemctl start firewalld;
   #sudo vim /etc/systemd/system/vncserver@:1.service;
   sudo firewall-cmd --permanent --zone=public --add-service vnc-server;
   sudo firewall-cmd --permanent --add-port=3389/tcp;
