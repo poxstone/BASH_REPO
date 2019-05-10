@@ -342,6 +342,8 @@ use_compression=yes\\\n\
   # Disable kde and enable gnome
   if [[ ! "$(grep -nE \"^gnome-session\" ${HOME_USER}/.vnc/xstartup)" ]];then
     sudo sed -i -e "s#exec /etc/X11/xinit/xinitrc#\#exec /etc/X11/xinit/xinitrc#g" ${HOME_USER}/.vnc/xstartup;
+    sudo sed -i -e "s#/etc/X11/xinit/xinitrc#\#\#/etc/X11/xinit/xinitrc#g" ${HOME_USER}/.vnc/xstartup;
+    sudo sed -i -e "s#vncserver -kill $DISPLAY#\#vncserver -kill $DISPLAY#g" ${HOME_USER}/.vnc/xstartup;
 
     echo "
 [ -x /etc/vnc/xstartup ] && exec /etc/vnc/xstartup
@@ -352,6 +354,12 @@ ${XINIT_STRIG}" >> ${HOME_USER}/.vnc/xstartup;
 
   fi;
 
+  sudo systemctl stop vncserver@:1.service;
+  #prevent error
+  sudo systemctl stop vncserver@:2.service;
+  sudo pkill -9 Xvnc;
+  sudo rm -rf /tmp/.*;
+  sudo rm -rf /tmp/*;
   sudo systemctl restart vncserver@:1.service;
 
   # Enable vnc
