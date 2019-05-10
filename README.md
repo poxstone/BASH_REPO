@@ -29,7 +29,7 @@ sudo su;
 cd;
 
 # Pull script
-curl -O curl -O https://raw.githubusercontent.com/poxstone/BASH_REPO/master/desktostart/centos7-cloud/i.sh;
+curl -O https://raw.githubusercontent.com/poxstone/BASH_REPO/master/desktostart/centos7-cloud/i.sh;
 
 # First step update system
 source i.sh;
