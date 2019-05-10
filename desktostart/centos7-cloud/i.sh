@@ -139,126 +139,116 @@ function devTools {
   sudo yum install -y libappindicator-gtk3;
 }
 
-function pythonUpdate {
-
-  # python update (https://gist.github.com/guy4261/0e9f4081f1c6b078b436)
-  # python update (https://tecadmin.net/install-python-2-7-on-centos-rhel/)
-  sudo yum install -y python-pip;
-  cd /opt/;
-  sudo wget --no-check-certificate https://www.python.org/ftp/python/2.7.15/Python-2.7.15.tar.xz;
-  sudo tar xf Python-2.7.15.tar.xz;
-  sudo chmod -R 755 Python*;
-  cd Python-2.7.15;
-  sudo ./configure --prefix=/usr/local --enable-shared --enable-unicode=ucs4;
-  sudo ./configure --enable-optimizations;
-  #sudo make && sudo make altinstall;
-  sudo make altinstall;
-  #local STRING_PYTHON_LIB="export LD_LIBRARY_PATH=/usr/local/lib:/usr/local/bin/python2.7:$LD_LIBRARY_PATH";
-  #local STRING_PY_ALIAS="alias python=/usr/local/bin/python2.7";
-  #sudo echo "$STRING_PYTHON_LIB" >> ${HOME_USER}/.bashrc;
-  #sudo echo "$STRING_PY_ALIAS" >> ${HOME_USER}/.bashrc;
-  #sudo su $DEV_USER <<EOF
-  ##echo "$STRING_PYTHON_LIB" >> ${HOME_USER}/.bashrc;
-  ##echo "$STRING_PY_ALIAS" >> ${HOME_USER}/.bashrc;
-EOF
-  bash ${HOME_USER}/.bashrc && sudo bash ${HOME_USER}/.bashrc;
-
-  #sudo wget https://bitbucket.org/pypa/setuptools/raw/bootstrap/ez_setup.py;
-  cd /opt/;
-  sudo wget https://bootstrap.pypa.io/ez_setup.py;
-  sudo python2.7 ez_setup.py;
-  sudo python2.7 -m pip install --upgrade pip;
-  #/usr/local/bin/easy_install-2.7 pip;
-
-  #sudo yum-config-manager --add-repo http://download.opensuse.org/repositories/home:/fengshuo:/zeromq/CentOS_CentOS-6/home:fengshuo:zeromq.repo;
-  #sudo yum install -y python-devel zeromq zeromq-devel;
-  ## 40 is less priority than 60ss
-  #sudo alternatives --install /bin/python python /usr/bin/python2 40;
-  #sudo alternatives --install /bin/python python /usr/local/bin/python2.7 50;
-  #sudo alternatives --install /bin/python python /usr/bin/python2 40;
-  #sudo alternatives --install /bin/python python /usr/local/bin/python2.7 50;
-  
-  # install pithon tools
-  #wget https://bootstrap.pypa.io/get-pip.py;
-  #sudo python2 get-pip.py;
-  #sudo python2.7 get-pip.py;
-  #sudo python3 get-pip.py;
-  #sudo python3.4 get-pip.py;
-
-  # Change default python version
-  #setPython "old";
-  
-  # install python 3.6
-  sudo yum install -y rh-python36;
-  #sudo ln -s /opt/rh/rh-python36/root/usr/bin/python3.6 /bin/python3.6;
-  #sudo rm -rf /usr/bin/python3;
-  #sudo ln -s /bin/python3.6 /bin/python3;
-  #sudo python3.6 get-pip.py;
-  sudo python3.6 ez_setup.py;
-  sudo python3.6 -m pip install pip --upgrade;
-  sudo python3.6 -m pip install virtualenv --upgrade;
-
-  cd;
-}
-
 # Python
-function pipTools {
-  # Change python versión for install pip
-  #setPython "new";
+function pipLibs {
+  local PYTHON_EXEC="${1}";
 
   #remove for errors
-  sudo pip uninstall -y jrnl;
-  sudo pip uninstall -y rpkg;
-
-  sudo pip install --upgrade pip; # also validate
-  sudo pip install --upgrade setuptools;
-  sudo pip install --upgrade ez_setup;
-  sudo easy_install -U setuptools;
-  sudo pip install --upgrade pyOpenSSL;
-  sudo pip install --upgrade jinja2;
-  sudo pip install --upgrade pyudev;
-  sudo pip install --upgrade dnspython;
-  sudo pip install --upgrade pyzmq;
-  sudo pip install --upgrade pygments;
-  sudo pip install --upgrade tornado;
-  sudo pip install --upgrade jsonschema;
-  sudo pip install --upgrade ipython;
-  sudo pip install --upgrade python-dateutil;
-  sudo pip install --upgrade "ipython[notebook]"; ## obs4rve
-  sudo pip install --upgrade requests; # observe
-  sudo pip install --upgrade ansible;
-  sudo pip install --upgrade cryptography;
-  sudo pip install --upgrade virtualenv;
-  sudo pip install --upgrade selenium; # observe
-  sudo pip install --upgrade graphlab-create; # observe
-  sudo pip install --upgrade seaborn;
-  sudo pip install --upgrade oauth2client;
-  sudo pip install --upgrade "pylint<2.0.0";
+  #sudo ${PYTHON_EXEC} -m pip install --upgrade rpkg; # 2.7error, 3.6error
+  sudo ${PYTHON_EXEC} -m pip install --upgrade pip;
+  sudo ${PYTHON_EXEC} -m pip install --upgrade setuptools;
+  sudo ${PYTHON_EXEC} -m pip install --upgrade ez_setup;
+  sudo ${PYTHON_EXEC} -m easy_install -U setuptools;
+  #sudo ${PYTHON_EXEC} -m pip install --upgrade rpm-py-installer; # 2.7error 3.6error
+  sudo ${PYTHON_EXEC} -m pip install --upgrade pyudev;
   
-  sudo pip install --upgrade rpm-py-installer; # not found
-  sudo pip install --upgrade koji; # se daña
+  sudo ${PYTHON_EXEC} -m pip install --upgrade cryptography;
+  sudo ${PYTHON_EXEC} -m pip install --upgrade pyOpenSSL;
+  sudo ${PYTHON_EXEC} -m pip install --upgrade dnspython;
+  sudo ${PYTHON_EXEC} -m pip install --upgrade requests; #2.7conflict
+  sudo ${PYTHON_EXEC} -m pip install --upgrade ansible;
+  sudo ${PYTHON_EXEC} -m pip install --upgrade virtualenv;
+  sudo ${PYTHON_EXEC} -m pip install --upgrade pylint;
+  
+  sudo ${PYTHON_EXEC} -m pip install --upgrade python-dateutil;
+  sudo ${PYTHON_EXEC} -m pip install --upgrade jsonschema;
+  sudo ${PYTHON_EXEC} -m pip install --upgrade tornado;
+  sudo ${PYTHON_EXEC} -m pip install --upgrade flask;
+  sudo ${PYTHON_EXEC} -m pip install --upgrade selenium;
+}
 
-  # no installed please
-  #sudo pip install --upgrade jrnl; # error python-dateutil
-  #sudo pip install --upgrade jrnl[encrypted]; # error  jupiter
+function installPythonManual {
+  cd /opt/;
+  local PYTHON_VERSION="${1}";
+  local PYTHON_DIR="${2}";
+  sudo wget --no-check-certificate https://www.python.org/ftp/python/${PYTHON_VERSION}/Python-${PYTHON_VERSION}.tar.xz;
+  sudo tar xf Python-${PYTHON_VERSION}.tar.xz;
+  sudo chmod -R 755 Python*;
+  cd Python-${PYTHON_VERSION};
+  sudo ./configure --prefix=/usr/local --enable-shared --enable-unicode=ucs4;
+  sudo ./configure --enable-optimizations;
+  sudo make altinstall;
+  #local STRING_PYTHON_LIB="export LD_LIBRARY_PATH=/usr/local/lib:${PYTHON_DIR}:$LD_LIBRARY_PATH";
+  #local STRING_PY_ALIAS="alias python=${PYTHON_DIR}";
+  #sudo echo "$STRING_PYTHON_LIB" >> ${HOME_USER}/.bashrc;
+  #sudo echo "$STRING_PY_ALIAS" >> ${HOME_USER}/.bashrc;
+#  sudo su $DEV_USER <<EOF
+  #echo "$STRING_PYTHON_LIB" >> ${HOME_USER}/.bashrc;
+  #echo "$STRING_PY_ALIAS" >> ${HOME_USER}/.bashrc;
+#EOF
+#  bash ${HOME_USER}/.bashrc && sudo bash ${HOME_USER}/.bashrc;
 
-  # Change python versión for continue yum installations
-  #setPython "old";
+  #sudo wget https://bitbucket.org/pypa/setuptools/raw/bootstrap/ez_setup.py;
+  sudo wget https://bootstrap.pypa.io/ez_setup.py;
+  sudo ${PYTHON_DIR} ez_setup.py;
 
+  sudo ln -s ${PYTHON_DIR} /bin/python${PYTHON_VERSION};
+
+  wget https://bootstrap.pypa.io/get-pip.py;
+  sudo ${PYTHON_DIR} get-pip.py;
+
+  pipLibs ${PYTHON_DIR};
+}
+
+function pythonUpdate {
+  # TODO: update version
+  local PYTHON_VERSION271="2.7.16";
+  local PYTHON_VERSION372="3.7.2";
+  
+  # Original dir bin
+  local PYTHON2_DIR='/bin/python2.7'; # RH7 original python2
+  local PYTHON36_DIR='/bin/python3.6';
+  local PYTHON271_DIR='/usr/local/bin/python2.7'; # new updated version
+  local PYTHON372_DIR='/usr/local/bin/python3.7'; # new updated version
+  
+  # download secure pip install pip
+  wget https://bootstrap.pypa.io/get-pip.py;
+  
+  # install and update python local
+  sudo yum install -y python-pip;
+  sudo yum -y groupinstall 'development tools';
+  #/usr/local/bin/easy_install-2.7 pip;
+  sudo yum install -y python-devel zeromq zeromq-devel;
+  #sudo ${PYTHON2_DIR} get-pip.py; # error
+  # alternative python os libraries
   sudo yum install -y libpng-devel freetype freetype-devel;
-  sudo yum install -y python-pandas;
-  sudo yum install -y python-devel python-nose python-setuptools gcc gcc-gfortran gcc-c++ blas-devel lapack-devel atlas-devel;
-  sudo yum install -y python2-crypto python-paramiko;
-
-  # install again in old version
-  pip install --upgrade jupyter-client;
+  sudo yum install -y python-devel python-nose python-setuptools gcc gcc-gfortran gcc-c++ blas-devel lapack-devel atlas-devel python2-crypto;
   pip install --upgrade rpkg;
+  pipLibs ${PYTHON2_DIR};
+  
+  # Install python 3.6
+  sudo yum install -y https://centos7.iuscommunity.org/ius-release.rpm;
+  sudo yum update -y;
+  sudo yum install -y python36u python36u-libs python36u-devel python36u-pip;
+  
+  #sudo yum install -y rh-python36;
+  #sudo ln -s /opt/rh/rh-python36/root/usr/bin/python3.6 ${PYTHON36_DIR};
+  sudo rm -rf /usr/bin/python3;
+  sudo ln -s ${PYTHON36_DIR} /bin/python3;
+  sudo ${PYTHON36_DIR} get-pip.py;
+  pipLibs ${PYTHON36_DIR};
+
+  # install python new versions
+  installPythonManual "${PYTHON_VERSION271}" "${PYTHON271_DIR}";
+  installPythonManual "${PYTHON_VERSION372}" "${PYTHON372_DIR}";
 
   # browser drivers for sellenium
   if ! geckodriver --version || ! chromedriver --version ;then
       echo "Pendiente instalar los drivers de lo navegadores";
   fi;
 }
+
+
 
 function installGraphicVnc {
   #sudo yum groupinstall -y "Server with GUI" -y;
