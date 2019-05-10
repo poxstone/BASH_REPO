@@ -171,15 +171,15 @@ function installPythonManual {
   sudo ./configure --prefix=/usr/local --enable-shared --enable-unicode=ucs4;
   sudo ./configure --enable-optimizations;
   sudo make altinstall;
-  local STRING_PYTHON_LIB="export LD_LIBRARY_PATH=/usr/local/lib:${PYTHON_DIR}:$LD_LIBRARY_PATH";
-  local STRING_PY_ALIAS="alias python=${PYTHON_DIR}";
-  sudo echo "$STRING_PYTHON_LIB" >> ${HOME_USER}/.bashrc;
-  sudo echo "$STRING_PY_ALIAS" >> ${HOME_USER}/.bashrc;
-  sudo su $DEV_USER <<EOF
+  #local STRING_PYTHON_LIB="export LD_LIBRARY_PATH=/usr/local/lib:${PYTHON_DIR}:$LD_LIBRARY_PATH";
+  #local STRING_PY_ALIAS="alias python=${PYTHON_DIR}";
+  #sudo echo "$STRING_PYTHON_LIB" >> ${HOME_USER}/.bashrc;
+  #sudo echo "$STRING_PY_ALIAS" >> ${HOME_USER}/.bashrc;
+#  sudo su $DEV_USER <<EOF
   #echo "$STRING_PYTHON_LIB" >> ${HOME_USER}/.bashrc;
   #echo "$STRING_PY_ALIAS" >> ${HOME_USER}/.bashrc;
-EOF
-  bash ${HOME_USER}/.bashrc && sudo bash ${HOME_USER}/.bashrc;
+#EOF
+#  bash ${HOME_USER}/.bashrc && sudo bash ${HOME_USER}/.bashrc;
 
   #sudo wget https://bitbucket.org/pypa/setuptools/raw/bootstrap/ez_setup.py;
   sudo wget https://bootstrap.pypa.io/ez_setup.py;
@@ -232,8 +232,8 @@ function pythonUpdate {
   pipLibs ${PYTHON36_DIR};
 
   # install python new versions
-  #installPythonManual "${PYTHON_VERSION271}" "${PYTHON271_DIR}";
-  #installPythonManual "${PYTHON_VERSION372}" "${PYTHON372_DIR}";
+  installPythonManual "${PYTHON_VERSION271}" "${PYTHON271_DIR}";
+  installPythonManual "${PYTHON_VERSION372}" "${PYTHON372_DIR}";
 
   # browser drivers for sellenium
   if ! geckodriver --version || ! chromedriver --version ;then
