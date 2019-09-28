@@ -686,30 +686,25 @@ EOF
 
   # firefox
   sudo yum install -y firefox;
-  
-  # sublime
-  sudo rpm -v --import https://download.sublimetext.com/sublimehq-rpm-pub.gpg;
-  sudo yum-config-manager --add-repo https://download.sublimetext.com/rpm/stable/x86_64/sublime-text.repo;
-  sudo yum install -y sublime-text;
 
   #pycharm
-  local pycharm_version="pycharm-community-2019.1.1";
+  local pycharm_version="pycharm-community-2019.2.3";
   wget "https://download.jetbrains.com/python/${pycharm_version}.tar.gz";
   tar -xvzf ${pycharm_version}.tar.gz;
   mv -f ${pycharm_version} ${HOME_USER}/bin/;
   restoreHomePermissions;
 
   #eclipse 
-  local eclipse_version="eclipse-jee-photon-R-linux-gtk-x86_64";
-  wget "http://download.obeo.fr/photon/${eclipse_version}.tar.gz";
+  local eclipse_version="eclipse-jee-2019-09-R-linux-gtk-x86_64";
+  wget "http://eclipse.c3sl.ufpr.br/technology/epp/downloads/release/2019-09/R/${eclipse_version}.tar.gz";
   tar -xvzf ${eclipse_version}.tar.gz;
   mv -f eclipse ${HOME_USER}/bin/eclipse;
   restoreHomePermissions;
 
   #sts TODO: update spring
-  wget 'https://download.springsource.com/release/STS4/4.2.0.RELEASE/dist/e4.11/spring-tool-suite-4-4.2.0.RELEASE-e4.11.0-linux.gtk.x86_64.tar.gz';
-  tar -xvzf spring-tool-suite-4-4.2.0.RELEASE-e4.11.0-linux.gtk.x86_64.tar.gz;
-  mv -f sts-4.2.0.RELEASE ${HOME_USER}/bin/spring-tool-suite;
+  wget 'https://download.springsource.com/release/STS4/4.4.0.RELEASE/dist/e4.13/spring-tool-suite-4-4.4.0.RELEASE-e4.13.0-linux.gtk.x86_64.tar.gz';
+  tar -xvzf spring-tool-suite-4-4.4.0.RELEASE-e4.13.0-linux.gtk.x86_64.tar.gz;
+  mv -f sts-4.4.0.RELEASE ${HOME_USER}/bin/spring-tool-suite;
   restoreHomePermissions;
 
   #apache dorectory studio
@@ -728,13 +723,13 @@ EOF
   }
 
   addGradle "gradle-3.5.1";
-  addGradle "gradle-5.3.1";
+  addGradle "gradle-5.6.2";
 
-  local STRING_GRADLE_LIB="export PATH=\$PATH:~/bin/gradle/gradle-5.3.1/bin;";
+  local STRING_GRADLE_LIB="export PATH=\$PATH:~/bin/gradle/gradle-5.6.2/bin;";
   sudo echo "$STRING_GRADLE_LIB" >> ${HOME_USER}/.bashrc;
   
   # maven
-  local maven_version='3.6.1';
+  local maven_version='3.6.2';
   sudo mkdir -p $HOME_USER/bin/maven/;
   wget http://apache.cs.utah.edu/maven/maven-3/${maven_version}/binaries/apache-maven-${maven_version}-bin.tar.gz;
   tar -xzf apache-maven-${maven_version}-bin.tar.gz;
@@ -753,7 +748,7 @@ EOF
     restoreHomePermissions;
   }
 
-  addTomcat "8" "8.5.40";
+  addTomcat "8" "8.5.46";
 
   # git
   sudo -i -u ${DEV_USER} git config --global user.name "${DEV_USER}";
