@@ -259,7 +259,9 @@ function installGraphicVnc {
     sudo yum groupinstall -y "KDE Plasma Workspaces";
     XINIT_STRIG="startkde &";
   elif [[ $GRAPH_INTERFACE == 2 ]];then
-    sudo yum groupinstall -y "Xfce";
+    yum groupinstall -y "X Window System";
+    yum groupinstall -y "Server with GUI";
+    yum groupinstall -y "Xfce";
     XINIT_STRIG="xfce4-session & start xfce4 & xfce4-panel &";
   elif [[ $GRAPH_INTERFACE == 3 ]];then
     sudo yum groupinstall -y "GNOME Desktop";
@@ -333,7 +335,7 @@ use_compression=yes\\\n\
   if [[ ! "$(grep -nE \"^gnome-session\" ${HOME_USER}/.vnc/xstartup)" ]];then
     sudo sed -i -e "s#exec /etc/X11/xinit/xinitrc#\#exec /etc/X11/xinit/xinitrc#g" ${HOME_USER}/.vnc/xstartup;
     sudo sed -i -e "s#/etc/X11/xinit/xinitrc#\#\#/etc/X11/xinit/xinitrc#g" ${HOME_USER}/.vnc/xstartup;
-    sudo sed -i -e "s#vncserver -kill $DISPLAY#\#vncserver -kill $DISPLAY#g" ${HOME_USER}/.vnc/xstartup;
+    sudo sed -i -e "s#vncserver -kill $DISPLAY#echo 1;\#vncserver -kill $DISPLAY#g" ${HOME_USER}/.vnc/xstartup;
 
     echo "
 [ -x /etc/vnc/xstartup ] && exec /etc/vnc/xstartup
