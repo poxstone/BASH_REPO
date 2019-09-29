@@ -262,7 +262,7 @@ function installGraphicVnc {
     yum groupinstall -y "X Window System";
     yum groupinstall -y "Server with GUI";
     yum groupinstall -y "Xfce";
-    XINIT_STRIG="xfce4-session & start xfce4 & xfce4-panel &";
+    XINIT_STRIG="xfce4-session & startxfce4 & xfce4-panel &";
   elif [[ $GRAPH_INTERFACE == 3 ]];then
     sudo yum groupinstall -y "GNOME Desktop";
     XINIT_STRIG="gnome-session &";
