@@ -60,7 +60,8 @@ function devTools {
   sudo dnf install https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm -y; 
   # Dev tools
   sudo dnf install redhat-rpm-config -y; 
-  sudo dnf install @development-tools -y; 
+  sudo dnf install @development-tools -y;
+  sudo dnf install liberation-fonts -y;
   sudo dnf install -y dh-autoreconf vim-enhanced curl-devel expat-devel gettext-devel openssl-devel apr-devel perl-devel zlib-devel libvirt;
   sudo dnf install -y asciidoc xmlto docbook2X binutils fedora-packager chrpath autoconf automake;
   sudo dnf install -y gcc gcc-c++ qt-devel libffi-devel dnf-plugins-core python python-devel nasm.x86_64 SDL* ant dkms kernel-devel dkms kernel-headers libstdc++.i686 subversion;
@@ -115,11 +116,11 @@ function pipTools {
   sudo pip install --upgrade "ipython[notebook]";
   sudo pip install --upgrade requests;
   sudo pip install --upgrade cryptography;
-  sudo pip install --upgrade graphlab-create;
+  #sudo pip install --upgrade graphlab-create;
   sudo pip install --upgrade seaborn;
   sudo pip install --upgrade oauth2client;
   sudo pip install --upgrade rsa;
-  sudo pip install --upgrade rpm-py-installer;
+  #sudo pip install --upgrade rpm-py-installer;
   sudo pip install --upgrade koji;
 
   sudo dnf install -y python-devel python-nose python-setuptools gcc gcc-gfortran gcc-c++ blas-devel lapack-devel atlas-devel;
@@ -131,9 +132,9 @@ function pipTools {
   fi;
   
   # python 3.7 and pip
-  sudo dnf install python37 -y;
-  wget https://bootstrap.pypa.io/get-pip.py;
-  sudo python3.7 get-pip.py;
+  #sudo dnf install python37 -y;
+  #wget https://bootstrap.pypa.io/get-pip.py;
+  #sudo python3.7 get-pip.py;
 }
 
 # Databases services
@@ -391,7 +392,7 @@ function installSpotify {
 
 function devPrograms {
   # https://code.visualstudio.com/docs/setup/linux
-  sudo rpm --import https://packages.microsoft.com/keys/microsoft.asc
+  sudo rpm --import https://packages.microsoft.com/keys/microsoft.asc;
   sudo sh -c 'echo -e "[code]\nname=Visual Studio Code\nbaseurl=https://packages.microsoft.com/yumrepos/vscode\nenabled=1\ngpgcheck=1\ngpgkey=https://packages.microsoft.com/keys/microsoft.asc" > /etc/yum.repos.d/vscode.repo'
   sudo dnf check-update -y;
   sudo dnf install code -y;
