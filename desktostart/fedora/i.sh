@@ -72,6 +72,11 @@ function devTools {
   sudo dnf install samba-winbind-clients -y;
   sudo dnf install -y glibc-devel.{i686,x86_64} libgcc.{i686,x86_64} libX11-devel.{i686,x86_64} freetype-devel.{i686,x86_64} gnutls-devel.{i686,x86_64} libxml2-devel.{i686,x86_64} libjpeg-turbo-devel.{i686,x86_64} libpng-devel.{i686,x86_64} libXrender-devel.{i686,x86_64} alsa-lib-devel.{i686,x86_64};
   sudo dnf install -y libappindicator-gtk3;
+  
+  # ds4
+  sudo git clone https://github.com/chrippa/ds4drv.git /tmp/ds4drv;
+  cd /tmp/ds4drv;
+  sudo python setup.py install;
 
   # ssh
   sudo dnf install openssh openssh-server -y; 
