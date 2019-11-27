@@ -238,7 +238,7 @@ function dockerTools {
   sudo chmod +x /usr/local/bin/docker-compose;
   sudo ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose;
   
-  echo 'modify: /etc/docker/daemon.json with {"graph: "/home/user/bin/docker-images/"}';
+  echo 'modify: /etc/docker/daemon.json with {"graph": "/home/user/bin/docker-images/"}';
 }
 
 # Android dev
