@@ -238,6 +238,13 @@ function dockerTools {
   sudo chmod +x /usr/local/bin/docker-compose;
   sudo ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose;
   
+  # fix cgroups 2 in fedora 31
+  sudo grubby --update-kernel=ALL --args="systemd.unified_cgroup_hierarchy=0";
+  
+  # enable docker
+  sudo systemctl enable docker;
+  sudo systemctl restart docker;
+  
   echo 'modify: /etc/docker/daemon.json with {"graph": "/home/user/bin/docker-images/"}';
 }
 
