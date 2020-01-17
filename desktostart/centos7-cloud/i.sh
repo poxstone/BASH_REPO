@@ -114,7 +114,7 @@ function mountDisk {
 # Install tools
 function mainTools {
   updateSystem;
-  sudo yum install vim nano tmux htop iotop lynx nmap whois tcpdump iotop bind-utils wget -y;
+  sudo yum install vim nano tmux htop iotop lynx nmap whois tcpdump iotop bind-utils wget whois -y;
 }
 
 # Dev tools
