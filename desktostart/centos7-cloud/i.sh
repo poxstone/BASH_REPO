@@ -259,9 +259,9 @@ function installGraphicVnc {
     sudo yum groupinstall -y "KDE Plasma Workspaces";
     XINIT_STRIG="startkde &";
   elif [[ $GRAPH_INTERFACE == 2 ]];then
-    yum groupinstall -y "X Window System";
-    yum groupinstall -y "Server with GUI";
-    yum groupinstall -y "Xfce";
+    sudo yum groupinstall -y "X Window System";
+    sudo yum groupinstall -y "Server with GUI";
+    sudo yum groupinstall -y "Xfce";
     XINIT_STRIG="xfce4-session & startxfce4 & xfce4-panel &";
   elif [[ $GRAPH_INTERFACE == 3 ]];then
     sudo yum groupinstall -y "GNOME Desktop";
