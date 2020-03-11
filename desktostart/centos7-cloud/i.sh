@@ -408,6 +408,12 @@ function mediaTool {
   sudo yum install -y gimp inkscape blender fontforge ImageMagick ImageMagick-devel ImageMagick-perl optipng;
   sudo yum install -y ffmpeg ffmpeg-devel;
   # snap install inkscape;
+  sudo yum install -y epel-release;
+  sudo yum install -y snapd;
+  sudo ln -s /var/lib/snapd/snap /snap;
+  sudo systemctl enable --now snapd.socket;
+  sudo systemctl enable --now snapd.service;
+  sudo snap install blender --classic;
 }
 
 # Install remte desktop windows
