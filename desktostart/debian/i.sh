@@ -279,6 +279,9 @@ function devPrograms {
   sudo sh -c 'echo "deb [arch=amd64 signed-by=/usr/share/keyrings/packages.microsoft.gpg] https://packages.microsoft.com/repos/vscode stable main" > /etc/apt/sources.list.d/vscode.list';
   sudo apt-get -y update;
   sudo apt-get install code -y;
+
+  #database
+  sudo snap install dbeaver-ce;
 }
 
 function installAll {
@@ -288,7 +291,7 @@ function installAll {
   mainTools;
   #removePython;#noknow
   devTools;
-  pipTools; # errors
+  #pipTools; # errors
   #databases;
   #rubyTools;
   mediaTool;
