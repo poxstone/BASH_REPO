@@ -77,7 +77,7 @@ function devTools {
   sudo apt-get install liberation-fonts -y;
   sudo apt-get install -y dh-autoreconf;
   sudo apt-get install -y asciidoc xmlto binutils chrpath autoconf automake;
-  sudo apt-get install -y gcc python python-dev python-pip subversion;
+  sudo apt-get install -y gcc python python-dev python-pip python3-pip subversion;
   sudo pip install setuptools --upgrade;
   sudo apt-get install -y wget deluge git-all kdiff3 openssh-server;
   # SDL* ant dkms dkms device-mapper-persistent-data
