@@ -71,6 +71,8 @@ function devTools {
   sudo apt install -y libvulkan1 mesa-vulkan-drivers vulkan-utils;
   sudo apt install -y vulkan-utils;
 
+  # mysql depends
+  sudo apt install -y libctemplate3 libmysqlcppconn7v5 libpcrecpp0v5 libvsqlitepp3v5 python-pexpect python-pyodbc python-pysqlite2 python3-evdev python2-evdev libgdal20 libmariadb3;
 
   sudo apt-get install -y libappindicator3-1 xbase-clients;
   sudo apt install -y build-essential manpages-dev net-tools;
@@ -281,7 +283,8 @@ function devPrograms {
   sudo apt-get install code -y;
 
   #database
-  sudo snap install dbeaver-ce;
+  #sudo snap install dbeaver-ce;
+
 }
 
 function installAll {
