@@ -205,6 +205,11 @@ function javaAndroid {
   sudo apt install -y android-tools-adb android-tools-fastboot;
 
   #java
+  sudo apt-get install -y default-jdk;
+  cd /tmp/;
+  wget -qO - https://adoptopenjdk.jfrog.io/adoptopenjdk/api/gpg/key/public | sudo apt-key add -;
+  sudo add-apt-repository --yes https://adoptopenjdk.jfrog.io/adoptopenjdk/deb/;
+  apt update -y;
   apt install adoptopenjdk-8-hotspot -y;
 }
 
