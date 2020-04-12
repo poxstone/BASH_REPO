@@ -35,6 +35,9 @@ function cleanDnf {
   sudo apt-get clean all;
   sudo apt -y autoremove;
   apt --fix-broken -y install;
+  apt update; apt full-upgrade; apt install -f; dpkg --configure -a; apt-get autoremove; apt --fix-broken install;
+  update-grub; update-grub2; apt-get autoremove; apt autoremove; apt purge; apt remove; apt --fix-broken install
+
 }
 
 # Install tools
@@ -54,14 +57,17 @@ function removePython {
 function devTools {
   # Dev tools
   sudo apt install -y wget gnupg software-properties-common;
+  sudo apt install -y deb-multimedia-keyring;
+
   wget -qO - https://adoptopenjdk.jfrog.io/adoptopenjdk/api/gpg/key/public | sudo apt-key add -;
   sudo add-apt-repository --yes https://adoptopenjdk.jfrog.io/adoptopenjdk/deb/;
+  #multimedia
   sudo apt-add-repository non-free;
-  echo "deb http://www.deb-multimedia.org buster main non-free"| sudo tee /etc/apt/sources.list.d/deb-multimedia.list;
+  echo "deb http://www.deb-multimedia.org buster main non-free"| sudo tee /etc/apt/sources.list.d/multimedia.list;
+  wget https://www.deb-multimedia.org/pool/main/d/deb-multimedia-keyring/deb-multimedia-keyring_2016.8.1_all.deb;
+  dpkg -i deb-multimedia-keyring_2016.8.1_all.deb;
   sudo apt update -y --allow-insecure-repositories;
   sudo apt list --upgradable;
-  sudo apt update -y;
-  sudo apt install -y deb-multimedia-keyring;
   sudo apt -y update;
 
   # wifi intel
@@ -71,17 +77,22 @@ function devTools {
   sudo apt install -y libvulkan1 mesa-vulkan-drivers vulkan-utils;
   sudo apt install -y vulkan-utils;
 
-  # mysql depends
-  sudo apt install -y libctemplate3 libmysqlcppconn7v5 libpcrecpp0v5 libvsqlitepp3v5 python-pexpect python-pyodbc python-pysqlite2 python3-evdev python2-evdev libgdal20 libmariadb3;
-
   sudo apt-get install -y libappindicator3-1 xbase-clients;
   sudo apt install -y build-essential manpages-dev net-tools;
   sudo apt-get install liberation-fonts -y;
   sudo apt-get install -y dh-autoreconf;
   sudo apt-get install -y asciidoc xmlto binutils chrpath autoconf automake;
   sudo apt-get install -y gcc python python-dev python-pip python3-pip subversion;
+  sudo apt install -y python3-evdev python-evdev python-pip python3-pip;
+
+  # mysql depends
+  sudo apt install -y libctemplate3 libmysqlcppconn7v5 libpcrecpp0v5 libvsqlitepp3v5 python-pexpect python-pyodbc python-pysqlite2 libgdal20 libmariadb3;
+
+  # someones interface graphocal requires
   sudo pip install setuptools --upgrade;
-  sudo apt-get install -y wget deluge git-all kdiff3 openssh-server;
+  sudo apt install -y glib-networking gsettings-desktop-schemas dconf-gsettings-backend libgtk-3-0 libgtk-3-common libgtk-3-bin; # gsettings-backend;
+  sudo apt-get install -y wget deluge git openssh-server; # git-all not work in gcp until has graphic interface
+  sudo apt install -y kdiff3;
   # SDL* ant dkms dkms device-mapper-persistent-data
   sudo apt-get install -y  p7zip; #unrar
   
@@ -150,10 +161,19 @@ function pipTools {
   #sudo python3.7 get-pip.py;
 }
 
+function graphicInterface {
+  sudo apt install -y tasksel;
+  tasksel install xfce-desktop --new-install;
+  apt install -y lightdm gtk3-engines-xfce xfce4-goodies xfce4-appmenu-plugin xfce4-eyes-plugin xfce4-indicator-plugin xfce4-mpc-plugin xfce4-sntray-plugin xfce4-statusnotifier-plugin;
+  # vnc https://www.digitalocean.com/community/tutorials/how-to-install-and-configure-vnc-on-debian-10
+  sudo apt install -y tightvncserver;# vnc4server
+
+}
+
 # Install dsn, media apps and tools
 function mediaTool {
-  sudo apt install -y libavcodec-extra libdvdread4 libdvdcss2;
-  sudo dpkg-reconfigure libdvd-pkg;
+  sudo apt install -y libavcodec-extra libdvdread4 libdvdcss2; # problems gcp
+  sudo dpkg-reconfigure libdvd-pkg; # problems gcp
   sudo apt install -y w64codecs;
   # npapi-vlc
   sudo apt-get install -y gimp inkscape krita blender fontforge imagemagick optipng vlc;
@@ -179,14 +199,14 @@ function dockerTools {
   sudo apt-get install -y docker-ce docker-ce-cli containerd.io;
 
   sudo usermod -a -G docker $USER;
-  # Docker kompose
-  sudo apt-get -y install docker-compose;
   #user to docker group
   sudo groupadd docker;
   sudo gpasswd -a $USER docker;
   # activate docker daemon
   sudo systemctl start docker;
   # docker compose TODO: set version
+  # Docker kompose
+  #sudo apt-get -y install docker-compose;
   sudo curl -L "https://github.com/docker/compose/releases/download/1.25.0/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose;
 
   sudo chmod +x /usr/local/bin/docker-compose;
@@ -282,7 +302,7 @@ function installSpotify {
 function devPrograms {
   # https://code.visualstudio.com/docs/setup/linux
   curl https://packages.microsoft.com/keys/microsoft.asc | sudo gpg --dearmor > packages.microsoft.gpg;
-  sudo install -y -o root -g root -m 644 packages.microsoft.gpg /usr/share/keyrings/;
+  sudo install -o root -g root -m 644 packages.microsoft.gpg /usr/share/keyrings/;
   sudo sh -c 'echo "deb [arch=amd64 signed-by=/usr/share/keyrings/packages.microsoft.gpg] https://packages.microsoft.com/repos/vscode stable main" > /etc/apt/sources.list.d/vscode.list';
   sudo apt-get -y update;
   sudo apt-get install code -y;
