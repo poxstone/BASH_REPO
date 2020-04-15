@@ -27,7 +27,7 @@ function updateSystem {
   sudo apt-get clean all;
 }
 
-function cleanDnf {
+function cleanApt {
   sudo apt-get clean dbcache;
   sudo apt-get clean expire-cache;
   sudo apt-get clean metadata;
@@ -35,22 +35,15 @@ function cleanDnf {
   sudo apt-get clean all;
   sudo apt -y autoremove;
   apt --fix-broken -y install;
-  apt update; apt full-upgrade; apt install -f; dpkg --configure -a; apt-get autoremove; apt --fix-broken install;
-  update-grub; update-grub2; apt-get autoremove; apt autoremove; apt purge; apt remove; apt --fix-broken install
-
+  apt update -y && apt full-upgrade && apt install -f && dpkg --configure -a && apt-get -y autoremove && apt --fix-broken install;
+  update-grub && update-grub2 && apt-get autoremove && apt -y autoremove && apt purge && apt remove && apt --fix-broken install;
 }
 
 # Install tools
 function mainTools {
-  sudo apt-get -y install vim tmux htop iotop lynx nmap tcpdump iotop  apt-transport-https ca-certificates curl gnupg-agent software-properties-common wireless-tools;
+  sudo apt-get -y install vim tmux htop iotop lynx nmap tcpdump iotop  apt-transport-https ca-certificates curl gnupg-agent software-properties-common wireless-tools dnsutils;
   # snap
   sudo apt-get install snapd -y;
-}
-
-function removePython {
-    #for package in $(sudo pip2 freeze); do sudo pip2 uninstall -y $package; done;
-    #sudo apt-get reinstall python2 -y;
-    #sudo apt-get install python python-devel -y;
 }
 
 # Dev tools
@@ -163,7 +156,7 @@ function pipTools {
 
 function graphicInterface {
   sudo apt install -y tasksel;
-  tasksel install xfce-desktop --new-install;
+  sudo tasksel install xfce-desktop --new-install;
   apt install -y lightdm gtk3-engines-xfce xfce4-goodies xfce4-appmenu-plugin xfce4-eyes-plugin xfce4-indicator-plugin xfce4-mpc-plugin xfce4-sntray-plugin xfce4-statusnotifier-plugin;
   # vnc https://www.digitalocean.com/community/tutorials/how-to-install-and-configure-vnc-on-debian-10
   sudo apt install -y tightvncserver;# vnc4server
@@ -315,7 +308,7 @@ function devPrograms {
 function installAll {
   updateSystem;
   updateSystem;
-  cleanDnf;
+  cleanApt;
   mainTools;
   #removePython;#noknow
   devTools;
