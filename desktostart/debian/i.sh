@@ -73,6 +73,7 @@ function devTools {
   sudo apt-get install -y libappindicator3-1 xbase-clients;
   sudo apt install -y build-essential manpages-dev net-tools;
   sudo apt-get install liberation-fonts -y;
+  sudo apt-get install -y libpangox-1.0-0 libgtkglext1;
   sudo apt-get install -y dh-autoreconf;
   sudo apt-get install -y asciidoc xmlto binutils chrpath autoconf automake;
   sudo apt-get install -y gcc python python-dev python-pip python3-pip subversion;
