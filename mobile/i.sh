@@ -56,6 +56,8 @@ cd ~;
     printf "let mapleader = \",\"\nnmap <leader>ne :NERDTreeToggle<cr> \n" >> ~/.vimrc;
     printf "execute pathogen#infect() \ncall pathogen#helptags() \nsyntax on \nfiletype plugin indent on \n" >> ~/.vimrc;
   fi;
+wget https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-295.0.0-linux-x86_64.tar.gz;
+tar -xvzf google-cloud-sdk-295.0.0-linux-x86_64.tar.gz;
 #gcloud replace
 gcloud=~/bin/google-cloud-sdk;
 ls $gcloud/bin | awk '{system("termux-fix-shebang '$gcloud'/bin/"$0)'};
