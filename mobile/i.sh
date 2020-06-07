@@ -3,6 +3,7 @@ termux-setup-storage;
 pkg install -y root-repo;
 pkg install -y util-linux;
 pkg install -y coreutils;
+pkg install -y git;
 #pkg install -y python2;
 #alias python="python2";
 #alias pip="pip2";
