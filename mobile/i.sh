@@ -27,6 +27,7 @@ pkg install -y kubectl;
 
 pip install ansible;
 npm install -g typescript;
+pkg install -y nodejs-lts;
 npm install -g @angular/cli stylus nib http-server;
 # vim
 mkdir -p ~/.vim/bundle/;
