@@ -7,7 +7,7 @@ pkg install -y coreutils;
 #alias python="python2";
 #alias pip="pip2";
 #pkg install -y python2-dev;
-pkg install -y python-dev;
+#pkg install -y python-dev; #review
 pkg install -y libllvm;
 pkg install -y clang;
 pkg install -y fftw;
