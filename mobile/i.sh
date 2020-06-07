@@ -69,6 +69,10 @@ termux-fix-shebang ~/bin/google-cloud-sdk/platform/google_appengine/dev_appserve
 git config --global user.name poxstone;
 git config --global user.email poxstone@gmail.com;
 
+mkdir bin;
+mv google-cloud-sdk bin;
+./bin/google-cloud-sdk/install.sh;
+
 #psql
 #pkg install -y postgresql
 #https://wiki.termux.com/wiki/Postgresql
