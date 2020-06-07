@@ -1,27 +1,31 @@
-apt -y update && apt upgrade;
+pkg update -y && pkg upgrade -y;
 termux-setup-storage;
-pkg install util-linux;
-apt -y install coreutils;
-apt -y install python2;
-alias python="python2";
-alias pip="pip2";
-apt -y install python2-dev;
-apt -y install libllvm;
-apt -y install clang;
-apt -y install fftw;
-apt -y install openssh;
-apt -y install git;
-apt -y install autoconf make openssl-dev libffi-dev python2-dev;
-pip2 install ansible;
-apt -y install curl;
-apt -y install vim;
-apt -y install tree;
-apt -y install tmux;
-apt -y install nmap;
-apt -y install nodejs;
-pkg -y install dnsutils;
-pkg -y install tsu; # tsu -A su #wrapper for Termux
-apt -y install tracepath;
+pkg install -y root-repo;
+pkg install -y util-linux;
+pkg install -y coreutils;
+#pkg install -y python2;
+#alias python="python2";
+#alias pip="pip2";
+#pkg install -y python2-dev;
+pkg install -y python-dev;
+pkg install -y libllvm;
+pkg install -y clang;
+pkg install -y fftw;
+pkg install -y openssh;
+pkg install -y git;
+pkg install -y autoconf make openssl-dev libffi-dev;
+pkg install -y curl;
+pkg install -y vim;
+pkg install -y tree;
+pkg install -y tmux;
+pkg install -y nmap;
+pkg install -y nodejs;
+pkg install -y dnsutils;
+pkg install -y tsu; # tsu -A su #wrapper for Termux
+pkg install -y tracepath;
+pkg install -y kubectl;
+
+pip install ansible;
 npm install -g typescript;
 npm install -g @angular/cli stylus nib http-server;
 # vim
@@ -62,7 +66,7 @@ git config --global user.name poxstone;
 git config --global user.email poxstone@gmail.com;
 
 #psql
-#apt -y install postgresql
+#pkg install -y postgresql
 #https://wiki.termux.com/wiki/Postgresql
 #mkdir -p $PREFIX/var/lib/postgresql
 #initdb $PREFIX/var/lib/postgresql
