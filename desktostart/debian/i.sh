@@ -70,7 +70,7 @@ function devTools {
   sudo apt install -y libvulkan1 mesa-vulkan-drivers vulkan-utils;
   sudo apt install -y vulkan-utils;
 
-  sudo apt-get install -y libappindicator3-1 xbase-clients;
+  sudo apt-get install -y libappindicator3-1 xbase-clients libxxf86vm1;
   sudo apt install -y build-essential manpages-dev net-tools;
   sudo apt-get install liberation-fonts -y;
   sudo apt-get install -y libpangox-1.0-0 libgtkglext1;
