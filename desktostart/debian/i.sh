@@ -214,6 +214,7 @@ function dockerTools {
 }
 
 function nvidiaCuda {
+  # download and install https://www.nvidia.com/Download/driverResults.aspx/157462/es-ES "NVIDIA-Linux-x86_64-440.64.run"
   sudo apt install -y nvidia-driver;
   
   # nvidia
