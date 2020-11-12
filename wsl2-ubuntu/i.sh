@@ -23,7 +23,7 @@ function cleanApt {
 
 # Install tools
 function mainTools {
-  sudo apt-get -y install vim tmux htop iotop lynx nmap tcpdump iotop  apt-transport-https ca-certificates curl gnupg-agent software-properties-common wireless-tools dnsutils;
+  sudo apt-get -y install vim tmux htop iotop lynx nmap tcpdump iotop  apt-transport-https ca-certificates curl gnupg-agent software-properties-common wireless-tools dnsutils putty-tools;
   # snap
   sudo apt-get install snapd -y;
 }
@@ -130,7 +130,6 @@ function javaDev {
   sudo apt-get install -y default-jdk;
 }
 
-
 # vim
 function vimConfig {
   if ! [[ -d ~/.vim ]] || ! [[ -d ~/.vim/bundle/ ]];then
@@ -162,6 +161,11 @@ function vimConfig {
   fi;
 }
 
+function dbTools {
+  sudo apt install -y mysql-client;
+  sudo apt install -y mysql-workbench;
+} 
+
 # nodejs
 function nodeConfig {
   # nodejs
@@ -178,6 +182,18 @@ function nodeConfig {
   fi;
 }
 
+#browsers
+function browsers {
+  sudo apt install -y firefox;
+  # chrome
+  sudo echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" | sudo tee /etc/apt/sources.list.d/google-chrome.list;
+  wget https://dl.google.com/linux/linux_signing_key.pub;
+  sudo apt-key add linux_signing_key.pub;
+  rm -f linux_signing_key.pub;
+  sudo apt update -y;
+  sudo apt install -y google-chrome-stable;
+}
+
 function installAll {
   updateSystem;
   cleanApt;
@@ -189,6 +205,7 @@ function installAll {
   javaDev;
   vimConfig;
   nodeConfig;
+  browsers;
   cleanApt;
 }
 
