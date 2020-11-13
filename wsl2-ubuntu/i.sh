@@ -201,6 +201,7 @@ function installAll {
   devTools;
   pipTools 2;
   pipTools 3;
+  dbTools;
   mediaTool;
   javaDev;
   vimConfig;
