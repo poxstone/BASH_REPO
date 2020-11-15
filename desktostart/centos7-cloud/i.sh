@@ -57,7 +57,7 @@ function restoreHomePermissions {
 }
 
 function setPython {
-  local version = 2;
+  local version=2;
   if [[ $1 == "old" ]];then
     version=1;
   else
