@@ -128,6 +128,10 @@ function nvidiaCuda {
 function javaDev {
   #java
   sudo apt-get install -y default-jdk;
+  sudo apt-get install -y openjdk-8-jdk;
+  echo "use java alternatives:";
+  echo "update-java-alternatives --list;";
+  echo "sudo update-java-alternatives --set /path/to/java/version;";
 }
 
 # vim
