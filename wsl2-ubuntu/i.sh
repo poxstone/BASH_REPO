@@ -23,7 +23,7 @@ function cleanApt {
 
 # Install tools
 function mainTools {
-  sudo apt-get -y install vim tmux htop iotop lynx nmap tcpdump iotop  apt-transport-https ca-certificates curl gnupg-agent software-properties-common wireless-tools dnsutils putty-tools;
+  sudo apt-get -y install vim tmux htop iotop lynx nmap tcpdump iotop  apt-transport-https ca-certificates curl gnupg-agent software-properties-common wireless-tools dnsutils putty-tools tree;
   # snap
   sudo apt-get install snapd -y;
 }
@@ -43,6 +43,7 @@ function devTools {
   sudo apt install -y python3-evdev python-evdev python-pip python3-pip;
   sudo apt-get install -y python-nose python-setuptools gcc;
   sudo apt-get install -y python-paramiko;
+  sudo apt-get install -y libmysqlclient-dev
 
   # mysql depends
   sudo apt install -y libctemplate3 libmysqlcppconn7v5 libpcrecpp0v5 libvsqlitepp3v5 python-pexpect python-pyodbc python-pysqlite2 libgdal20 libmariadb3;
