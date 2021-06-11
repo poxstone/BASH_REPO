@@ -17,6 +17,7 @@ pkg install -y git;
 pkg install -y autoconf make openssl-dev libffi-dev;
 pkg install -y curl;
 pkg install -y vim;
+pkg install -y wget;
 pkg install -y tree;
 pkg install -y tmux;
 pkg install -y nmap;
