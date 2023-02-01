@@ -42,6 +42,7 @@ function cleanApt {
 # Install tools
 function mainTools {
   sudo apt-get -y install vim tmux htop iotop lynx nmap tcpdump iotop  apt-transport-https ca-certificates curl gnupg-agent software-properties-common wireless-tools dnsutils;
+  sudo apt install -y gnome-shell-extension-manager;
   # snap
   sudo apt-get install snapd -y;
 }
@@ -274,6 +275,14 @@ function devPrograms {
   #database
   #sudo snap install dbeaver-ce;
 
+}
+
+function nvidiaDrivers {
+  # https://docs.kinetica.com/7.1/install/nvidia_deb/;
+  sudo apt-get -y install pciutils;
+  sudo lspci | grep VGA;
+  sudo apt install -y nvidia-detect;
+  sudo apt install -y nvidia-settings;
 }
 
 function installAll {
