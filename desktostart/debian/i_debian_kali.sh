@@ -283,6 +283,14 @@ function nvidiaDrivers {
   sudo lspci | grep VGA;
   sudo apt install -y nvidia-detect;
   sudo apt install -y nvidia-settings;
+  # https://developer.nvidia.com/cuda-downloads?target_os=Linux&target_arch=x86_64&Distribution=Debian&target_version=10&target_type=deb_local
+  # wget https://developer.download.nvidia.com/compute/cuda/12.0.1/local_installers/cuda-repo-debian10-12-0-local_12.0.1-525.85.12-1_amd64.deb
+  # sudo dpkg -i cuda-repo-debian10-12-0-local_12.0.1-525.85.12-1_amd64.deb
+  # sudo cp /var/cuda-repo-debian10-12-0-local/cuda-*-keyring.gpg /usr/share/keyrings/
+  # sudo add-apt-repository contrib
+  # sudo apt-get update
+  # sudo apt-get -y install cuda
+  dkms status;
 }
 
 function installAll {
