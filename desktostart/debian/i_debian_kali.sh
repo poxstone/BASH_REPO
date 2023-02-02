@@ -262,7 +262,7 @@ function nodeConfig {
 #}
 
 function devPrograms {
-  # https://code.visualstudio.com/docs/setup/linux
+   # https://code.visualstudio.com/docs/setup/linux
    
   wget -qO- https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > packages.microsoft.gpg;
   sudo install -D -o root -g root -m 644 packages.microsoft.gpg /etc/apt/keyrings/packages.microsoft.gpg;
@@ -278,10 +278,24 @@ function devPrograms {
 }
 
 function nvidiaDrivers {
+  # https://www.kali.org/docs/general-use/install-nvidia-drivers-on-kali-linux/
+  # decoment "contrib non-free" "deb http://http.kali.org/kali kali-rolling main contrib non-free"
+  sudo vi /etc/apt/sources.list;
+  sudo apt update -y;
+  sudo apt -y full-upgrade -y;
+ 
   # https://docs.kinetica.com/7.1/install/nvidia_deb/;
   sudo apt-get -y install pciutils;
   sudo lspci | grep VGA;
+  sudo lspci -s 01:00.0 -v;
+  # for only detect card
   sudo apt install -y nvidia-detect;
+  sudo nvidia-detect;
+
+  # install drivers
+  sudo apt install -y nvidia-driver nvidia-cuda-toolkit;
+  sudo reboot -f;
+  # install settings but no drivers OPTIONAL
   sudo apt install -y nvidia-settings;
   # https://developer.nvidia.com/cuda-downloads?target_os=Linux&target_arch=x86_64&Distribution=Debian&target_version=10&target_type=deb_local
   # wget https://developer.download.nvidia.com/compute/cuda/12.0.1/local_installers/cuda-repo-debian10-12-0-local_12.0.1-525.85.12-1_amd64.deb
