@@ -282,6 +282,17 @@ function devPrograms {
 
 }
 
+function netTools {
+  sudo apt install -y wireshark;
+  sudo usermod -aG wireshark $(whoami);
+  sudo apt-get install -y aircrack-ng;
+  sudo apt-get install -y netdiscover;
+  sudo apt-get install -y sslscan ssldump sslsplitx sslh;
+  sudo pip install --upgrade sslyze;
+  # spyderfoot
+  wget https://raw.githubusercontent.com/smicallef/spiderfoot/master/requirements.txt; sudo pip install -r requirements.txt;
+}
+
 function kali {
   sudo apt-get update -y && sudo apt-get full-upgrade -y && sudo apt-get dist-upgrade -y && sudo apt autoremove -y && sudo apt autoclean;
   sudo apt-get install -y wget gnupg dirmngr;
