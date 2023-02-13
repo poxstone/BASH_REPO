@@ -142,14 +142,14 @@ function pipTools {
   #sudo python3.7 get-pip.py;
 }
 
-# Install dsn, media apps and tools
+# Install dsn, 
+apps and tools
 function mediaTool {
-  sudo apt install -y libavcodec-extra libdvdcss2; # problems gcp
+  sudo apt install -y libavcodec-extra libdvdcss2 libdvdcss-dev; # problems gcp
   sudo dpkg-reconfigure libdvd-pkg; # problems gcp
   # npapi-vlc
   sudo apt-get install -y inkscape krita blender fontforge imagemagick optipng vlc;
   sudo apt-get install -y mencoder ffmpeg;
-  # snap install inkscape;
 }
 
 # Install remte desktop windows
@@ -280,6 +280,21 @@ function devPrograms {
   #database
   #sudo snap install dbeaver-ce;
 
+}
+
+function kali {
+  sudo apt-get update -y && sudo apt-get full-upgrade -y && sudo apt-get dist-upgrade -y && sudo apt autoremove -y && sudo apt autoclean;
+  sudo apt-get install -y wget gnupg dirmngr;
+  wget -q -O - https://archive.kali.org/archive-key.asc | sudo gpg --import;
+  sudo echo "deb http://http.kali.org/kali kali-rolling main non-free contrib" >> /etc/apt/sources.list;
+  sudo gpg -a --export ED444FF07D8D0BF6 | sudo apt-key add -;
+  sudo apt-get update -y && sudo apt-get full-upgrade -y && sudo apt-get dist-upgrade -y && sudo apt autoremove -y && sudo apt autoclean;
+  # solve someones problems
+  sudo apt-get install -y kali-linux-default;
+  touch kali_update.sh;
+  echo "apt-get update -y && apt-get full-upgrade -y && apt-get dist-upgrade -y && apt autoremove -y && apt autoclean" > kali_update.sh;
+  chmod +x kali_update.sh;
+  
 }
 
 function installAll {
