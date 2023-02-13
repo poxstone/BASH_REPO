@@ -289,6 +289,7 @@ function kali {
   sudo echo "deb http://http.kali.org/kali kali-rolling main non-free contrib" >> /etc/apt/sources.list;
   sudo gpg -a --export ED444FF07D8D0BF6 | sudo apt-key add -;
   sudo apt-get update -y && sudo apt-get full-upgrade -y && sudo apt-get dist-upgrade -y && sudo apt autoremove -y && sudo apt autoclean;
+  sudo apt --fix-broken install;
   # solve someones problems
   sudo apt-get install -y kali-linux-default;
   touch kali_update.sh;
