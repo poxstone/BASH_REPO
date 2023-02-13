@@ -158,6 +158,7 @@ function remote {
   sudo apt-get install -y remmina;
   sudo apt-get install -y vinagre;
   sudo apt-get install -y x2goclient;
+  sudo apt-get install -y wireguard;
 }
 
 # DOCKER
