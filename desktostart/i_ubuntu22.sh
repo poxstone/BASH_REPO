@@ -43,7 +43,7 @@ function cleanApt {
 function mainTools {
   sudo apt-get -y install vim tmux htop iotop lynx nmap tcpdump iotop  apt-transport-https ca-certificates curl gnupg-agent software-properties-common wireless-tools dnsutils;
   # snap
-  sudo apt-get install snapd -y;
+  sudo apt-get install snapd fuse -y;
 }
 
 # Dev tools
