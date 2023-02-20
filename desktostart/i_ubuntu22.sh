@@ -184,7 +184,11 @@ function dockerTools {
   sudo systemctl enable docker;
   sudo systemctl restart docker;
   
-  echo "{\"graph\": \"/home/${USER}/bin/docker-images/\"}" > "/etc/docker/daemon.json";
+  #echo "{\"graph\": \"/home/${USER}/bin/docker-images/\"}" > "/etc/docker/daemon.json";
+  # compose
+  sudo curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose;
+  sudo chmod +x /usr/local/bin/docker-compose;
+  sudo chmod +x /usr/local/bin/docker-compose;
 }
 
 # Android dev
