@@ -337,3 +337,6 @@ function installAll {
   devPrograms;
   cleanApt;
 }
+
+# fix Mount windows partitions
+#ntfsfix /dev/nvme0n1p4 && umount -a && sleep 2 && mount -a
