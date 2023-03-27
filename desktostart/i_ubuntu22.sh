@@ -37,6 +37,7 @@ function cleanApt {
   sudo apt --fix-broken -y install;
   sudo apt update -y && apt full-upgrade && apt install -f && dpkg --configure -a && apt-get -y autoremove && apt --fix-broken install;
   update-grub && update-grub2 && apt-get autoremove && apt -y autoremove && apt purge && apt remove && apt --fix-broken install;
+  sudo apt install -y python3-psutil xserver-xorg-video-dummy;
 }
 
 # Install tools
