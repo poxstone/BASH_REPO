@@ -42,7 +42,7 @@ function cleanApt {
 
 # Install tools
 function mainTools {
-  sudo apt-get -y install vim tmux htop iotop lynx nmap tcpdump iotop resolvconf apt-transport-https ca-certificates curl gnupg-agent software-properties-common wireless-tools dnsutils;
+  sudo apt-get -y install vim tmux htop iotop lynx nmap tcpdump iotop resolvconf apt-transport-https ca-certificates curl gnupg-agent software-properties-common wireless-tools dnsutils jq;
   # snap
   sudo apt-get install snapd fuse libfuse2 -y;
 }
