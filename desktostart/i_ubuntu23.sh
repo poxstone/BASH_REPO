@@ -274,6 +274,11 @@ function netTools {
   wget https://raw.githubusercontent.com/smicallef/spiderfoot/master/requirements.txt; sudo pip install -r requirements.txt;
 }
 
+function nvidiaDrivers {
+  sudo apt install -y cuda-drivers-fabricmanager-525 nvidia-cuda-toolkit;
+  nvcc --version;
+}
+
 function kali {
   sudo apt-get update -y && sudo apt-get full-upgrade -y && sudo apt-get dist-upgrade -y && sudo apt autoremove -y && sudo apt autoclean;
   sudo apt-get install -y wget gnupg dirmngr;
