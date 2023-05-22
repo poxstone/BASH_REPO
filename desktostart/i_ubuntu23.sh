@@ -329,4 +329,5 @@ function installAll {
 #GRUB_CMDLINE_LINUX="... pci=realloc"
 #update-grub
 #restart
+# theme: Otto plasma https://store.kde.org/p/1358262
 
