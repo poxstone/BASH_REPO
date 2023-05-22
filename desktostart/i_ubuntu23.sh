@@ -330,4 +330,5 @@ function installAll {
 #update-grub
 #restart
 # theme: Otto plasma https://store.kde.org/p/1358262
+# gestures touchpad https://github.com/NayamAmarshe/ToucheggKDE
 
