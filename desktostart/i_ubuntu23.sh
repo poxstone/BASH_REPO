@@ -332,5 +332,5 @@ function installAll {
 # theme: Otto plasma https://store.kde.org/p/1358262
 # gestures touchpad https://github.com/NayamAmarshe/ToucheggKDE
 # sudo apt install solaar
-# sudo solaar
+# solaar
 
