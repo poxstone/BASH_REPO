@@ -329,8 +329,18 @@ function installAll {
 #GRUB_CMDLINE_LINUX="... pci=realloc"
 #update-grub
 #restart
+
+# download theme and install
 # theme: Otto plasma https://store.kde.org/p/1358262
+
+## padmouse gestures
 # gestures touchpad https://github.com/NayamAmarshe/ToucheggKDE
+
+## set logitech keyboard swich (set on root and user)
 # sudo apt install solaar
+# sudo solaar
 # solaar
 
+## Set time zone for windows change ()
+# sudo timedatectl set-timezone America/Bogota
+# sudo timedatectl set-local-rtc 1 --adjust-system-clock
