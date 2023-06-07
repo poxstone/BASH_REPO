@@ -48,7 +48,6 @@ config_files=(
     "${config_dir}/.gtkrc-2.0"
     "${config_dir}/.vscode-cli/"
     "${config_dir}/.local/share/applications"
-    "${config_dir}/.local/share/kservices5"
     "${config_dir}/.local/share/konsole"
 )
 
