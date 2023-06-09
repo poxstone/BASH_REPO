@@ -320,7 +320,10 @@ function installAll {
 }
 
 # fix Mount windows partitions (best is mount by vrowser)
+# /dev/nvme1n1p5   /media/poxstone/DOCS  fuseblk  rw,nosuid,nodev,relatime,user_id=0,group_id=0,default_permissions,allow_other,blksize=4096,uhelper=udisks2  0   2
+# other
 # UUID=704A25B04A25744E /media/poxstone/DOCS           ntfs    defaults,nls=utf8,umask=000,dmask=027,fmask=137,uid=1000,gid=1000,windows_names       0       2
+
 #ntfsfix /dev/nvme0n1p4 && umount -a && sleep 2 && mount -a
 
 # fix nvidia and sound drivers
