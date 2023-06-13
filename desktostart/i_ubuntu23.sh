@@ -219,7 +219,7 @@ function nodeConfig {
   if node -v;then
       if [[ $(node -v) != *"v16"* ]];then
         sudo apt-get remove nodejs -y;
-        curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.39.2/install.sh | bash && \
+        curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.39.3/install.sh | bash && \
         . ~/.nvm/nvm.sh && . ~/.bashrc; \
         nvm install 16 && nvm use 16 && nvm alias default $(nvm current) && \
         npm i -g stylus nib pug-cli less less-prefixer watch-less http-server bower;
