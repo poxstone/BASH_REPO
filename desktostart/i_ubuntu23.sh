@@ -295,6 +295,14 @@ function kali {
   
 }
 
+function brewInstall {
+  sudo apt-get update -y;
+  sudo apt-get install -y build-essential curl file git;
+  sh -c "$(curl -fsSL https://raw.githubusercontent.com/Linuxbrew/install/master/install.sh)";
+  echo 'eval $(/home/linuxbrew/.linuxbrew/bin/brew shellenv)' >> ~/.bashrc;
+  source ~/.bashrc;
+}
+
 function installAll {
   updateSystem;
   updateSystem;
