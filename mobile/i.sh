@@ -1,3 +1,4 @@
+#/data/data/com.termux/files/usr/etc/apt/sources.list.d
 pkg update -y && pkg upgrade -y;
 termux-setup-storage;
 pkg install -y root-repo;
