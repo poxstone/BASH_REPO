@@ -332,7 +332,7 @@ function installAll {
 # other
 # UUID=704A25B04A25744E /media/poxstone/DOCS           ntfs    defaults,nls=utf8,umask=000,dmask=027,fmask=137,uid=1000,gid=1000,windows_names       0       2
 
-#ntfsfix /dev/nvme0n1p4 && umount -a && sleep 2 && mount -a
+#for i in {0..6};do ntfsfix /dev/nvme0n1p${i};done
 
 # fix nvidia and sound drivers
 #sudo vim /etc/default/grub
