@@ -65,8 +65,8 @@ find $gcloud -nameo "*.py" -type f | awk '{system("termux-fix-shebang "$0)'};
 termux-fix-shebang ~/bin/google-cloud-sdk/platform/google_appengine/dev_appserver.py;
 
 #git-config
-git config --global user.name poxstone;
-git config --global user.email poxstone@gmail.com;
+git config --global user.name droid;
+git config --global user.email droid@email.com;
 
 mkdir bin;
 mv google-cloud-sdk bin;
