@@ -5,10 +5,7 @@ pkg install -y root-repo;
 pkg install -y util-linux;
 pkg install -y coreutils;
 pkg install -y git;
-#pkg install -y python2;
-#alias python="python2";
-#alias pip="pip2";
-#pkg install -y python2-dev;
+pkg install -y python;
 #pkg install -y python-dev; #review
 pkg install -y libllvm;
 pkg install -y clang;
