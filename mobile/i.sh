@@ -20,6 +20,7 @@ pkg install -y tmux;
 pkg install -y nmap;
 pkg install -y nodejs;
 pkg install -y dnsutils;
+pkg install -y whois;
 pkg install -y tsu; # tsu -A su #wrapper for Termux
 pkg install -y tracepath;
 pkg install -y kubectl;
