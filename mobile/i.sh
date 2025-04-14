@@ -6,13 +6,12 @@ pkg install -y util-linux;
 pkg install -y coreutils;
 pkg install -y git;
 pkg install -y python;
-#pkg install -y python-dev; #review
 pkg install -y libllvm;
 pkg install -y clang;
 pkg install -y fftw;
 pkg install -y openssh;
 pkg install -y git;
-pkg install -y autoconf make openssl-dev libffi-dev;
+pkg install -y autoconf make;
 pkg install -y curl;
 pkg install -y vim;
 pkg install -y wget;
