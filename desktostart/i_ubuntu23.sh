@@ -92,34 +92,24 @@ function devTools {
 
 # Python
 function pipTools {
-  sudo pip install --upgrade pip; # error on version 10.0.1
-  #sudo pip install pip==9.0.3 # use this if abode fails
-
-
   sudo apt install -y python3-flask;
   sudo apt install -y python3-requests;
   sudo apt install -y python3-cryptography;
   sudo apt install -y python3-virtualenv;
-  sudo pip install --upgrade setuptools;
-  sudo pip install --upgrade pyudev;
-  sudo pip install --upgrade cryptography;
 
   sudo apt-get install -y python3-setuptools gcc;
-
-  # browser drivers for sellenium
-  if ! geckodriver --version || ! chromedriver --version ;then
-      echo "Pendiente instalar los drivers de lo navegadores";
-  fi;
 }
 
-# Install dsn, 
-apps and tools
+# Install dsn, apps and tools
 function mediaTool {
   sudo apt install -y libavcodec-extra libdvdcss2 libdvdcss-dev; # problems gcp
   sudo dpkg-reconfigure libdvd-pkg; # problems gcp
   # npapi-vlc
+  sudo apt-get install -y mencoder ffmpeg peek chromium;
+  
+}
+function desigTools {
   sudo apt-get install -y inkscape krita blender fontforge imagemagick optipng vlc;
-  sudo apt-get install -y mencoder ffmpeg;
 }
 
 # Install remte desktop windows
@@ -156,7 +146,7 @@ function dockerTools {
   
   #echo "{\"graph\": \"/home/${USER}/bin/docker-images/\"}" > "/etc/docker/daemon.json";
   # compose
-  sudo curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose;
+  sudo curl -L "https://github.com/docker/compose/releases/download/1.35.1/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose;
   sudo chmod +x /usr/local/bin/docker-compose;
   sudo chmod +x /usr/local/bin/docker-compose;
 }
